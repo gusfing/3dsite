@@ -10,7 +10,13 @@ export class Vehicle
         this.setChassis()
 
         this.controller = this.game.physics.world.createVehicleController(this.chassis.physical.body)
+
         this.up = new THREE.Vector3(0, 1, 0)
+        this.position = new THREE.Vector3()
+        this.positionDelta = new THREE.Vector3()
+        this.velocity = new THREE.Vector3()
+        this.speed = 0
+        this.upsideDownRatio = 0
 
         this.setWheels()
         this.setJump()
@@ -23,7 +29,7 @@ export class Vehicle
         this.game.time.events.on('tick', () =>
         {
             this.updatePostPhysics()
-        }, 3)
+        }, 4)
     }
 
     setChassis()
@@ -162,6 +168,7 @@ export class Vehicle
 
     updatePrePhysics()
     {
+        // Wheels
         this.wheels.engineForce = 0
         if(this.game.inputs.keys.up)
             this.wheels.engineForce += 6
@@ -195,6 +202,7 @@ export class Vehicle
 
     updatePostPhysics()
     {
+        // Wheels
         this.wheels.visualSteering += (this.wheels.steering - this.wheels.visualSteering) * this.game.time.delta * 16
 
         this.wheels.inContact = 0
@@ -212,6 +220,13 @@ export class Vehicle
                 this.wheels.inContact++
         }
 
+        // Various measures
+        const newPosition = this.chassis.physical.body.translation()
+        this.positionDelta = this.positionDelta.copy(newPosition).sub(this.position)
+        this.position.copy(newPosition)
+
         this.up.set(0, 1, 0).applyQuaternion(this.chassis.physical.body.rotation())
+        this.speed = this.positionDelta.length() / this.game.time.delta // Units per seconds
+        this.upsideDownRatio = this.up.dot(new THREE.Vector3(0, - 1, 0)) * 0.5 + 0.5
     }
 }
