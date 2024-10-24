@@ -1,3 +1,4 @@
+import { Debug } from './Debug.js'
 import { Inputs } from './Inputs.js'
 import { Physics } from './Physics/Physics.js'
 import { PhysicsDebug } from './Physics/PhysicsDebug.js'
@@ -21,6 +22,7 @@ export class Game
         // Setup
         this.domElement = document.querySelector('.game')
 
+        this.debug = new Debug()
         this.inputs = new Inputs([
             { name: 'up', keys: [ 'ArrowUp', 'KeyW' ] },
             { name: 'right', keys: [ 'ArrowRight', 'KeyD' ] },
