@@ -365,9 +365,9 @@ export class Vehicle
     {
         // Wheels
         this.wheels.engineForce = 0
-        if(this.game.inputs.keys.up)
+        if(this.game.inputs.keys.forward)
             this.wheels.engineForce += this.wheels.engineForceMax
-        if(this.game.inputs.keys.down)
+        if(this.game.inputs.keys.backward)
             this.wheels.engineForce -= this.wheels.engineForceMax
 
         if(this.game.inputs.keys.boost)
@@ -416,7 +416,10 @@ export class Vehicle
             const wheel = this.wheels.items[i]
 
             if(!this.game.inputs.keys.brake)
-                wheel.visual.rotation.z -= (this.speed * this.game.time.deltaScaled) / this.wheels.settings.radius
+            {
+                if(!this.stop.active)
+                    wheel.visual.rotation.z -= (this.speed * this.game.time.deltaScaled) / this.wheels.settings.radius
+            }
 
             if(i === 0 || i === 1)
                 wheel.visual.rotation.y = this.wheels.visualSteering

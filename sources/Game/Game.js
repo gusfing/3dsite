@@ -34,9 +34,9 @@ export class Game
 
         this.debug = new Debug()
         this.inputs = new Inputs([
-            { name: 'up', keys: [ 'ArrowUp', 'KeyW' ] },
+            { name: 'forward', keys: [ 'ArrowUp', 'KeyW' ] },
             { name: 'right', keys: [ 'ArrowRight', 'KeyD' ] },
-            { name: 'down', keys: [ 'ArrowDown', 'KeyS' ] },
+            { name: 'backward', keys: [ 'ArrowDown', 'KeyS' ] },
             { name: 'left', keys: [ 'ArrowLeft', 'KeyA' ] },
             { name: 'boost', keys: [ 'ShiftLeft', 'ShiftRight' ] },
             { name: 'brake', keys: [ 'KeyB' ] },
