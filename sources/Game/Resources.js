@@ -1,5 +1,5 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-import * as THREE from 'three/webgpu'
+import * as THREE from 'three'
 
 export class Resources
 {

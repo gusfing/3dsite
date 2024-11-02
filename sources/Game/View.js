@@ -1,4 +1,4 @@
-import * as THREE from 'three/webgpu'
+import * as THREE from 'three'
 import CameraControls from 'camera-controls'
 import { Game } from './Game.js'
 
@@ -40,8 +40,8 @@ export class View
     {
         const vehicle = this.game.vehicle
 
-        if(vehicle)
-            this.cameraControls.setTarget(vehicle.position.x, vehicle.position.y, vehicle.position.z)
+        // if(vehicle)
+        //     this.cameraControls.setTarget(vehicle.position.x, vehicle.position.y, vehicle.position.z)
             
         this.cameraControls.update(this.game.time.delta)
     }

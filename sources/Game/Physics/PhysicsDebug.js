@@ -1,12 +1,12 @@
 import { Game } from '../Game.js'
-import * as THREE from 'three/webgpu'
+import * as THREE from 'three'
 
 export class PhysicsDebug
 {
     constructor()
     {
         this.game = new Game()
-        this.active = true
+        this.active = false
 
         this.geometry = new THREE.BufferGeometry()
         this.geometry.setAttribute('position', new THREE.Float32BufferAttribute([], 3))

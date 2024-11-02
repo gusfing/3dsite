@@ -1,4 +1,4 @@
-import * as THREE from 'three/webgpu'
+import * as THREE from 'three'
 import { Game } from './Game.js'
 
 export class Rendering
@@ -7,7 +7,7 @@ export class Rendering
     {
         this.game = new Game()
 
-        this.renderer = new THREE.WebGPURenderer()
+        this.renderer = new THREE.WebGPURenderer({ antialias: true })
         this.renderer.setSize(this.game.viewport.width, this.game.viewport.height)
         this.renderer.domElement.classList.add('experience')
         this.renderer.setClearColor(0x1b191f)

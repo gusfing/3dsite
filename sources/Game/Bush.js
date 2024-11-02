@@ -1,16 +1,16 @@
-import * as THREE from 'three/webgpu'
+import * as THREE from 'three'
 import { Game } from './Game.js'
-import { texture } from 'three/webgpu'
-import { vec2 } from 'three/webgpu'
-import { Fn } from 'three/webgpu'
-import { positionGeometry } from 'three/webgpu'
-import { positionLocal } from 'three/webgpu'
-import { vec3 } from 'three/webgpu'
-import { transformNormalToView } from 'three/webgpu'
-import { positionViewDirection } from 'three/webgpu'
-import { sin } from 'three/webgpu'
-import { positionWorld } from 'three/webgpu'
-import { time } from 'three/webgpu'
+import { texture } from 'three'
+import { vec2 } from 'three'
+import { Fn } from 'three'
+import { positionGeometry } from 'three'
+import { positionLocal } from 'three'
+import { vec3 } from 'three'
+import { transformNormalToView } from 'three'
+import { positionViewDirection } from 'three'
+import { sin } from 'three'
+import { positionWorld } from 'three'
+import { time } from 'three'
 
 export class Bush
 {
@@ -62,6 +62,8 @@ export class Bush
             const leavesColor = texture(this.resources.bushLeaves)
 
             leavesColor.r.lessThan(0.5).discard()
+
+            
 
             return matcapColor.rgb
         })()

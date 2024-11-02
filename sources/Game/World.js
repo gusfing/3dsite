@@ -1,5 +1,5 @@
-import * as THREE from 'three/webgpu'
-import { uniform, color, rangeFog } from 'three/webgpu'
+import * as THREE from 'three'
+import { uniform, color, rangeFog } from 'three'
 import { Game } from './Game.js'
 import MeshGridMaterial, { MeshGridMaterialLine } from './Materials/MeshGridMaterial.js'
 import { Terrain } from './Terrain.js'
