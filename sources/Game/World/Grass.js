@@ -10,7 +10,7 @@ export class Grass
         this.game = new Game()
 
         this.details = 400
-        this.size = 80
+        this.size = 60
         this.count = this.details * this.details
         this.fragmentSize = this.size / this.details
         this.bladeWidthRatio = 1.5
@@ -92,7 +92,7 @@ export class Grass
     setMaterial()
     {
         this.material = new THREE.MeshMatcapNodeMaterial()
-        this.playerPosition = uniform(new THREE.Vector2())
+        this.center = uniform(new THREE.Vector2())
 
         const vertexLoopIndex = varying(vertexIndex.toFloat().mod(3))
         const tipness = varying(vertexLoopIndex.step(0.5))
@@ -122,19 +122,19 @@ export class Grass
             // Blade position
             const position = attribute('position')
 
-            const loopPosition = position.sub(this.playerPosition)
+            const loopPosition = position.sub(this.center)
             const halfSize = float(this.size).mul(0.5).toVar()
             loopPosition.x.assign(mod(loopPosition.x.add(halfSize), this.size).sub(halfSize))
             loopPosition.y.assign(mod(loopPosition.y.add(halfSize), this.size).sub(halfSize))
 
-            const position3 = vec3(loopPosition.x, 0, loopPosition.y).add(vec3(this.playerPosition.x, 0, this.playerPosition.y))
+            const position3 = vec3(loopPosition.x, 0, loopPosition.y).add(vec3(this.center.x, 0, this.center.y))
             const worldPosition = modelWorldMatrix.mul(position3).toVar()
             bladePosition.assign(worldPosition.xz)
 
             // Wheel tracks
             const wheelTracksColor = texture(
                 this.game.vehicle.wheelTracks.renderTarget.texture,
-                worldPosition.xz.sub(- this.game.vehicle.wheelTracks.halfSize).sub(this.playerPosition).div(this.game.vehicle.wheelTracks.size)
+                worldPosition.xz.sub(- this.game.vehicle.wheelTracks.halfSize).sub(this.center).div(this.game.vehicle.wheelTracks.size)
             )
             const wheelsTracksHeight = wheelTracksColor.a.oneMinus().toVar()
 
@@ -223,8 +223,7 @@ export class Grass
 
     update()
     {
-        this.playerPosition.value.set(this.game.vehicle.position.x, this.game.vehicle.position.z)
-        // this.mesh.position.set(this.game.vehicle.position.x, 0, this.game.vehicle.position.z)
-        // this.testPlane.position.set(this.game.vehicle.position.x, 0, this.game.vehicle.position.z)
+        const offset = new THREE.Vector2(this.game.view.spherical.offset.x, this.game.view.spherical.offset.z).setLength(this.size / 2).negate()
+        this.center.value.set(this.game.view.camera.position.x, this.game.view.camera.position.z).add(offset)
     }
 }

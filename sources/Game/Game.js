@@ -61,8 +61,8 @@ export class Game
         this.viewport = new Viewport(this.domElement)
         this.resources = new Resources()
         this.physics = new Physics()
-        this.vehicle = new Vehicle()
         this.world = new World()
+        this.vehicle = new Vehicle()
         this.view = new View()
         this.rendering = new Rendering()
 

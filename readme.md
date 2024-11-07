@@ -20,9 +20,9 @@ npm run build
 | Order | Components |
 |---|---|
 | 1 | Inputs |
-| 1 | Vehicle(pre Physics) |
+| 1 | Vehicle (pre Physics) |
 | 2 | Physics |
 | 3 | View |
-| 4 | Vehicle(post Physics), PhysicsWireframe |
+| 4 | Vehicle (post Physics), PhysicsWireframe |
 | 5 | Grass |
 | 6 | Rendering |
