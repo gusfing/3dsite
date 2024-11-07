@@ -1,3 +1,5 @@
+import normalizeWheel from 'normalize-wheel'
+
 import { Events } from './Events.js'
 
 export class Inputs
@@ -8,6 +10,21 @@ export class Inputs
 
         this.map = _map
 
+        this.setKeys()
+        this.setWheel()
+    }
+
+    setWheel()
+    {
+        addEventListener('wheel', (event) =>
+        {
+            const normalized = normalizeWheel(event)
+            this.events.trigger('zoom', [ normalized.spinY ])
+        })
+    }
+
+    setKeys()
+    {
         this.keys = {}
 
         for(const _map of this.map)

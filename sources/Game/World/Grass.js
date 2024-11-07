@@ -10,7 +10,7 @@ export class Grass
         this.game = new Game()
 
         this.details = 400
-        this.size = 60
+        this.size = 80
         this.count = this.details * this.details
         this.fragmentSize = this.size / this.details
         this.bladeWidthRatio = 1.5

@@ -14,21 +14,36 @@ export class View
 
         this.mode = 'default'
 
-        this.target = new THREE.Vector3()
-        this.smoothedTarget = new THREE.Vector3()
+        this.focusPoint = new THREE.Vector3()
+        this.smoothedFocusPoint = new THREE.Vector3()
 
         this.phi = Math.PI * 0.35
         this.theta = Math.PI * 0.25
 
+        this.sphericalOffset = new THREE.Vector3()
+
+        this.zoom = {}
+        this.zoom.baseRatio = 0.25
+        this.zoom.ratio = this.zoom.baseRatio
+        this.zoom.smoothedRatio = this.zoom.baseRatio
+        this.zoom.speedAmplitude = - 0.5
+        this.zoom.speedEdgeLow = 5
+        this.zoom.speedEdgeHigh = 40
+        this.zoom.sensitivity = 0.05
+
         this.radius = {}
-        this.radius.smoothedValue = 25
-        this.radius.low = 25
-        this.radius.high = 35
-        this.radius.speedLow = 5
-        this.radius.speedHigh = 40
+        this.radius.min = 10
+        this.radius.max = 30
+        this.radius.current = lerp(this.radius.min, this.radius.max, 1 - this.zoom.smoothedRatio)
+
+        this.game.inputs.events.on('zoom', (zoomValue) =>
+        {
+            this.zoom.baseRatio -= zoomValue * this.zoom.sensitivity
+            this.zoom.baseRatio = clamp(this.zoom.baseRatio, 0, 1)
+        })
 
         this.camera = new THREE.PerspectiveCamera(25, this.game.viewport.ratio, 0.1, 1000)
-        this.camera.position.setFromSphericalCoords(this.radius.smoothedValue, this.phi, this.theta)
+        this.camera.position.setFromSphericalCoords(this.radius.current, this.phi, this.theta)
         this.game.scene.add(this.camera)
 
         this.cameraControls = new CameraControls(this.camera, this.game.domElement)
@@ -66,23 +81,30 @@ export class View
                 }
             ).on('change', () => 
             {
-                this.smoothedTarget.copy(this.target)
+                this.smoothedFocusPoint.copy(this.focusPoint)
 
                 this.cameraControls.enabled = this.mode === 'controls'
-                this.cameraControls.setTarget(this.target.x, this.target.y, this.target.z)
+                this.cameraControls.setTarget(this.focusPoint.x, this.focusPoint.y, this.focusPoint.z)
                 this.cameraControls.setPosition(this.camera.position.x, this.camera.position.y, this.camera.position.z)
             })
-            this.debugPanel.addBinding(this, 'phi', { min: 0, max: Math.PI * 0.5, step: 0.001 })
-            this.debugPanel.addBinding(this, 'theta', { min: - Math.PI, max: Math.PI, step: 0.001 })
-
-            const radiusFolder = this.debugPanel.addFolder({
-                title: 'Radius',
+            
+            const sphericalDebugPanel = this.debugPanel.addFolder({
+                title: 'Spherical',
                 expanded: true,
             })
-            radiusFolder.addBinding(this.radius, 'low', { min: 0, max: 100, step: 0.001 })
-            radiusFolder.addBinding(this.radius, 'high', { min: 0, max: 100, step: 0.001 })
-            radiusFolder.addBinding(this.radius, 'speedLow', { min: 0, max: 100, step: 0.001 })
-            radiusFolder.addBinding(this.radius, 'speedHigh', { min: 0, max: 100, step: 0.001 })
+            sphericalDebugPanel.addBinding(this, 'phi', { min: 0, max: Math.PI * 0.5, step: 0.001 })
+            sphericalDebugPanel.addBinding(this, 'theta', { min: - Math.PI, max: Math.PI, step: 0.001 })
+            sphericalDebugPanel.addBinding(this.radius, 'min', { label: 'zoomMin', min: 0, max: 100, step: 0.001 })
+            sphericalDebugPanel.addBinding(this.radius, 'max', { label: 'zoomMax', min: 0, max: 100, step: 0.001 })
+            
+            const zoomDebugPanel = this.debugPanel.addFolder({
+                title: 'Zoom',
+                expanded: true,
+            })
+            zoomDebugPanel.addBinding(this.zoom, 'speedAmplitude', { min: 0, max: 1, step: 0.001 })
+            zoomDebugPanel.addBinding(this.zoom, 'speedEdgeLow', { min: 0, max: 100, step: 0.001 })
+            zoomDebugPanel.addBinding(this.zoom, 'speedEdgeHigh', { min: 0, max: 100, step: 0.001 })
+            zoomDebugPanel.addBinding(this.zoom, 'sensitivity', { min: 0, max: 0.5, step: 0.0001 })
         }
 
         this.setSpeedLines()
@@ -91,8 +113,8 @@ export class View
     setSpeedLines()
     {
         this.speedLines = {}
-        this.speedLines.strength = uniform(0)
-        this.speedLines.targetStrength = 0
+        this.speedLines.smoothedStrength = uniform(0)
+        this.speedLines.strength = 0
         this.speedLines.speed = uniform(25)
 
         const linesCount = 30
@@ -152,7 +174,7 @@ export class View
             const newPosition = positionGeometry.toVar()
             const length = newPosition.xy.length()
             const angle = atan2(newPosition.y, newPosition.x)
-            length.addAssign(lineRatio.add(this.speedLines.strength.oneMinus().mul(maxDistance)))
+            length.addAssign(lineRatio.add(this.speedLines.smoothedStrength.oneMinus().mul(maxDistance)))
             newPosition.x.assign(cos(angle).mul(length))
             newPosition.y.assign(sin(angle).mul(length))
             
@@ -172,7 +194,7 @@ export class View
                 title: 'Speed lines',
                 expanded: true,
             })
-            folder.addBinding(this.speedLines, 'targetStrength', { label: 'strength', min: 0, max: 1, step: 0.001 })
+            folder.addBinding(this.speedLines, 'strength', { label: 'strength', min: 0, max: 1, step: 0.001 })
             folder.addBinding(this.speedLines.speed, 'value', { label: 'speed', min: 0, max: 100, step: 0.001 })
         }
     }
@@ -189,24 +211,27 @@ export class View
         if(this.mode === 'default')
         {
             // Target
-            const newSmoothTarget = this.smoothedTarget.clone().lerp(this.target, this.game.time.delta * 10)
-            const smoothTargetDelta = newSmoothTarget.clone().sub(this.smoothedTarget)
-            const targetSpeed = smoothTargetDelta.length() / this.game.time.delta
-            this.smoothedTarget.copy(newSmoothTarget)
+            const newSmoothTarget = this.smoothedFocusPoint.clone().lerp(this.focusPoint, this.game.time.delta * 10)
+            const smoothTargetDelta = newSmoothTarget.clone().sub(this.smoothedFocusPoint)
+            const targetSpeed = Math.hypot(smoothTargetDelta.x, smoothTargetDelta.z) / this.game.time.delta
+            this.smoothedFocusPoint.copy(newSmoothTarget)
             
+            // Zoom
+            const zoomSpeedRatio = smoothstep(targetSpeed, this.zoom.speedEdgeLow, this.zoom.speedEdgeHigh)
+            this.zoom.ratio = this.zoom.baseRatio + this.zoom.speedAmplitude * zoomSpeedRatio
+            this.zoom.smoothedRatio = lerp(this.zoom.smoothedRatio, this.zoom.ratio, this.game.time.delta * 10)
+
             // Radius
-            const radiusRatio = smoothstep(targetSpeed, this.radius.speedLow, this.radius.speedHigh)
-            const radius = lerp(this.radius.low, this.radius.high, radiusRatio)
-            this.radius.smoothedValue = lerp(this.radius.smoothedValue, radius, this.game.time.delta * 10)
+            this.radius.current = lerp(this.radius.min, this.radius.max, 1 - this.zoom.smoothedRatio)
             
-            // Offset
-            const offset = new THREE.Vector3().setFromSphericalCoords(this.radius.smoothedValue, this.phi, this.theta)
+            // Spherical offset
+            this.sphericalOffset.setFromSphericalCoords(this.radius.current, this.phi, this.theta)
 
             // Position
-            this.camera.position.copy(this.smoothedTarget).add(offset)
+            this.camera.position.copy(this.smoothedFocusPoint).add(this.sphericalOffset)
 
             // Look at
-            this.camera.lookAt(this.smoothedTarget)
+            this.camera.lookAt(this.smoothedFocusPoint)
         }
         
         // Controls mode
@@ -216,6 +241,6 @@ export class View
         }
 
         // Speed lines
-        this.speedLines.strength.value = lerp(this.speedLines.strength.value, this.speedLines.targetStrength, this.game.time.delta * 2)
+        this.speedLines.smoothedStrength.value = lerp(this.speedLines.smoothedStrength.value, this.speedLines.strength, this.game.time.delta * 2)
     }
 }
