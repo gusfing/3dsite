@@ -182,9 +182,9 @@ export class Grass
         const colorB = uniform(color('#e0e239'))
         const colorVariation = varying(texture(this.resources.noisesTexture, bladePosition.mul(0.02)).smoothstep(0.2, 0.8))
 
-        const finalColor = colorVariation.mix(colorA, colorB).mul(tipness).varying()
-        const shadowColor = finalColor.mul(vec3(0.25, 0.5, 2, 1)).varying()
-        this.material.outputNode = vec4(mix(finalColor.rgb, shadowColor.rgb, totalShadows.oneMinus()), 1)
+        const finalColor = colorVariation.mix(colorA, colorB).mul(tipness).rgb.varying()
+        const shadowColor = finalColor.mul(vec3(0.25, 0.5, 2, 1)).rgb.varying()
+        this.material.outputNode = vec4(mix(finalColor, shadowColor, totalShadows.oneMinus()), 1)
 
         // Debug
         if(this.game.debug.active)
