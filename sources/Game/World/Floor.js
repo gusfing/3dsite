@@ -51,7 +51,7 @@ export class Floor
             {
                 const lineDebugPanel = debugPanel.addFolder({
                     title: 'Line',
-                    expanded: true,
+                    expanded: false,
                 })
                 lineDebugPanel.addBinding(line.scale, 'value', { label: 'scale', min: 0, max: 1, step: 0.001 })
                 lineDebugPanel.addBinding(line.thickness, 'value', { label: 'thickness', min: 0, max: 1, step: 0.001 })

@@ -59,6 +59,14 @@ export class Vehicle
                 child.receiveShadow = true
                 child.castShadow = true
                 child.material.shadowSide = THREE.BackSide
+
+                if(child.material.name === 'carEmissiveNormal' || child.material.name === 'carEmissiveRed')
+                {
+                    const luminanceCoefficients = new THREE.Vector3()
+                    THREE.ColorManagement.getLuminanceCoefficients(luminanceCoefficients)
+                    const luminance = child.material.color.r * luminanceCoefficients.x + child.material.color.g * luminanceCoefficients.y + child.material.color.b * luminanceCoefficients.z
+                    child.material.color.multiplyScalar(1.5 / luminance)
+                }
             }
         })
         this.game.materials.updateObject(model)
@@ -138,20 +146,17 @@ export class Vehicle
 
         // Settings
         this.wheels.settings = {
-            offsetXFront: 0.78,
-            offsetXBack: -1,
-            offsetY: -0.5,
-            offsetZ: 0.75,
-            radius: 0.5,                          // No default
-            directionCs: { x: 0, y: -1, z: 0 },   // Suspension direction
-            axleCs: { x: 0, y: 0, z: 1 },         // Rotation axis
-            frictionSlip: 0.9,                    // 10.5
-            maxSuspensionForce: 100,              // 100
-            maxSuspensionTravel: 2,               // 5
-            sideFrictionStiffness: 0.6,           // 1
-            suspensionCompression: 2,             // 0.83
-            suspensionRelaxation: 1.88,           // 0.88
-            suspensionStiffness: 30,              // 5.88
+            offset: { x: 0.90, y: - 0.5, z: 0.75 },
+            radius: 0.5,
+            directionCs: { x: 0, y: -1, z: 0 },
+            axleCs: { x: 0, y: 0, z: 1 },
+            frictionSlip: 0.9,
+            maxSuspensionForce: 100,
+            maxSuspensionTravel: 2,
+            sideFrictionStiffness: 0.6,
+            suspensionCompression: 2,
+            suspensionRelaxation: 1.88,
+            suspensionStiffness: 30,
         }
 
         this.wheels.updateSettings = () =>
@@ -159,10 +164,10 @@ export class Vehicle
             this.wheels.perimeter = this.wheels.settings.radius * Math.PI * 2
 
             const wheelsPositions = [
-                new THREE.Vector3(this.wheels.settings.offsetXFront, this.wheels.settings.offsetY,   this.wheels.settings.offsetZ),
-                new THREE.Vector3(this.wheels.settings.offsetXFront, this.wheels.settings.offsetY, - this.wheels.settings.offsetZ),
-                new THREE.Vector3(this.wheels.settings.offsetXBack,  this.wheels.settings.offsetY,   this.wheels.settings.offsetZ),
-                new THREE.Vector3(this.wheels.settings.offsetXBack,  this.wheels.settings.offsetY, - this.wheels.settings.offsetZ),
+                new THREE.Vector3(  this.wheels.settings.offset.x, this.wheels.settings.offset.y,   this.wheels.settings.offset.z),
+                new THREE.Vector3(  this.wheels.settings.offset.x, this.wheels.settings.offset.y, - this.wheels.settings.offset.z),
+                new THREE.Vector3(- this.wheels.settings.offset.x, this.wheels.settings.offset.y,   this.wheels.settings.offset.z),
+                new THREE.Vector3(- this.wheels.settings.offset.x, this.wheels.settings.offset.y, - this.wheels.settings.offset.z),
             ]
             
             let i = 0
@@ -196,13 +201,10 @@ export class Vehicle
         {
             const debugPanel = this.debugPanel.addFolder({
                 title: '🛞 Wheels',
-                expanded: true,
+                expanded: false,
             })
 
-            debugPanel.addBinding(this.wheels.settings, 'offsetXFront', { min: -1, max: 1, step: 0.01 }).on('change', this.wheels.updateSettings)
-            debugPanel.addBinding(this.wheels.settings, 'offsetXBack', { min: -1, max: 1, step: 0.01 }).on('change', this.wheels.updateSettings)
-            debugPanel.addBinding(this.wheels.settings, 'offsetY', { min: -1, max: 1, step: 0.01 }).on('change', this.wheels.updateSettings)
-            debugPanel.addBinding(this.wheels.settings, 'offsetZ', { min: -1, max: 1, step: 0.01 }).on('change', this.wheels.updateSettings)
+            debugPanel.addBinding(this.wheels.settings, 'offset', { min: -1, max: 1, step: 0.01 }).on('change', this.wheels.updateSettings)
             debugPanel.addBinding(this.wheels.settings, 'radius', { min: 0, max: 1, step: 0.01 }).on('change', this.wheels.updateSettings)
             debugPanel.addBinding(this.wheels.settings, 'frictionSlip', { min: 0, max: 1, step: 0.01 }).on('change', this.wheels.updateSettings)
             debugPanel.addBinding(this.wheels.settings, 'maxSuspensionForce', { min: 0, max: 1000, step: 1 }).on('change', this.wheels.updateSettings)
@@ -328,7 +330,7 @@ export class Vehicle
         {
             const debugPanel = this.debugPanel.addFolder({
                 title: '🔄 Unstuck',
-                expanded: true,
+                expanded: false,
             })
 
             debugPanel.addBinding(this.unstuck, 'force', { min: 0, max: 20, step: 0.01 })
@@ -357,7 +359,7 @@ export class Vehicle
     {
         this.hydraulics = {}
         this.hydraulics.low = 0.125
-        this.hydraulics.mid = 0.5
+        this.hydraulics.mid = 0.45
         this.hydraulics.high = 1
 
         for(let i = 0; i < 4; i++)
@@ -409,7 +411,7 @@ export class Vehicle
         {
             const debugPanel = this.debugPanel.addFolder({
                 title: '⬆️ Hydraulics',
-                expanded: true,
+                expanded: false,
             })
 
             debugPanel.addBinding(this.hydraulics, 'low', { min: 0, max: 2, step: 0.01 }).on('change', this.hydraulics.update)

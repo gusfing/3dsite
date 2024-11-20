@@ -44,7 +44,7 @@ export class Lighting
         {
             const debugPanel = this.game.debug.panel.addFolder({
                 title: '💡 Lights',
-                expanded: true,
+                expanded: false,
             })
 
             debugPanel.addBinding(this.spherical, 'phi', { min: 0, max: Math.PI * 0.5 }).on('change', () => this.updateCoordinates())

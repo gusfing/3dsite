@@ -19,7 +19,7 @@ export class View
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '📷 View',
-                expanded: true,
+                expanded: false,
             })
 
             this.debugPanel.addBinding(
@@ -95,7 +95,7 @@ export class View
         {
             const zoomDebugPanel = this.debugPanel.addFolder({
                 title: 'Zoom',
-                expanded: true,
+                expanded: false,
             })
             zoomDebugPanel.addBinding(this.zoom, 'speedAmplitude', { min: 0, max: 1, step: 0.001 })
             zoomDebugPanel.addBinding(this.zoom, 'speedEdgeLow', { min: 0, max: 100, step: 0.001 })
@@ -122,7 +122,7 @@ export class View
         {
             const sphericalDebugPanel = this.debugPanel.addFolder({
                 title: 'Spherical',
-                expanded: true,
+                expanded: false,
             })
             sphericalDebugPanel.addBinding(this.spherical, 'phi', { min: 0, max: Math.PI * 0.5, step: 0.001 })
             sphericalDebugPanel.addBinding(this.spherical, 'theta', { min: - Math.PI, max: Math.PI, step: 0.001 })
@@ -243,7 +243,7 @@ export class View
         {
             const folder = this.debugPanel.addFolder({
                 title: 'Speed lines',
-                expanded: true,
+                expanded: false,
             })
             folder.addBinding(this.speedLines, 'strength', { label: 'strength', min: 0, max: 1, step: 0.001 })
             folder.addBinding(this.speedLines.speed, 'value', { label: 'speed', min: 0, max: 100, step: 0.001 })

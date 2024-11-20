@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { positionWorld, float, Fn, uniform, color, mix, vec3, vec4, normalWorld } from 'three'
+import { mrt, positionWorld, float, Fn, uniform, color, mix, vec3, vec4, normalWorld } from 'three'
 import { Game } from './Game.js'
 
 export class Materials
@@ -39,7 +39,7 @@ export class Materials
         {
             const debugPanel = this.game.debug.panel.addFolder({
                 title: '🎨 Materials',
-                expanded: true,
+                expanded: false,
             })
 
             debugPanel.addBinding(this.lightEdgeLow, 'value', { min: - 1, max: 1, step: 0.01 })
