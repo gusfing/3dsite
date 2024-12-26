@@ -21,7 +21,7 @@ export class Flowers
 
         this.setColors()
         // this.setOne()
-        this.setRandomClusters()
+        this.setClusters()
         
         this.setGeometry()
         this.setMaterial()
@@ -81,22 +81,20 @@ export class Flowers
         this.transformMatrices.push(object.matrix)
     }
 
-    setRandomClusters()
+    setClusters()
     {
         this.transformMatrices = []
 
         this.colorIndices = []
 
-        for(let i = 0; i < 60; i++)
+        let i = 0
+        for(const reference of this.game.resources.flowersReferencesModel.scene.children)
         {
-            const clusterPosition = new THREE.Vector2(
-                (Math.random() - 0.5) * 50,
-                (Math.random() - 0.5) * 50
-            )
+            const clusterPosition = reference.position
 
             const colorIndex = i % this.colors.presets.length
 
-            const clusterCount = 2 + Math.floor(Math.random() * 8)
+            const clusterCount = 3 + Math.floor(Math.random() * 8)
             for(let j = 0; j < clusterCount; j++)
             {
                 // Transform matrix
@@ -108,8 +106,8 @@ export class Flowers
 
                 object.position.set(
                     clusterPosition.x + (Math.random() - 0.5) * 3,
-                    size * 0.5,
-                    clusterPosition.y + (Math.random() - 0.5) * 3
+                    clusterPosition.y,
+                    clusterPosition.z + (Math.random() - 0.5) * 3
                 )
 
                 object.scale.setScalar(size)
@@ -120,6 +118,7 @@ export class Flowers
                 // Color index
                 this.colorIndices.push(colorIndex)
             }
+            i++
         }
     }
 

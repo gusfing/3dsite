@@ -29,6 +29,7 @@ export class Bricks
         const model = this.game.resources.bricksVisualModel.scene.children[0]
         model.position.set(0, 0, 0)
         model.rotation.set(0, 0, 0)
+        model.frustumCulled = false
         this.game.materials.updateObject(model)
 
         model.traverse(child =>
