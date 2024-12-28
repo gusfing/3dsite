@@ -142,7 +142,7 @@ export class Flowers
         this.material.shadowPositionNode = positionLocal.add(this.game.lighting.directionUniform.mul(shadowOffset))
 
         // Position
-        const wind = getWind([this.game.resources.noisesTexture, positionLocal.xz])
+        const wind = getWind([this.game.noises.texture, positionLocal.xz])
         const multiplier = positionLocal.y.clamp(0, 1).mul(1)
 
         this.material.positionNode = Fn( ( { object } ) =>

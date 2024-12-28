@@ -140,7 +140,6 @@ export class Terrain
 
     setPhysicalHeightfield()
     {
-        console.log(this.geometry.attributes.position)
         // Extract heights from geometry
         const positionAttribute = this.geometry.attributes.position
         const totalCount = positionAttribute.count
@@ -191,7 +190,7 @@ export class Terrain
             
             const baseRipple = terrainData.b.add(time.mul(timeFrequency)).mul(slopeFrequency).toVar()
             const rippleId = baseRipple.floor()
-            const noise = texture(this.game.resources.noisesTexture, positionWorld.xz.add(rippleId.div(0.345)).mul(noiseFrequency)).r
+            const noise = texture(this.game.noises.texture, positionWorld.xz.add(rippleId.div(0.345)).mul(noiseFrequency)).r
             const ripple = baseRipple.mod(1).sub(terrainData.b.oneMinus()).add(noise)
 
             ripple.greaterThan(threshold).discard()

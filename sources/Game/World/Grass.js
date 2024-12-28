@@ -122,10 +122,10 @@ export class Grass
             const wheelsTracksHeight = groundDataColor.a.oneMinus().toVar()
 
             // Height
-            const heightVariation = texture(this.game.resources.noisesTexture, bladePosition.mul(0.0321)).add(0.5)
+            const heightVariation = texture(this.game.noises.texture, bladePosition.mul(0.0321)).r.add(0.5)
             const height = bladeHeight
                 .mul(bladeHeightRandomness.mul(attribute('heightRandomness')).add(bladeHeightRandomness.oneMinus()))
-                .mul(heightVariation.r)
+                .mul(heightVariation)
                 .mul(wheelsTracksHeight)
                 .mul(terrainDataGrass)
 
@@ -144,7 +144,7 @@ export class Grass
             vertexPosition.xz.assign(rotateUV(vertexPosition.xz, angleToCamera, worldPosition.xz))
 
             // Wind
-            wind.assign(getWind([this.game.resources.noisesTexture, worldPosition.xz]).mul(tipness).mul(height).mul(2))
+            wind.assign(getWind([this.game.noises.texture, worldPosition.xz]).mul(tipness).mul(height).mul(2))
             vertexPosition.addAssign(vec3(wind.x, 0, wind.y))
 
             return vertexPosition

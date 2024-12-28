@@ -18,6 +18,7 @@ import { Materials } from './Materials.js'
 import { Entities } from './Entities.js'
 import { Fog } from './Fog.js'
 import { Cycles } from './Cycles.js'
+import { Noises } from './Noises.js'
 
 export class Game
 {
@@ -43,7 +44,6 @@ export class Game
                 [
                     { path: 'bushes/bushesLeaves.png', type: 'texture', name: 'bushesLeaves' },
                     { path: 'bushes/bushes.glb', type: 'gltf', name: 'bushes' },
-                    { path: 'noises-256x256.png', type: 'texture', name: 'noisesTexture' },
                     { path: 'vehicle/default.glb', type: 'gltf', name: 'vehicle' },
                     { path: 'playground/playgroundVisual.glb', type: 'gltf', name: 'playgroundVisual' },
                     { path: 'playground/playgroundPhysical.glb', type: 'gltf', name: 'playgroundPhysical' },
@@ -62,10 +62,6 @@ export class Game
                 (resources) =>
                 {
                     this.resources = resources
-
-                    this.resources.noisesTexture.wrapS = THREE.RepeatWrapping
-                    this.resources.noisesTexture.wrapT = THREE.RepeatWrapping
-
                     this.resources.terrainTexture.flipY = false
 
                     // Init
@@ -104,6 +100,9 @@ export class Game
             { name: 'close', keys: [ 'Escape' ] },
         ])
         this.viewport = new Viewport(this.domElement)
+        this.view = new View()
+        this.rendering = new Rendering()
+        this.noises = new Noises()
         // this.sounds = new Sounds()
         this.cycles = new Cycles()
         this.lighting = new Lighting()
@@ -112,10 +111,8 @@ export class Game
         this.entities = new Entities()
         this.physics = new Physics()
         this.groundData = new GroundData()
-        this.view = new View()
         this.vehicle = new Vehicle()
         this.world = new World()
-        this.rendering = new Rendering()
         // this.monitoring = new Monitoring()
 
         this.rendering.renderer.setAnimationLoop((elapsedTime) => { this.time.update(elapsedTime) })
