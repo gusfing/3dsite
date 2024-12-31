@@ -171,24 +171,30 @@ export class Terrain
 
     setWaterSurface()
     {
+        this.waterSurface = {}
 
-        const geometry = new THREE.PlaneGeometry(80, 80, 1, 1)
-        geometry.rotateX(- Math.PI * 0.5)
-        const material = new THREE.MeshLambertNodeMaterial({ color: '#ffffff', wireframe: false })
+        this.waterSurface.localTime = uniform(0)
+        this.waterSurface.timeFrequency = 0.01
 
-        const totalShadow = this.game.materials.getTotalShadow(material)
+        // Geometry
+        this.waterSurface.geometry = new THREE.PlaneGeometry(80, 80, 1, 1)
+        this.waterSurface.geometry.rotateX(- Math.PI * 0.5)
 
-        const timeFrequency = uniform(0.01)
+        // Material
+        this.waterSurface.material = new THREE.MeshLambertNodeMaterial({ color: '#ffffff', wireframe: false })
+
+        const totalShadow = this.game.materials.getTotalShadow(this.waterSurface.material)
+
         const slopeFrequency = uniform(10)
         const noiseFrequency = uniform(0.1)
         const threshold = uniform(-0.2)
 
-        material.outputNode = Fn(() =>
+        this.waterSurface.material.outputNode = Fn(() =>
         {
             const terrainUv = this.game.materials.terrainUvNode(positionWorld.xz)
             const terrainData = this.game.materials.terrainDataNode(terrainUv)
             
-            const baseRipple = terrainData.b.add(time.mul(timeFrequency)).mul(slopeFrequency).toVar()
+            const baseRipple = terrainData.b.add(this.waterSurface.localTime).mul(slopeFrequency).toVar()
             const rippleId = baseRipple.floor()
             const noise = texture(this.game.noises.texture, positionWorld.xz.add(rippleId.div(0.345)).mul(noiseFrequency)).r
             const ripple = baseRipple.mod(1).sub(terrainData.b.oneMinus()).add(noise)
@@ -198,12 +204,13 @@ export class Terrain
             return this.game.materials.lightOutputNodeBuilder(vec3(1), totalShadow, false, false)
         })()
 
-        this.waterSurface = new THREE.Mesh(geometry, material)
-        this.waterSurface.position.y = - 0.3
-        // this.waterSurface.position.y = 3
-        this.waterSurface.receiveShadow = true
-        this.game.scene.add(this.waterSurface)
+        // Mesh
+        this.waterSurface.mesh = new THREE.Mesh(this.waterSurface.geometry, this.waterSurface.material)
+        this.waterSurface.mesh.position.y = - 0.3
+        this.waterSurface.mesh.receiveShadow = true
+        this.game.scene.add(this.waterSurface.mesh)
 
+        // Debug
         if(this.game.debug.active)
         {
             const debugPanel = this.game.debug.panel.addFolder({
@@ -211,7 +218,7 @@ export class Terrain
                 expanded: true,
             })
 
-            debugPanel.addBinding(timeFrequency, 'value', { label: 'timeFrequency', min: 0, max: 0.1, step: 0.001 })
+            debugPanel.addBinding(this.waterSurface, 'timeFrequency', { min: 0, max: 0.1, step: 0.001 })
             debugPanel.addBinding(slopeFrequency, 'value', { label: 'slopeFrequency', min: 0, max: 50, step: 0.01 })
             debugPanel.addBinding(noiseFrequency, 'value', { label: 'noiseFrequency', min: 0, max: 1, step: 0.01 })
             debugPanel.addBinding(threshold, 'value', { label: 'threshold', min: -1, max: 0, step: 0.01 })
@@ -220,9 +227,12 @@ export class Terrain
 
     update()
     {
+        // Water surface
+        this.waterSurface.localTime.value += this.game.time.deltaScaled * this.waterSurface.timeFrequency
+
         // TODO: Mutualise formula as for grass
         const offset = new THREE.Vector3(this.game.view.spherical.offset.x, 0, this.game.view.spherical.offset.z).setLength(80 / 2).negate()
-        this.waterSurface.position.x = this.game.view.position.x + offset.x
-        this.waterSurface.position.z = this.game.view.position.z + offset.z
+        this.waterSurface.mesh.position.x = this.game.view.position.x + offset.x
+        this.waterSurface.mesh.position.z = this.game.view.position.z + offset.z
     }
 }
