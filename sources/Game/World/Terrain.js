@@ -1,7 +1,7 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import MeshGridMaterial, { MeshGridMaterialLine } from '../Materials/MeshGridMaterial.js'
-import { color, Fn, mix, output, positionGeometry, positionLocal, positionWorld, remap, remapClamp, sin, smoothstep, step, texture, time, uniform, uv, vec3, vec4 } from 'three/tsl'
+import { color, Fn, mix, output, positionGeometry, positionLocal, positionWorld, remap, remapClamp, sin, smoothstep, step, texture, time, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
 
 export class Terrain
 {
@@ -10,13 +10,14 @@ export class Terrain
         this.game = Game.getInstance()
 
         this.geometry = this.game.resources.terrainModel.scene.children[0].geometry
+        // this.geometry = new THREE.PlaneGeometry(256, 256).rotateX(-Math.PI * 0.5)
         this.subdivision = 256
 
         if(this.game.debug.active)
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '🏔️ Terrain',
-                expanded: true,
+                expanded: false,
             })
         }
 
@@ -181,7 +182,7 @@ export class Terrain
         this.waterSurface.geometry.rotateX(- Math.PI * 0.5)
 
         // Material
-        this.waterSurface.material = new THREE.MeshLambertNodeMaterial({ color: '#ffffff', wireframe: false })
+        this.waterSurface.material = new THREE.MeshLambertNodeMaterial({ color: '#000000', wireframe: false })
 
         const totalShadow = this.game.materials.getTotalShadow(this.waterSurface.material)
 
@@ -195,12 +196,22 @@ export class Terrain
             const terrainData = this.game.materials.terrainDataNode(terrainUv)
             
             const baseRipple = terrainData.b.add(this.waterSurface.localTime).mul(slopeFrequency).toVar()
-            const rippleId = baseRipple.floor()
-            const noise = texture(this.game.noises.texture, positionWorld.xz.add(rippleId.div(0.345)).mul(noiseFrequency)).r
-            const ripple = baseRipple.mod(1).sub(terrainData.b.oneMinus()).add(noise)
+            const rippleIndex = baseRipple.floor()
+
+            const noise = texture(
+                this.game.noises.texture,
+                positionWorld.xz.add(rippleIndex.div(0.345)
+            ).mul(noiseFrequency)).r
+            
+            const ripple = terrainData.b
+                .add(this.waterSurface.localTime)
+                .mul(slopeFrequency)
+                .mod(1)
+                .sub(terrainData.b.oneMinus())
+                .add(noise)
 
             ripple.greaterThan(threshold).discard()
-            
+
             return this.game.materials.lightOutputNodeBuilder(vec3(1), totalShadow, false, false)
         })()
 

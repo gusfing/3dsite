@@ -39,8 +39,8 @@ export class Cycles
         const presets = {
             day: { lightColor: new THREE.Color('#ffffff'), lightIntensity: 1.2, shadowColor: new THREE.Color('#0085db'), fogColor: new THREE.Color('#b4fbff'), fogNear: 6, fogFar: 45 },
             dusk: { lightColor: new THREE.Color('#ff4141'), lightIntensity: 1.2, shadowColor: new THREE.Color('#840f85'), fogColor: new THREE.Color('#724cff'), fogNear: 6, fogFar: 45 },
-            night: { lightColor: new THREE.Color('#3240ff'), lightIntensity: 3.8,  shadowColor: new THREE.Color('#0032db'), fogColor: new THREE.Color('#070e29'), fogNear: 0, fogFar: 21 },
-            dawn: { lightColor: new THREE.Color('#ff9000'), lightIntensity: 1.2,   shadowColor: new THREE.Color('#db4700'), fogColor: new THREE.Color('#ffa385'), fogNear: 6, fogFar: 45 },
+            night: { lightColor: new THREE.Color('#3240ff'), lightIntensity: 3.8, shadowColor: new THREE.Color('#0032db'), fogColor: new THREE.Color('#070e29'), fogNear: 0, fogFar: 21 },
+            dawn: { lightColor: new THREE.Color('#ff9000'), lightIntensity: 1.2, shadowColor: new THREE.Color('#db4700'), fogColor: new THREE.Color('#ffa385'), fogNear: 6, fogFar: 45 },
         }
 
         this.day.values = this.createKeyframes(

@@ -26,9 +26,6 @@ export class World
         // this.playground = new Playground()
         this.bricks = new Bricks()
         // this.christmas = new Christmas()
-        // this.setTestCube()
-        // this.setTestShadow()
-        // this.setAxesHelper()
     }
 
     setTestShadow()

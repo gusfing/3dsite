@@ -130,6 +130,7 @@ export class Flowers
 
     setMaterial()
     {
+        // this.material = new THREE.MeshNormalNodeMaterial({ wireframe: false })
         // this.material = new THREE.MeshLambertNodeMaterial({ wireframe: true })
         this.material = new THREE.MeshLambertNodeMaterial({
             alphaMap: this.game.resources.foliateTexture,

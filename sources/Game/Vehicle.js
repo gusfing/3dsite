@@ -565,21 +565,19 @@ export class Vehicle
         // Water controls
         if(this.inWater.active && this.wheels.inContact <= 1)
         {
+            // Forward / background impulse
             const waterImpulse = new THREE.Vector3(0, 0, 0)
 
-            // Forward
             if(this.game.inputs.keys.forward)
                 waterImpulse.add(this.forward)
 
-            // Backward
             if(this.game.inputs.keys.backward)
                 waterImpulse.sub(this.forward)
 
             waterImpulse.multiplyScalar(this.chassis.physical.body.mass() * 0.02)
             this.chassis.physical.body.applyImpulse(waterImpulse)
 
-
-            // Water torque
+            // Left / right torque
             let torqueY = 0
             if(this.game.inputs.keys.left)
                 torqueY = 0.02

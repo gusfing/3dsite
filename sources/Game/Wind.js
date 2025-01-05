@@ -43,7 +43,7 @@ export class Wind
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '💨 Wind',
-                expanded: true,
+                expanded: false,
             })
 
             this.debugPanel.addBinding(this.positionFrequency, 'value', { label: 'positionFrequency', min: 0, max: 1, step: 0.001 })

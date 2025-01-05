@@ -26,6 +26,7 @@ export class Lighting
         this.shadowNormalBias = 0
 
         this.setLights()
+        this.setHelper()
         this.updateShadow()
 
         this.game.time.events.on('tick', () =>
@@ -74,6 +75,16 @@ export class Lighting
 
             this.lights.push(light)
         }
+    }
+
+    setHelper()
+    {
+        this.helper = new THREE.Mesh(
+            new THREE.IcosahedronGeometry(0.25, 3),
+            new THREE.MeshBasicNodeMaterial({ wireframe: true })
+        )
+        this.helper.visible = false
+        this.game.scene.add(this.helper)
     }
 
     updateShadow()
@@ -127,6 +138,10 @@ export class Lighting
             light.position.setFromSpherical(this.spherical).add(this.game.view.focusPoint.position).add(offset)
             light.target.position.copy(this.game.view.focusPoint.position).add(offset)
         }
+
+        // Helper
+        this.helper.position.copy(this.direction).multiplyScalar(10).add(this.game.view.focusPoint.position)
+        this.helper.lookAt(this.game.view.focusPoint.position)
 
         // Apply day cycles values
         this.colorUniform.value.copy(this.game.cycles.day.values.properties.lightColor.value)

@@ -176,7 +176,11 @@ export class Materials
                 // Water
                 if(withWater)
                 {
-                    const waterMix = positionWorld.y.remapClamp(this.waterThreshold, this.waterThreshold.sub(this.waterAmplitude), 1, 0).mul(positionWorld.y.step(this.waterThreshold)).pow(this.waterPower).mul(1)
+                    const waterMix = positionWorld.y
+                        .remapClamp(this.waterThreshold, this.waterThreshold.sub(this.waterAmplitude), 1, 0)
+                        .mul(positionWorld.y.step(this.waterThreshold))
+                        .pow(this.waterPower)
+                    
                     baseColor.assign(mix(baseColor, color('#ffffff'), waterMix))
                 }
 
