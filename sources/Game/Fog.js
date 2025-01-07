@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { color, positionWorld, uniform, vec2 } from 'three/tsl'
+import { color, float, mix, positionWorld, rangeFogFactor, screenCoordinate, uniform, vec2, vec3, viewportUV } from 'three/tsl'
 import { Game } from './Game.js'
 
 export class Fog
@@ -8,28 +8,46 @@ export class Fog
     {
         this.game = Game.getInstance()
         
-        this.color = uniform(color('#b4fbff'))
+        this.colorA = uniform(color('#ff0000'))
+        this.colorB = uniform(color('#0000ff'))
+        this.radialCenter = uniform(vec2(0.2, 0))
+        this.radialStart = uniform(0)
+        this.radialEnd = uniform(1)
+
+        const colorMix = vec2(viewportUV.xy).sub(this.radialCenter).length().smoothstep(this.radialStart, this.radialEnd)
+        this.color = mix(this.colorA, this.colorB, colorMix)
         this.game.scene.backgroundNode = this.color
 
-        this.fogNear = uniform(6)
-        this.fogFar = uniform(45)
-        this.fogOffset = uniform(vec2(0, 0))
-        this.fogColor = this.color
-        this.fogStrength = positionWorld.xz.sub(this.fogOffset).length().smoothstep(this.fogNear, this.fogFar)
+        this.amplitude = this.game.view.optimalArea.farDistance - this.game.view.optimalArea.nearDistance
+
+        this.near = uniform(this.game.view.optimalArea.nearDistance)
+        this.far = uniform(this.game.view.optimalArea.farDistance)
+        this.strength = rangeFogFactor(this.near, this.far)
+        // this.strength = float(1)
 
         this.game.time.events.on('tick', () =>
         {
             this.update()
         }, 9)
+
+        // Debug
+        if(this.game.debug.active)
+        {
+            const debugPanel = this.game.debug.panel.addFolder({
+                title: '☁️ Fog',
+                expanded: false,
+            })
+            debugPanel.addBinding(this.radialCenter, 'value', { value: 'offset', min: 0, max: 1 })
+        }
     }
 
     update()
     {
-        this.fogOffset.value.set(this.game.view.focusPoint.position.x, this.game.view.focusPoint.position.z)
-
         // Apply day cycles values
-        this.fogColor.value.copy(this.game.cycles.day.values.properties.fogColor.value)
-        this.fogNear.value = this.game.cycles.day.values.properties.fogNear.value
-        this.fogFar.value = this.game.cycles.day.values.properties.fogFar.value
+        this.colorA.value.copy(this.game.cycles.day.values.properties.fogColorA.value)
+        this.colorB.value.copy(this.game.cycles.day.values.properties.fogColorB.value)
+        this.near.value = this.game.view.optimalArea.nearDistance + this.game.cycles.day.values.properties.fogNearRatio.value * this.amplitude
+        this.far.value = this.game.view.optimalArea.nearDistance + this.game.cycles.day.values.properties.fogFarRatio.value * this.amplitude
+        // this.far.value = this.game.cycles.day.values.properties.fogFar.value
     }
 }

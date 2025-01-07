@@ -88,9 +88,11 @@ export class View
     {
         this.optimalArea = {}
         this.optimalArea.position = new THREE.Vector3()
+        this.optimalArea.nearPosition = new THREE.Vector3()
+        this.optimalArea.farPosition = new THREE.Vector3()
+        this.optimalArea.nearDistance = null
+        this.optimalArea.farDistance = null
         this.optimalArea.radius = 0
-        this.optimalArea.near = new THREE.Vector3()
-        this.optimalArea.far = new THREE.Vector3()
         this.optimalArea.raycaster = new THREE.Raycaster()
 
         this.optimalArea.floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)
@@ -113,33 +115,51 @@ export class View
         this.optimalArea.update = () =>
         {
             this.defaultCamera.updateProjectionMatrix()
+
+            // First near/far diagonal
             this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(1, -1), this.defaultCamera)
-            this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.near)
-            this.optimalArea.helpers.near.position.copy(this.optimalArea.near)
+            this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.nearPosition)
+            this.optimalArea.helpers.near.position.copy(this.optimalArea.nearPosition)
 
             this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(-1, 1), this.defaultCamera)
-            this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.far)
-            this.optimalArea.helpers.far.position.copy(this.optimalArea.far)
+            this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.farPosition)
+            this.optimalArea.helpers.far.position.copy(this.optimalArea.farPosition)
 
-            const centerA = this.optimalArea.near.clone().lerp(this.optimalArea.far, 0.5)
+            const centerA = this.optimalArea.nearPosition.clone().lerp(this.optimalArea.farPosition, 0.5)
 
+            // Second near/far diagonal
             this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(-1, -1), this.defaultCamera)
-            this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.near)
-            this.optimalArea.helpers.near.position.copy(this.optimalArea.near)
+            this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.nearPosition)
+            this.optimalArea.helpers.near.position.copy(this.optimalArea.nearPosition)
 
             this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(1, 1), this.defaultCamera)
-            this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.far)
-            this.optimalArea.helpers.far.position.copy(this.optimalArea.far)
+            this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.farPosition)
+            this.optimalArea.helpers.far.position.copy(this.optimalArea.farPosition)
 
-            const centerB = this.optimalArea.near.clone().lerp(this.optimalArea.far, 0.5)
+            const centerB = this.optimalArea.nearPosition.clone().lerp(this.optimalArea.farPosition, 0.5)
 
+            // Center between the two fiagonal centers
             this.optimalArea.position = centerA.clone().lerp(centerB, 0.5)
             this.optimalArea.helpers.center.position.copy(this.optimalArea.position)
 
-            const optimalRadius = this.optimalArea.position.distanceTo(this.optimalArea.far)
+            // Radius
+            const optimalRadius = this.optimalArea.position.distanceTo(this.optimalArea.farPosition)
 
             if(optimalRadius > this.optimalArea.radius)
                 this.optimalArea.radius = optimalRadius
+
+            // Distances
+            if(this.optimalArea.nearDistance == null)
+            {
+                this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(0, -1), this.defaultCamera)
+                this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.nearPosition)
+
+                this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(0, 1), this.defaultCamera)
+                this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.farPosition)
+                
+                this.optimalArea.nearDistance = this.camera.position.distanceTo(this.optimalArea.nearPosition)
+                this.optimalArea.farDistance = this.camera.position.distanceTo(this.optimalArea.farPosition)
+            }
         }
     }
 
@@ -401,6 +421,11 @@ export class View
             this.camera.position.copy(this.freeCamera.position)
             this.camera.quaternion.copy(this.freeCamera.quaternion)
         }
+
+        // Cameras matrices
+        this.camera.updateMatrixWorld()
+        this.defaultCamera.updateMatrixWorld()
+        this.freeCamera.updateMatrixWorld()
         
         // Optimal area
         this.optimalArea.update()

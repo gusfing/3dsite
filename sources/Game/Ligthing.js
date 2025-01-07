@@ -157,7 +157,7 @@ export class Lighting
                 const shadedColor = mix(lightenColor, shadowColor, combinedShadowMix)
                 
                 // Fog
-                const foggedColor = this.game.fog.fogStrength.mix(shadedColor, this.game.fog.fogColor)
+                const foggedColor = this.game.fog.strength.mix(shadedColor, this.game.fog.color)
 
                 return vec4(foggedColor.rgb, 1)
             })([inputColor, totalShadows])

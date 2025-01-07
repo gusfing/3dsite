@@ -37,10 +37,10 @@ export class Cycles
         this.day.auto = true
 
         const presets = {
-            day: { lightColor: new THREE.Color('#ffffff'), lightIntensity: 1.2, shadowColor: new THREE.Color('#0085db'), fogColor: new THREE.Color('#b4fbff'), fogNear: 6, fogFar: 45 },
-            dusk: { lightColor: new THREE.Color('#ff4141'), lightIntensity: 1.2, shadowColor: new THREE.Color('#840f85'), fogColor: new THREE.Color('#724cff'), fogNear: 6, fogFar: 45 },
-            night: { lightColor: new THREE.Color('#3240ff'), lightIntensity: 3.8, shadowColor: new THREE.Color('#0032db'), fogColor: new THREE.Color('#070e29'), fogNear: 0, fogFar: 21 },
-            dawn: { lightColor: new THREE.Color('#ff9000'), lightIntensity: 1.2, shadowColor: new THREE.Color('#db4700'), fogColor: new THREE.Color('#ffa385'), fogNear: 6, fogFar: 45 },
+            day: { lightColor: new THREE.Color('#ffffff'), lightIntensity: 1.2, shadowColor: new THREE.Color('#0085db'), fogColorA: new THREE.Color('#b4ffff'), fogColorB: new THREE.Color('#ffdf89'), fogNearRatio: 0.315, fogFarRatio: 1.25 },
+            dusk: { lightColor: new THREE.Color('#ff4141'), lightIntensity: 1.2, shadowColor: new THREE.Color('#840f85'), fogColorA: new THREE.Color('#3e53ff'), fogColorB: new THREE.Color('#ff4ce4'), fogNearRatio: 0, fogFarRatio: 1 },
+            night: { lightColor: new THREE.Color('#3240ff'), lightIntensity: 3.8, shadowColor: new THREE.Color('#0032db'), fogColorA: new THREE.Color('#041242'), fogColorB: new THREE.Color('#490a42'), fogNearRatio: -0.225, fogFarRatio: 0.75 },
+            dawn: { lightColor: new THREE.Color('#ff9000'), lightIntensity: 1.2, shadowColor: new THREE.Color('#db4700'), fogColorA: new THREE.Color('#ee85ff'), fogColorB: new THREE.Color('#ff3939'), fogNearRatio: 0, fogFarRatio: 1 },
         }
 
         this.day.values = this.createKeyframes(
@@ -68,9 +68,9 @@ export class Cycles
             debugPanel.addBinding(this.day, 'speed', { min: 0, max: 1, step: 0.001 })
             debugPanel.addBinding(this.day, 'auto')
             debugPanel.addButton({ title: 'day' }).on('click', () => { this.day.progress = 0 })
-            debugPanel.addButton({ title: 'dusk' }).on('click', () => { this.day.progress = 0.3 })
-            debugPanel.addButton({ title: 'night' }).on('click', () => { this.day.progress = 0.5 })
-            debugPanel.addButton({ title: 'dawn' }).on('click', () => { this.day.progress = 0.9 })
+            debugPanel.addButton({ title: 'dusk' }).on('click', () => { this.day.progress = 0.25 })
+            debugPanel.addButton({ title: 'night' }).on('click', () => { this.day.progress = 0.35 })
+            debugPanel.addButton({ title: 'dawn' }).on('click', () => { this.day.progress = 0.8 })
 
             for(const presetKey in presets)
             {
@@ -83,11 +83,11 @@ export class Cycles
                 this.game.debug.addThreeColorBinding(presetsDebugPanel, preset.lightColor, 'lightColor')
                 presetsDebugPanel.addBinding(preset, 'lightIntensity', { min: 0, max: 20 })
                 this.game.debug.addThreeColorBinding(presetsDebugPanel, preset.shadowColor, 'shadowColor')
-                this.game.debug.addThreeColorBinding(presetsDebugPanel, preset.fogColor, 'fogColor')
-                presetsDebugPanel.addBinding(preset, 'fogNear', { label: 'near', min: 0, max: 100, step: 0.01 })
-                presetsDebugPanel.addBinding(preset, 'fogFar', { label: 'far', min: 0, max: 100, step: 0.01 })
+                this.game.debug.addThreeColorBinding(presetsDebugPanel, preset.fogColorA, 'fogColorA')
+                this.game.debug.addThreeColorBinding(presetsDebugPanel, preset.fogColorB, 'fogColorB')
+                presetsDebugPanel.addBinding(preset, 'fogNearRatio', { label: 'near', min: -1, max: 1, step: 0.001 })
+                presetsDebugPanel.addBinding(preset, 'fogFarRatio', { label: 'far', min: -1, max: 1, step: 0.001 })
             }
-
         }
     }
 
