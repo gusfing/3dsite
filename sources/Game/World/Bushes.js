@@ -9,8 +9,8 @@ export default class Bushes
     {
         this.game = Game.getInstance()
 
-        this.color = new THREE.Color('#9eaf33')
-        this.foliage = new Foliage(this.game.resources.bushes.scene.children, this.color)
+        this.color = new THREE.Color('#8eaf58')
+        this.foliage = new Foliage(this.game.resources.bushesReferences.scene.children, this.color)
 
         // Debug
         if(this.game.debug.active)

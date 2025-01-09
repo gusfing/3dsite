@@ -45,7 +45,7 @@ export class Game
             this.resourcesLoader.load(
                 [
                     { path: 'foliage/foliage.png', type: 'texture', name: 'foliateTexture' },
-                    { path: 'bushes/bushes.glb', type: 'gltf', name: 'bushes' },
+                    { path: 'bushes/bushesReferences.glb', type: 'gltf', name: 'bushesReferences' },
                     { path: 'vehicle/default.glb', type: 'gltf', name: 'vehicle' },
                     { path: 'playground/playgroundVisual.glb', type: 'gltf', name: 'playgroundVisual' },
                     { path: 'playground/playgroundPhysical.glb', type: 'gltf', name: 'playgroundPhysical' },
@@ -56,8 +56,12 @@ export class Game
                     { path: 'terrain/terrain.png', type: 'texture', name: 'terrainTexture' },
                     // { path: 'terrain/flatGrass.png', type: 'texture', name: 'terrainTexture' },
                     { path: 'terrain/terrain.glb', type: 'gltf', name: 'terrainModel' },
-                    { path: 'trees/treesVisual.glb', type: 'gltf', name: 'treesVisualModel' },
-                    { path: 'trees/treesReferences.glb', type: 'gltf', name: 'treesReferencesModel' },
+                    { path: 'birchTrees/birchTreesVisual.glb', type: 'gltf', name: 'birchTreesVisualModel' },
+                    { path: 'birchTrees/birchTreesReferences.glb', type: 'gltf', name: 'birchTreesReferencesModel' },
+                    { path: 'oakTrees/oakTreesVisual.glb', type: 'gltf', name: 'oakTreesVisualModel' },
+                    { path: 'oakTrees/oakTreesReferences.glb', type: 'gltf', name: 'oakTreesReferencesModel' },
+                    { path: 'cherryTrees/cherryTreesVisual.glb', type: 'gltf', name: 'cherryTreesVisualModel' },
+                    { path: 'cherryTrees/cherryTreesReferences.glb', type: 'gltf', name: 'cherryTreesReferencesModel' },
                     
                     // { path: 'christmas/christmasTreeVisual.glb', type: 'gltf', name: 'christmasTreeVisualModel' },
                     // { path: 'christmas/christmasTreePhysical.glb', type: 'gltf', name: 'christmasTreePhysicalModel' },

@@ -4,7 +4,7 @@ import { Foliage } from './Foliage.js'
 
 export class Trees
 {
-    constructor()
+    constructor(name, visual, references, color)
     {
         this.game = Game.getInstance()
 
@@ -12,12 +12,14 @@ export class Trees
         if(this.game.debug.active)
         {
             this.debugPanel = this.game.debug.panel.addFolder({
-                title: '🌳 Trees',
+                title: `🌳 ${name}`,
                 expanded: false,
             })
         }
 
-        this.baseReferences = this.game.resources.treesReferencesModel.scene.children
+        this.visual = visual
+        this.references = references
+        this.color = color
 
         this.setModelParts()
         this.setBodies()
@@ -31,7 +33,7 @@ export class Trees
         this.modelParts.leaves = []
         this.modelParts.body = null
         
-        this.game.resources.treesVisualModel.scene.traverse((_child) =>
+        this.visual.traverse((_child) =>
         {
             if(_child.isMesh)
             {
@@ -46,13 +48,13 @@ export class Trees
     setBodies()
     {
         this.game.materials.updateObject(this.modelParts.body)
-        this.bodies = new THREE.InstancedMesh(this.modelParts.body.geometry, this.modelParts.body.material, this.baseReferences.length)
+        this.bodies = new THREE.InstancedMesh(this.modelParts.body.geometry, this.modelParts.body.material, this.references.length)
         this.bodies.instanceMatrix.setUsage(THREE.StaticDrawUsage)
         this.bodies.castShadow = true
         this.bodies.receiveShadow = true
         
         let i = 0
-        for(const treeReference of this.baseReferences)
+        for(const treeReference of this.references)
         {
             this.bodies.setMatrixAt(i, treeReference.matrix)
             i++
@@ -65,7 +67,7 @@ export class Trees
     {
         const references = []
         
-        for(const treeReference of this.baseReferences)
+        for(const treeReference of this.references)
         {
             for(const leaves of this.modelParts.leaves)
             {
@@ -77,7 +79,7 @@ export class Trees
             }
         }
 
-        this.leavesColor = new THREE.Color('#ff782b')
+        this.leavesColor = new THREE.Color(this.color)
         this.leaves = new Foliage(references, this.leavesColor)
 
         // Debug
@@ -90,7 +92,7 @@ export class Trees
 
     setPhysical()
     {
-        for(const treeReference of this.baseReferences)
+        for(const treeReference of this.references)
         {
             this.game.entities.add(
                 {

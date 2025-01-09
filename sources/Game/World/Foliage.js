@@ -57,7 +57,7 @@ export class Foliage
                     plane.attributes.position.array[i3 + 2],
                 )
 
-                const mixedNormal = position.lerp(normal, 0.75)
+                const mixedNormal = position.lerp(normal, 0.85)
                 
                 normalArray[i3    ] = mixedNormal.x
                 normalArray[i3 + 1] = mixedNormal.y
