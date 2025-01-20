@@ -22,7 +22,7 @@ export class View
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '📷 View',
-                expanded: false,
+                expanded: true,
             })
 
             this.debugPanel.addBinding(
@@ -43,6 +43,7 @@ export class View
         this.setFocusPoint()
         this.setZoom()
         this.setSpherical()
+        this.setRoll()
         this.setCameras()
         this.setOptimalArea()
         this.setFree()
@@ -235,6 +236,40 @@ export class View
         }
     }
 
+    setRoll()
+    {
+        this.roll = {}
+        this.roll.value = 0
+        this.roll.velocity = 0
+        this.roll.speed = 0
+        this.roll.damping = 4
+        this.roll.pullStrength = 100
+        this.roll.kickStrength = 1
+        
+        this.roll.kick = (strength = 1) =>
+        {
+            this.roll.speed = strength * this.roll.kickStrength * (Math.random() < 0.5 ? - 1 : 1)
+        }
+
+        if(this.game.debug.active)
+        {
+            const rollDebugPanel = this.debugPanel.addFolder({
+                title: 'Roll',
+                expanded: true,
+            })
+            rollDebugPanel
+                .addButton({ title: 'kick' })
+                .on('click', () =>
+                {
+                    this.roll.kick()
+                })
+
+            rollDebugPanel.addBinding(this.roll, 'damping', { min: 0, max: 20, step: 0.1 })
+            rollDebugPanel.addBinding(this.roll, 'pullStrength', { min: 0, max: 400, step: 0.1 })
+            rollDebugPanel.addBinding(this.roll, 'kickStrength', { min: 0, max: 10, step: 0.1 })
+        }
+    }
+
     setCameras()
     {
         this.camera = new THREE.PerspectiveCamera(25, this.game.viewport.ratio, 0.1, 1000)
@@ -421,10 +456,20 @@ export class View
         // Position
         this.position.copy(this.focusPoint.smoothedPosition).add(this.spherical.offset)
 
-        // Default camera
+        // Default camera position
         this.defaultCamera.position.copy(this.position)
+
+        // Default camera look at and roll
+        this.defaultCamera.rotation.set(0, 0, 0)
         this.defaultCamera.lookAt(this.focusPoint.smoothedPosition)
 
+        this.roll.velocity = - this.roll.value * this.roll.pullStrength * this.game.time.deltaScaled
+        this.roll.speed += this.roll.velocity
+        this.roll.value += this.roll.speed * this.game.time.deltaScaled
+        this.roll.speed *= 1 - this.roll.damping * this.game.time.deltaScaled
+        this.defaultCamera.rotation.z += this.roll.value
+
+        // Apply to final camera
         if(this.mode === View.DEFAULT_MODE)
         {
             this.camera.position.copy(this.defaultCamera.position)
