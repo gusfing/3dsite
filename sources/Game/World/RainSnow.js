@@ -15,7 +15,7 @@ export class RainSnow
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '🌧️ Rain / Snow',
-                expanded: true,
+                expanded: false,
             })
         }
 

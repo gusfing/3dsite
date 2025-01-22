@@ -1,10 +1,184 @@
 import * as THREE from 'three/webgpu'
 import { Game } from './Game.js'
 
-// https://godotshaders.com/snippet/seamless-perlin-noise/
-// Three.js Transpiler r171
 
-import { vec2, vec3, vec4, mod, Fn, dot, sin, fract, mul, float, uv, floor, ceil, smoothstep, int, mix } from 'three/tsl';
+import { If, vec2, vec3, abs, sqrt, vec4, mod, Fn, dot, sin, fract, length, mul, min, float, uv, floor, ceil, smoothstep, int, mix, Loop } from 'three/tsl';
+
+const hash = /*#__PURE__*/ Fn( ( [ p_immutable ] ) => {
+
+	const p = vec2( p_immutable ).toVar();
+	p.assign( vec2( dot( p, vec2( 127.1, 311.7 ) ), dot( p, vec2( 269.5, 183.3 ) ) ) );
+
+	return fract( sin( p ).mul( 43758.5453123 ) );
+
+} ).setLayout( {
+	name: 'hash',
+	type: 'vec2',
+	inputs: [
+		{ name: 'p', type: 'vec2' }
+	]
+} );
+
+// const voronoi = /*#__PURE__*/ Fn( ( [ p_immutable, repeat_immutable ] ) => {
+
+// 	const repeat = float( repeat_immutable ).toVar();
+// 	const p = vec2( p_immutable ).toVar();
+// 	p.assign( mod( p, repeat ) );
+// 	const i = vec2( floor( p ) ).toVar();
+// 	const f = vec2( fract( p ) ).toVar();
+// 	const minDist = float( 1.0 ).toVar();
+
+// 	Loop( { start: int( - 1 ), end: int( 1 ), name: 'y', condition: '<=' }, ( { y } ) => {
+
+// 		Loop( { start: int( - 1 ), end: int( 1 ), name: 'x', condition: '<=' }, ( { x } ) => {
+
+// 			const neighbor = vec2( x, y ).toVar();
+// 			const point = vec2( hash( mod( i.add( neighbor ), repeat ) ) ).toVar();
+// 			const diff = vec2( neighbor.add( point.sub( f ) ) ).toVar();
+// 			const dist = float( length( diff ) ).toVar();
+// 			minDist.assign( min( minDist, dist ) );
+
+// 		} );
+
+// 	} );
+
+// 	return minDist;
+
+// } ).setLayout( {
+// 	name: 'repeatingVoronoi',
+// 	type: 'float',
+// 	inputs: [
+// 		{ name: 'p', type: 'vec2' },
+// 		{ name: 'repeat', type: 'float' }
+// 	]
+// } );
+
+// const voronoi = /*#__PURE__*/ Fn( ( [ p_immutable, repeat_immutable ] ) => {
+
+// 	const repeat = float( repeat_immutable ).toVar();
+// 	const p = vec2( p_immutable ).toVar();
+// 	p.assign( mod( p, repeat ) );
+// 	const i = vec2( floor( p ) ).toVar();
+// 	const f = vec2( fract( p ) ).toVar();
+// 	const minDist = float( 1.0 ).toVar();
+// 	const secondMinDist = float( 1.0 ).toVar();
+
+// 	Loop( { start: int( - 1 ), end: int( 1 ), name: 'y', condition: '<=' }, ( { y } ) => {
+
+// 		Loop( { start: int( - 1 ), end: int( 1 ), name: 'x', condition: '<=' }, ( { x } ) => {
+
+// 			const neighbor = vec2( x, y ).toVar();
+// 			const point = vec2( hash( mod( i.add( neighbor ), repeat ) ) ).toVar();
+// 			const diff = vec2( neighbor.add( point.sub( f ) ) ).toVar();
+// 			const dist = float( length( diff ) ).toVar();
+
+// 			If( dist.lessThan( minDist ), () => {
+
+// 				secondMinDist.assign( minDist );
+// 				minDist.assign( dist );
+
+// 			} ).ElseIf( dist.lessThan( secondMinDist ), () => {
+
+// 				secondMinDist.assign( dist );
+
+// 			} );
+
+// 		} );
+
+// 	} );
+
+// 	return vec2( minDist, secondMinDist.sub(minDist) );
+
+// } ).setLayout( {
+// 	name: 'repeatingVoronoiEdge',
+// 	type: 'vec2',
+// 	inputs: [
+// 		{ name: 'p', type: 'vec2' },
+// 		{ name: 'repeat', type: 'float' }
+// 	]
+// } );
+
+const voronoi = /*#__PURE__*/ Fn( ( [ uv_immutable, repeat_immutable ] ) => {
+
+	const repeat = float( repeat_immutable ).toVar();
+	const uv = vec2( uv_immutable ).toVar();
+	const cellId = vec2( 0.0 ).toVar();
+	uv.mulAssign( repeat );
+	const i = vec2( floor( uv ) ).toVar();
+	const f = vec2( fract( uv ) ).toVar();
+	const minDist = float( 1.0 ).toVar();
+	const minEdge = float( 1.0 ).toVar();
+	const bestId = vec2( 0.0 ).toVar();
+
+	Loop( { start: int( - 1 ), end: int( 1 ), name: 'y', condition: '<=' }, ( { y } ) => {
+
+		Loop( { start: int( - 1 ), end: int( 1 ), name: 'x', condition: '<=' }, ( { x } ) => {
+
+			const neighbor = vec2( x, y ).toVar();
+			const cell = vec2( mod( i.add( neighbor ), repeat ) ).toVar();
+			const point = vec2( hash( cell ) ).toVar();
+			const diff = vec2( neighbor.add( point.sub( f ) ) ).toVar();
+			const dist = float( length( diff ) ).toVar();
+
+			If( dist.lessThan( minDist ), () => {
+
+				minEdge.assign( minDist );
+				minDist.assign( dist );
+				bestId.assign( i.add( neighbor ) );
+
+			} ).ElseIf( dist.lessThan( minEdge ), () => {
+
+				minEdge.assign( dist );
+
+			} );
+
+			// const neighbor = vec2( x, y ).toVar();
+			// const point = vec2( hash( mod( i.add( neighbor ), repeat ) ) ).toVar();
+			// const diff = vec2( neighbor.add( point.sub( f ) ) ).toVar();
+			// const dist = float( length( diff ) ).toVar();
+
+			// If( dist.lessThan( minDist ), () => {
+
+			// 	minEdge.assign( minDist );
+			// 	minDist.assign( dist );
+			// 	bestId.assign( i.add( neighbor ) );
+
+			// } ).ElseIf( dist.lessThan( minEdge ), () => {
+
+			// 	minEdge.assign( dist );
+
+			// } );
+			// const neighbor = vec2( x, y ).toVar();
+			// const point = vec2( hash( mod( i.add( neighbor ), repeat ) ) ).toVar();
+			// const diff = vec2( neighbor.add( point.sub( f ) ) ).toVar();
+			// const dist = float( length( diff ) ).toVar();
+
+			// If( dist.lessThan( minDist ), () => {
+
+			// 	minDist.assign( dist );
+			// 	bestId.assign( i.add( neighbor ) );
+
+			// } );
+
+			// minEdge.assign( min( minEdge, abs( length( diff ).sub( sqrt( minDist ) ) ) ) );
+
+		} );
+
+	} );
+
+	cellId.assign( fract( bestId.div( repeat ) ) );
+
+	return vec3( minDist, minEdge.sub(minDist), cellId.x.add(cellId.y).div(2) );
+
+} ).setLayout( {
+	name: 'voronoi',
+	type: 'vec3',
+	inputs: [
+		{ name: 'uv', type: 'vec2' },
+		{ name: 'repeat', type: 'float' }
+	]
+} );
+
 
 export const modulo = /*#__PURE__*/ Fn( ( [ divident_immutable, divisor_immutable ] ) => {
 
@@ -92,7 +266,7 @@ export class Noises
         this.material = new THREE.MeshBasicNodeMaterial({ color: 'red', wireframe: false })
         this.material.outputNode = vec4(
             seamless_noise(uv(), 6.0, 6.0).remap(0.1, 0.9, 0.0, 1.0),
-            0,
+            voronoi(uv(), 8).y,
             0,
             1
         )
