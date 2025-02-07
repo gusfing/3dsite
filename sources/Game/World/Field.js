@@ -1,7 +1,7 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import MeshGridMaterial, { MeshGridMaterialLine } from '../Materials/MeshGridMaterial.js'
-import { positionWorld, uv, vec4 } from 'three/tsl'
+import { Fn, min, positionLocal, positionWorld, uv, vec4 } from 'three/tsl'
 
 export class Field
 {
@@ -10,7 +10,6 @@ export class Field
         this.game = Game.getInstance()
 
         this.geometry = this.game.resources.terrainModel.scene.children[0].geometry
-        // this.geometry = new THREE.PlaneGeometry(this.game.terrainData.subdivision, this.game.terrainData.subdivision).rotateX(-Math.PI * 0.5)
         this.subdivision = this.game.terrainData.subdivision
 
         if(this.game.debug.active)
@@ -24,21 +23,52 @@ export class Field
         this.setVisual()
         this.setPhysical()
         // this.setKeys()
+
+        this.game.ticker.events.on('tick', () =>
+        {
+            this.update()
+        }, 9)
     }
 
     setVisual()
     {
+        this.size = Math.round(this.game.view.optimalArea.radius * 2) + 1
+        this.halfSize = this.size * 0.5
+        this.subdivisions = this.size
+
+        // Geometry
+        const geometry = new THREE.PlaneGeometry(this.size, this.size, this.subdivisions, this.subdivisions)
+        geometry.rotateX(-Math.PI * 0.5)
+        // geometry.deleteAttribute('uv')
+        geometry.deleteAttribute('normal')
+        console.log(geometry.attributes.position)
+
+        // Material
         const material = new THREE.MeshLambertNodeMaterial({ color: '#000000', wireframe: false })
 
+        // Terrain data
         const terrainData = this.game.terrainData.terrainDataNode(positionWorld.xz)
         const terrainDataGrass = terrainData.g.smoothstep(0.4, 0.6)
         const baseColor = this.game.terrainData.colorNode(terrainData)
 
-        const totalShadow = this.game.lighting.addTotalShadowToMaterial(material).mul(terrainDataGrass.oneMinus())
+        // Displacement
+        material.positionNode = Fn(() =>
+        {
+            const uvDim = min(min(uv().x, uv().y).mul(20), 1)
 
+            const newPosition = positionLocal.toVar()
+            newPosition.y.addAssign(terrainData.b.mul(-2).mul(uvDim))
+
+
+            return newPosition
+        })()
+
+        // Output
+        const totalShadow = this.game.lighting.addTotalShadowToMaterial(material).mul(terrainDataGrass.oneMinus())
         material.outputNode = this.game.lighting.lightOutputNodeBuilder(baseColor.rgb, totalShadow, false, false)
 
-        this.mesh = new THREE.Mesh(this.geometry, material)
+        // Mesh
+        this.mesh = new THREE.Mesh(geometry, material)
         this.mesh.receiveShadow = true
         // this.mesh.castShadow = true
         this.game.scene.add(this.mesh)
@@ -96,5 +126,11 @@ export class Field
                 { shape: 'heightfield', parameters: [ rowsCount - 1, rowsCount - 1, heights, { x: this.subdivision, y: 1, z: this.subdivision } ], category: 'floor' }
             ]
         })
+    }
+
+    update()
+    {
+        this.mesh.position.x = Math.round(this.game.view.optimalArea.position.x)
+        this.mesh.position.z = Math.round(this.game.view.optimalArea.position.z)
     }
 }
