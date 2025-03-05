@@ -104,6 +104,7 @@ export class Modals
 
             this.visible = true
             this.current = item
+            this.game.inputs.updateFilters(['ui'])
         }
 
         // Already visible => Set pending
@@ -122,5 +123,6 @@ export class Modals
         this.element.classList.remove('is-visible')
 
         this.visible = false
+        this.game.inputs.updateFilters([])
     }
 }

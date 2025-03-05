@@ -12,6 +12,7 @@ export class Inputs
         this.events = new Events()
 
         this.map = _map
+        this.filters = []
 
         this.setKeys()
         this.setPointer()
@@ -75,11 +76,27 @@ export class Inputs
         })
     }
 
+    checkCategory(map)
+    {
+        // No filter => Allow all
+        if(this.filters.length === 0)
+            return true
+
+        // Has filter but no category on map => Forbid
+        if(!map.category)
+            return false
+
+        if(this.filters.indexOf(map.category) === -1)
+            return false
+
+        return true
+    }
+
     down(key)
     {
         const map = this.map.find((_map) => _map.keys.indexOf(key) !== - 1 )
 
-        if(map && !this.keys[map.name])
+        if(map && !this.keys[map.name] && this.checkCategory(map))
         {
             this.keys[map.name] = true
             this.events.trigger('keyDown', [ { down: true, name: map.name } ])
@@ -97,5 +114,10 @@ export class Inputs
             this.events.trigger('keyUp', [ { down: false, name: map.name } ])
             this.events.trigger(map.name, [ { down: false, name: map.name } ])
         }
+    }
+
+    updateFilters(filters = [])
+    {
+        this.filters = filters
     }
 }
