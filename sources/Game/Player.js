@@ -1,23 +1,30 @@
 import * as THREE from 'three/webgpu'
 import { Game } from './Game.js'
+import gsap from 'gsap'
 
 export class Player
 {
+    static STATE_DEFAULT = 1
+    static STATE_DYING = 2
+
     constructor()
     {
         this.game = Game.getInstance()
         
+        this.state = Player.STATE_DEFAULT
         this.accelerating = 0
         this.steering = 0
         this.boosting = 0
         this.braking = 0
         this.suspensions = ['low', 'low', 'low', 'low']
 
-        this.basePosition = new THREE.Vector3(5, 4, 2)
+        this.basePosition = new THREE.Vector3(25, 4, -15)
         this.position = this.basePosition.clone()
         
         this.setInputs()
         this.setUnstuck()
+
+        this.game.physicalVehicle.moveTo(this.basePosition)
 
         this.game.ticker.events.on('tick', () =>
         {
@@ -35,6 +42,9 @@ export class Player
         // Reset
         this.game.inputs.events.on('reset', (_event) =>
         {
+            if(this.state !== Player.STATE_DEFAULT)
+                return
+
             if(_event.down)
                 this.game.physicalVehicle.moveTo(this.basePosition)
         })
@@ -42,6 +52,9 @@ export class Player
         // Suspensions
         const suspensionsUpdate = (_event) =>
         {
+            if(this.state !== Player.STATE_DEFAULT)
+                return
+
             const activeSuspensions = [
                 this.game.inputs.keys.suspensions || this.game.inputs.keys.suspensionsFront || this.game.inputs.keys.suspensionsRight || this.game.inputs.keys.suspensionsFrontRight, // front right
                 this.game.inputs.keys.suspensions || this.game.inputs.keys.suspensionsFront || this.game.inputs.keys.suspensionsLeft || this.game.inputs.keys.suspensionsFrontLeft, // front left
@@ -80,21 +93,32 @@ export class Player
             // Wait a moment
             this.unstuck.timeout = setTimeout(() =>
             {
+                if(this.state !== Player.STATE_DEFAULT)
+                    return
+
                 // Still upside down => Flip back
                 if(this.game.physicalVehicle.upsideDown.active)
                     this.game.physicalVehicle.flip()
             }, this.unstuck.duration * 2000)
         })
+    }
 
-        // if(this.game.debug.active)
-        // {
-        //     const debugPanel = this.debugPanel.addFolder({
-        //         title: '🔄 Unstuck',
-        //         expanded: false,
-        //     })
+    die()
+    {
+        this.state = Player.STATE_DYING
+        
+        this.game.overlay.show()
 
-        //     debugPanel.addBinding(this.unstuck, 'force', { min: 0, max: 20, step: 0.01 })
-        // }
+        gsap.delayedCall(2, () =>
+        {
+            this.game.physicalVehicle.moveTo(this.basePosition)
+        })
+
+        gsap.delayedCall(4, () =>
+        {
+            this.state = Player.STATE_DEFAULT
+            this.game.overlay.hide()
+        })
     }
 
     updatePrePhysics()
@@ -103,6 +127,9 @@ export class Player
         this.steering = 0
         this.boosting = 0
         this.braking = 0
+
+        if(this.state !== Player.STATE_DEFAULT)
+            return
 
         // Accelerating (forward and backward)
         if(this.game.inputs.keys.forward)

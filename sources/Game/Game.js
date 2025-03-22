@@ -29,6 +29,8 @@ import { Server } from './Server.js'
 import { Modals } from './Modals.js'
 import { PhysicsVehicle } from './Physics/PhysicsVehicle.js'
 import { PhysicsWireframe } from './Physics/PhysicsWireframe.js'
+import { Areas } from './Areas.js'
+import { Overlay } from './Overlay.js'
 
 export class Game
 {
@@ -160,8 +162,10 @@ export class Game
             this.physics = new Physics()
             this.wireframe = new PhysicsWireframe()
             this.physicalVehicle = new PhysicsVehicle()
+            this.areas = new Areas()
             this.player = new Player()
             this.world = new World()
+            this.overlay = new Overlay()
             // this.monitoring = new Monitoring()
 
             this.rendering.renderer.setAnimationLoop((elapsedTime) => { this.ticker.update(elapsedTime) })

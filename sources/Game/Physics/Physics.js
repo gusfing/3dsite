@@ -49,7 +49,7 @@ export class Physics
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '⬇️ Physics',
-                expanded: true,
+                expanded: false,
             })
             this.debugPanel.addBinding(this.world.gravity, 'y', { min: - 20, max: 20, step: 0.01 })
         }

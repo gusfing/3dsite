@@ -251,15 +251,11 @@ export class VisualVehicle
             this.antenna.headAxle.rotation.z += this.game.ticker.deltaScaled * antennaRotationSpeed
         }
 
-        // TODO: Stop lights
-        if(this.game.player.braking/* || reverseBrake*/)
-        {
+        // Stop lights
+        if(this.game.player.braking)
             this.parts.stopLights.visible = true
-        }
         else
-        {
             this.parts.stopLights.visible = false
-        }
 
         // Boost trails
         const trailAlpha = physicalVehicle.goingForward && this.game.player.boosting && (this.game.inputs.keys.forward) ? 1 : 0

@@ -29,7 +29,9 @@ export class Altar
         this.setBeam()
         this.setCounter()
         this.setCounterParticles()
+        this.setArea()
 
+        // Faker
         setInterval(() =>
         {
             this.updateValue(this.value + 1)
@@ -263,6 +265,39 @@ export class Altar
                 { value: 1, ease: 'linear', duration: 3 },
             )
         }
+    }
+
+    setArea()
+    {
+        this.game.areas.add('altar', new THREE.Vector2(this.position.x, this.position.z), 1.75)
+
+        let timeout = null
+
+        this.game.areas.events.on('altar', (area) =>
+        {
+            // Inside the area
+            if(area.isIn)
+            {
+                // Wait a moment
+                timeout = gsap.delayedCall(1, () =>
+                {
+                    // Still in
+                    if(area.isIn)
+                    {
+                        this.game.player.die()
+
+                        // TODO: Particles animation
+                    }
+                })
+            }
+
+            // Outside the area
+            else
+            {
+                if(timeout)
+                    timeout.kill()
+            }
+        })
     }
 
     updateValue(value)
