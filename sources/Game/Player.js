@@ -107,14 +107,17 @@ export class Player
     {
         this.state = Player.STATE_DYING
         
-        this.game.overlay.show()
-
         gsap.delayedCall(2, () =>
+        {
+            this.game.overlay.show()
+        })
+
+        gsap.delayedCall(4, () =>
         {
             this.game.physicalVehicle.moveTo(this.basePosition)
         })
 
-        gsap.delayedCall(4, () =>
+        gsap.delayedCall(5, () =>
         {
             this.state = Player.STATE_DEFAULT
             this.game.overlay.hide()

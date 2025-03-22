@@ -16,19 +16,39 @@ export class Areas
         {
             this.update()
         })
+
+        this.previewGroup = new THREE.Group()
+        this.previewGroup.visible = false
+        this.game.scene.add(this.previewGroup)
+
+        if(this.game.debug.active)
+        {
+            this.debugPanel = this.game.debug.panel.addFolder({
+                title: '🌐 Areas',
+                expanded: false,
+            })
+            this.debugPanel.addBinding(this.previewGroup, 'visible', { label: 'previewVisible' })
+        }
     }
 
     add(name, position, radius)
     {
         this.items.push({ name, position, radius, isIn: false })
+
+        // Preview
+        const preview = new THREE.Mesh(
+            new THREE.SphereGeometry(radius, 16, 16),
+            new THREE.MeshBasicNodeMaterial({ color: '#ffffff', wireframe: true })
+        )
+        preview.position.copy(position)
+        this.previewGroup.add(preview)
     }
 
     update()
     {
-        const playerPosition = new THREE.Vector2(this.game.player.position.x, this.game.player.position.z)
         for(const area of this.items)
         {
-            const distance = playerPosition.distanceTo(area.position)
+            const distance = this.game.player.position.distanceTo(area.position)
 
             if(distance < area.radius)
             {

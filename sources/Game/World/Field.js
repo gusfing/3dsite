@@ -12,14 +12,6 @@ export class Field
         this.geometry = this.game.resources.terrainModel.scene.children[0].geometry
         this.subdivision = this.game.terrainData.subdivision
 
-        if(this.game.debug.active)
-        {
-            this.debugPanel = this.game.debug.panel.addFolder({
-                title: '🌐 Field',
-                expanded: false,
-            })
-        }
-
         this.setVisual()
         this.setPhysical()
         // this.setKeys()

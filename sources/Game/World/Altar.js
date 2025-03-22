@@ -27,16 +27,19 @@ export class Altar
         this.emissiveTop = uniform(2.7)
 
         this.setBeam()
+        this.setBeamParticles()
         this.setCounter()
         this.setCounterParticles()
         this.setArea()
 
-        // Faker
-        setInterval(() =>
-        {
-            this.updateValue(this.value + 1)
-        }, 2000)
-        this.updateValue(Math.floor(Math.pow(Math.random(), 2) * 999999))
+        this.updateValue(1)
+
+        // // Faker
+        // setInterval(() =>
+        // {
+        //     this.updateValue(this.value + 1)
+        // }, 2000)
+        // this.updateValue(Math.floor(Math.pow(Math.random(), 2) * 999999))
 
         // Debug
         if(this.game.debug.active)
@@ -51,7 +54,8 @@ export class Altar
     setBeam()
     {
         const radius = 2.5
-        const height = 4
+        const height = 6
+        this.beamAttenuation = uniform(1)
 
         // Cylinder
         const cylinderGeometry = new THREE.CylinderGeometry(radius, radius, height, 32, 1, true)
@@ -63,19 +67,21 @@ export class Altar
         {
             const baseUv = uv().toVar()
 
+            // Noise
+            const noiseUv = vec2(baseUv.x.mul(6).add(baseUv.y.mul(-2)), baseUv.y.mul(1).sub(this.game.ticker.elapsedScaledUniform.mul(0.2)))
+            const noise = texture(this.game.noises.others, noiseUv).r
+            noise.addAssign(baseUv.y.mul(this.beamAttenuation.add(1)))
+
             // Emissive
-            const emissiveUv = vec2(baseUv.x.mul(6).add(baseUv.y.mul(-2)), baseUv.y.mul(1).sub(this.game.ticker.elapsedScaledUniform.mul(0.2)))
-            const emissiveNoise = texture(this.game.noises.others, emissiveUv).r
-            emissiveNoise.addAssign(baseUv.y)
-            const emissiveMask = step(1, emissiveNoise)
+            const emissiveMask = step(1, noise)
             const emissiveColor = mix(this.colorBottom.mul(this.emissiveBottom), this.colorTop.mul(this.emissiveTop), baseUv.y)
 
             // Goo
             const gooColor = this.game.fog.strength.mix(vec3(0), this.game.fog.color) // Fog
 
             // Mix
-            // const gooMask = step(emissiveNoise, 0.95)
-            const gooMask = step(0.65, emissiveNoise)
+            // const gooMask = step(noise, 0.95)
+            const gooMask = step(0.65, noise)
             const finalColor = mix(emissiveColor, gooColor, gooMask)
 
             // Discard
@@ -115,6 +121,102 @@ export class Altar
         bottom.position.copy(this.position)
         bottom.rotation.x = - Math.PI * 0.5
         this.game.scene.add(bottom)
+
+        this.animateBeam = () =>
+        {
+            gsap.to(
+                this.beamAttenuation,
+                { value: 0, ease: 'power2.out', duration: 0.4, onComplete: () =>
+                {
+                    gsap.to(
+                        this.beamAttenuation,
+                        { value: 1, ease: 'power2.inOut', duration: 5, delay: 1 },
+                    )
+                } },
+            )
+        }
+    }
+
+    setBeamParticles()
+    {
+        const count = 150
+
+        // Uniforms
+        const progress = uniform(0)
+        
+        // Attributes
+        const positionArray = new Float32Array(count * 3)
+        const scaleArray = new Float32Array(count)
+        const randomArray = new Float32Array(count)
+        
+        for(let i = 0; i < count; i++)
+        {
+            const i3 = i * 3
+
+            const spherical = new THREE.Spherical(
+                (1 - Math.pow(1 - Math.random(), 2)) * 5,
+                Math.random() * Math.PI * 0.4,
+                Math.random() * Math.PI * 2
+            )
+            const position = new THREE.Vector3().setFromSpherical(spherical)
+            positionArray[i3 + 0] = position.x
+            positionArray[i3 + 1] = position.y
+            positionArray[i3 + 2] = position.z
+
+            scaleArray[i] = Math.random()
+            randomArray[i] = Math.random()
+        }
+        const position = instancedArray(positionArray, 'vec3').toAttribute()
+        const scale = instancedArray(scaleArray, 'float').toAttribute()
+        const random = instancedArray(randomArray, 'float').toAttribute()
+
+        // Geometry
+        const particlesGeometry = new THREE.PlaneGeometry(0.2, 0.2)
+
+        // Material
+        const particlesMaterial = new THREE.SpriteNodeMaterial()
+        particlesMaterial.outputNode = Fn(() =>
+        {
+            const distanceToCenter = uv().sub(0.5).length()
+            const gooColor = this.game.fog.strength.mix(vec3(0), this.game.fog.color) // Fog
+            const emissiveColor = this.colorBottom.mul(this.emissiveBottom)
+            const finalColor = mix(gooColor, emissiveColor, step(distanceToCenter, 0.35))
+
+            // Discard
+            distanceToCenter.greaterThan(0.5).discard()
+
+            return vec4(finalColor, 1)
+        })()
+        particlesMaterial.positionNode = Fn(() =>
+        {
+            const localProgress = progress.remapClamp(0, 0.5, 1, 0).pow(6).oneMinus()
+            
+            const finalPosition = position.toVar().mulAssign(localProgress)
+            finalPosition.y.addAssign(progress.mul(random))
+
+            return finalPosition
+        })()
+        particlesMaterial.scaleNode = Fn(() =>
+        {
+            const finalScale = smoothstep(1, 0.3, progress).mul(scale)
+            return finalScale
+        })()
+        
+        // Mesh
+        const particles = new THREE.Mesh(particlesGeometry, particlesMaterial)
+        particles.count = count
+        particles.position.copy(this.position)
+        particles.position.y -= 0.1
+        this.game.scene.add(particles)
+
+        this.animateBeamParticles = () =>
+        {
+            gsap.fromTo(
+                progress,
+                { value: 0 },
+                { value: 1, ease: 'linear', duration: 3 },
+            )
+        }
     }
 
     setCounter()
@@ -148,13 +250,11 @@ export class Altar
         material.outputNode = Fn(() =>
         {
             const textData = texture(textTexture, uv())
-
             const gooColor = this.game.fog.strength.mix(vec3(0), this.game.fog.color) // Fog
-
             const emissiveColor = this.colorBottom.mul(this.emissiveBottom)
-            
             const finalColor = mix(gooColor, emissiveColor, textData.g)
 
+            // Discard
             textData.r.add(textData.g).lessThan(0.5).discard()
 
             return vec4(finalColor, 1)
@@ -227,13 +327,11 @@ export class Altar
         particlesMaterial.outputNode = Fn(() =>
         {
             const distanceToCenter = uv().sub(0.5).length()
-
             const gooColor = this.game.fog.strength.mix(vec3(0), this.game.fog.color) // Fog
-
             const emissiveColor = this.colorBottom.mul(this.emissiveBottom)
-            
             const finalColor = mix(gooColor, emissiveColor, step(distanceToCenter, 0.35))
 
+            // Discard
             distanceToCenter.greaterThan(0.5).discard()
 
             return vec4(finalColor, 1)
@@ -269,33 +367,19 @@ export class Altar
 
     setArea()
     {
-        this.game.areas.add('altar', new THREE.Vector2(this.position.x, this.position.z), 1.75)
-
-        let timeout = null
+        const areaPosition = this.position.clone()
+        areaPosition.y -= 1.25
+        this.game.areas.add('altar', areaPosition, 2.5)
 
         this.game.areas.events.on('altar', (area) =>
         {
             // Inside the area
             if(area.isIn)
             {
-                // Wait a moment
-                timeout = gsap.delayedCall(1, () =>
-                {
-                    // Still in
-                    if(area.isIn)
-                    {
-                        this.game.player.die()
-
-                        // TODO: Particles animation
-                    }
-                })
-            }
-
-            // Outside the area
-            else
-            {
-                if(timeout)
-                    timeout.kill()
+                this.animateBeam()
+                this.animateBeamParticles()
+                this.updateValue(this.value + 1)
+                this.game.player.die()
             }
         })
     }
