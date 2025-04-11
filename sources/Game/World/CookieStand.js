@@ -3,6 +3,7 @@ import { Game } from '../Game.js'
 import { color, float, Fn, mix, normalWorld, step, storage, texture, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
 import { InstancedGroup } from '../InstancedGroup.js'
 import gsap from 'gsap'
+import { InteractiveAreas } from '../InteractiveAreas2.js'
 
 export class CookieStand
 {
@@ -222,11 +223,23 @@ export class CookieStand
     {
         this.game.interactiveAreas.create(
             this.interactiveAreaPosition,
+            'Accept cookie',
+            InteractiveAreas.ALIGN_RIGHT,
             () =>
             {
                 this.accept()
             }
         )
+
+        // this.game.interactiveAreas.create(
+        //     this.interactiveAreaPosition.clone().add(new THREE.Vector3(-6, 0, 3)),
+        //     'Test',
+        //     InteractiveAreas.ALIGN_RIGHT,
+        //     () =>
+        //     {
+        //         // this.accept()
+        //     }
+        // )
     }
 
     accept()

@@ -32,7 +32,7 @@ import { PhysicsWireframe } from './Physics/PhysicsWireframe.js'
 import { Areas } from './Areas.js'
 import { Overlay } from './Overlay.js'
 import { Tornado } from './Tornado.js'
-import { InteractiveAreas } from './InteractiveAreas.js'
+import { InteractiveAreas } from './InteractiveAreas2.js'
 
 export class Game
 {
@@ -60,34 +60,38 @@ export class Game
             this.resourcesLoader = new ResourcesLoader()
             this.resourcesLoader.load(
                 [
-                    [ 'foliateTexture',             'foliage/foliage.png',                   'texture' ],
-                    [ 'bushesReferences',           'bushes/bushesReferences.glb',           'gltf'    ],
-                    [ 'vehicle',                    'vehicle/default.glb',                   'gltf'    ],
-                    [ 'playgroundVisual',           'playground/playgroundVisual.glb',       'gltf'    ],
-                    [ 'playgroundPhysical',         'playground/playgroundPhysical.glb',     'gltf'    ],
-                    [ 'floorKeysTexture',           'floor/keys.png',                        'texture' ],
-                    [ 'flowersReferencesModel',     'flowers/flowersReferences.glb',         'gltf'    ],
-                    [ 'bricksReferencesModel',      'bricks/bricksReferences.glb',           'gltf'    ],
-                    [ 'bricksVisualModel',          'bricks/bricksVisual.glb',               'gltf'    ],
-                    [ 'terrainTexture',             'terrain/terrain.png',                   'texture' ],
-                    // [ 'terrainTexture',             'terrain/flatGrass.png',                 'texture' ],
-                    [ 'terrainModel',               'terrain/terrain.glb',                   'gltf'    ],
-                    [ 'birchTreesVisualModel',      'birchTrees/birchTreesVisual.glb',       'gltf'    ],
-                    [ 'birchTreesReferencesModel',  'birchTrees/birchTreesReferences.glb',   'gltf'    ],
-                    [ 'oakTreesVisualModel',        'oakTrees/oakTreesVisual.glb',           'gltf'    ],
-                    [ 'oakTreesReferencesModel',    'oakTrees/oakTreesReferences.glb',       'gltf'    ],
-                    [ 'cherryTreesVisualModel',     'cherryTrees/cherryTreesVisual.glb',     'gltf'    ],
-                    [ 'cherryTreesReferencesModel', 'cherryTrees/cherryTreesReferences.glb', 'gltf'    ],
-                    [ 'sceneryStaticModel',         'scenery/sceneryStatic.glb',             'gltf'    ],
-                    [ 'sceneryDynamicModel',        'scenery/sceneryDynamic.glb',            'gltf'    ],
-                    [ 'poleLightsVisualModel',      'poleLights/poleLightsVisual.glb',       'gltf'    ],
-                    [ 'poleLightsPhysicalModel',    'poleLights/poleLightsPhysical.glb',     'gltf'    ],
-                    [ 'whisperBeamTexture',         'whispers/whisperBeam.png',              'texture' ],
-                    [ 'satanStarTexture',           'scenery/satanStar.png',                 'texture' ],
-                    [ 'tornadoPathModel',           'tornado/tornadoPath.glb',               'gltf'    ],
-                    [ 'overlayPatternTexture',      'overlay/overlayPattern.png',            'texture', (resource) => { resource.wrapS = THREE.RepeatWrapping; resource.wrapT = THREE.RepeatWrapping } ],
-                    [ 'cookieBannerTexture',        'cookieStand/cookieBanner.png',          'texture', (resource) => { resource.colorSpace = THREE.SRGBColorSpace; resource.flipY = false } ],
+                    [ 'foliateTexture',                 'foliage/foliage.png',                          'texture' ],
+                    [ 'bushesReferences',               'bushes/bushesReferences.glb',                  'gltf'    ],
+                    [ 'vehicle',                        'vehicle/default.glb',                          'gltf'    ],
+                    [ 'playgroundVisual',               'playground/playgroundVisual.glb',              'gltf'    ],
+                    [ 'playgroundPhysical',             'playground/playgroundPhysical.glb',            'gltf'    ],
+                    [ 'floorKeysTexture',               'floor/keys.png',                               'texture' ],
+                    [ 'flowersReferencesModel',         'flowers/flowersReferences.glb',                'gltf'    ],
+                    [ 'bricksReferencesModel',          'bricks/bricksReferences.glb',                  'gltf'    ],
+                    [ 'bricksVisualModel',              'bricks/bricksVisual.glb',                      'gltf'    ],
+                    [ 'terrainTexture',                 'terrain/terrain.png',                          'texture' ],
+                    // [ 'terrainTexture',                 'terrain/flatGrass.png',                        'texture' ],
+                    [ 'terrainModel',                   'terrain/terrain.glb',                          'gltf'    ],
+                    [ 'birchTreesVisualModel',          'birchTrees/birchTreesVisual.glb',              'gltf'    ],
+                    [ 'birchTreesReferencesModel',      'birchTrees/birchTreesReferences.glb',          'gltf'    ],
+                    [ 'oakTreesVisualModel',            'oakTrees/oakTreesVisual.glb',                  'gltf'    ],
+                    [ 'oakTreesReferencesModel',        'oakTrees/oakTreesReferences.glb',              'gltf'    ],
+                    [ 'cherryTreesVisualModel',         'cherryTrees/cherryTreesVisual.glb',            'gltf'    ],
+                    [ 'cherryTreesReferencesModel',     'cherryTrees/cherryTreesReferences.glb',        'gltf'    ],
+                    [ 'sceneryStaticModel',             'scenery/sceneryStatic.glb',                    'gltf'    ],
+                    [ 'sceneryDynamicModel',            'scenery/sceneryDynamic.glb',                   'gltf'    ],
+                    [ 'poleLightsVisualModel',          'poleLights/poleLightsVisual.glb',              'gltf'    ],
+                    [ 'poleLightsPhysicalModel',        'poleLights/poleLightsPhysical.glb',            'gltf'    ],
+                    [ 'whisperBeamTexture',             'whispers/whisperBeam.png',                     'texture' ],
+                    [ 'satanStarTexture',               'scenery/satanStar.png',                        'texture' ],
+                    [ 'tornadoPathModel',               'tornado/tornadoPath.glb',                      'gltf'    ],
+                    [ 'overlayPatternTexture',          'overlay/overlayPattern.png',                   'texture', (resource) => { resource.wrapS = THREE.RepeatWrapping; resource.wrapT = THREE.RepeatWrapping } ],
+                    [ 'cookieBannerTexture',            'cookieStand/cookieBanner.png',                 'texture', (resource) => { resource.colorSpace = THREE.SRGBColorSpace; resource.flipY = false } ],
+                    [ 'interactiveAreasKeyIconTexture', 'interactiveAreas/interactiveAreasKeyIcon.png', 'texture', (resource) => { resource.flipY = true; resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false } ],
                     
+                            
+                            
+                            
                     // [ 'christmasTreeVisualModel',     'christmas/christmasTreeVisual.glb',     'gltf' ],
                     // [ 'christmasTreePhysicalModel',   'christmas/christmasTreePhysical.glb',   'gltf' ],
                     // [ 'christmasGiftVisualModel',     'christmas/christmasGiftVisual.glb',     'gltf' ],

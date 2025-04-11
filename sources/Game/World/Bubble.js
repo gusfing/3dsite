@@ -34,7 +34,6 @@ export class Bubble
         this.canvas.element.height = this.height
 
         this.canvas.texture = new THREE.Texture(this.canvas.element)
-        this.canvas.texture.colorSpace = THREE.SRGBColorSpace
         this.canvas.texture.minFilter = THREE.NearestFilter
         this.canvas.texture.magFilter = THREE.NearestFilter
         this.canvas.texture.generateMipmaps = false
