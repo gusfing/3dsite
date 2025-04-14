@@ -26,7 +26,7 @@ export class World
         // this.field = new Field()
         this.grid = new Grid()
         // this.waterSurface = new WaterSurface()
-        // this.grass = new Grass()
+        this.grass = new Grass()
         this.windLines = new WindLines()
         // this.leaves = new Leaves()
         // this.rainSnow = new Rain()

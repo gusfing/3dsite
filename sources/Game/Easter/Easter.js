@@ -2,6 +2,7 @@ import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import { InstancedGroup } from '../InstancedGroup.js'
 import { cameraPosition, color, Fn, luminance, mix, normalWorld, positionWorld, uniform, uv, vec3, vec4 } from 'three/tsl'
+import gsap from 'gsap'
 
 export class Easter
 {
@@ -9,31 +10,19 @@ export class Easter
     {
         this.game = Game.getInstance()
 
-        this.setVisual()
-
-
-        // References
-        const references = InstancedGroup.getReferencesFromChildren(this.game.resources.easterEggReferencesModel.scene.children)
-        console.log(references)
+        this.code = 'easter2025'
         
-        for(const reference of references)
+        this.setEggVisual()
+        this.setEggs()
+        this.setModal()
+
+        this.game.ticker.events.on('tick', () =>
         {
-        }
-
-        // this.game.entities.add(
-        //     {
-        //         model: model,
-        //         parent: null
-        //     },
-        //     null
-        // )
-        // // model.removeFromParent()
-
-        // Instanced group
-        this.testInstancedGroup = new InstancedGroup(references, this.visual, true)
+            this.update()
+        }, 10)
     }
 
-    setVisual()
+    setEggVisual()
     {
         const colorA = uniform(color('#ff8641'))
         const colorB = uniform(color('#ff3e00'))
@@ -89,6 +78,187 @@ export class Easter
         beams.material = beamsMaterial
         
         this.visual = this.game.resources.easterEggVisualModel.scene
+    }
+    
+    setEggs()
+    {
+        this.eggs = {}
+        this.eggs.allCaught = false
+        this.eggs.catchDistance = 2
+        this.eggs.closest = null
+        // this.eggs.containerElement = this.element.querySelector('.eggs')
+        // this.eggs.fragmentElements = this.eggs.containerElement.querySelectorAll('.fragment')
+
+        // References
+        const references = InstancedGroup.getReferencesFromChildren(this.game.resources.easterEggReferencesModel.scene.children)
+        
+        // Items
+        this.eggs.items = []
+        for(const reference of references)
+        {
+            const item = {}
+            item.reference = reference
+            item.distance = Infinity
+            item.caught = false
+            // item.element = this.eggs.fragmentElements[i]
+
+            item.catch = () =>
+            {
+                item.caught = true
+                gsap.to(
+                    item.reference.scale,
+                    {
+                        x: 0.1,
+                        y: 0.1,
+                        z: 0.1,
+                        duration: 0.6,
+                        ease: 'back.in(6)',
+                        onComplete: () =>
+                        {
+                            item.reference.position.y = 99
+                        }
+                    }
+                )
+            }
+
+            this.eggs.items.push(item)
+        }
+
+        // Instanced group
+        this.testInstancedGroup = new InstancedGroup(references, this.visual, true)
+
+        this.eggs.getClosest = () =>
+        {
+            let closest = null
+            let minDistance = Infinity
+            for(const egg of this.eggs.items)
+            {
+                if(!egg.caught)
+                {
+                    egg.distance = egg.reference.position.distanceTo(this.game.player.position)
+
+                    if(closest === null || egg.distance < minDistance)
+                    {
+                        closest = egg
+                        minDistance = egg.distance
+                    }
+                }
+            }
+
+            return closest
+        }
+
+        this.eggs.tryCatch = (egg) =>
+        {
+            if(egg.distance < this.eggs.catchDistance && !egg.caught)
+                this.eggs.catch(egg)
+        }
+
+        this.eggs.catch = (egg) =>
+        {
+            // this.game.sounds.eggs.catch()
+            egg.catch()
+            // egg.element.innerHTML = /* html */`
+            //     <div class="character">${egg.character}</div>
+            //     <div class="bottom"></div>
+            //     <div class="stroke"></div>
+            //     <div class="particles">
+            //         <div class="particle"></div>
+            //         <div class="particle"></div>
+            //         <div class="particle"></div>
+            //         <div class="particle"></div>
+            //         <div class="particle"></div>
+            //         <div class="particle"></div>
+            //         <div class="particle"></div>
+            //         <div class="particle"></div>
+            //         <div class="particle"></div>
+            //         <div class="particle"></div>
+            //     </div>
+            // `
+            // requestAnimationFrame(() =>
+            // {
+            //     egg.element.classList.add('is-caught')
+            // })
+            this.eggs.testOver()
+        }
+
+        this.eggs.testOver = () =>
+        {
+            this.eggs.allCaught = this.eggs.items.reduce((accumulator, fragment) => { return fragment.caught && accumulator }, true)
+
+            if(this.eggs.allCaught)
+            {
+                this.game.modals.open('easter-end')
+            }
+        }
+    }
+
+    setModal()
+    {
+        this.modal = {}
+
+        const modalItem = this.game.modals.items.get('easter-end')
+        this.modal.element = modalItem.element
+        this.modal.time = this.modal.element.querySelector('.js-time')
+        this.modal.code = this.modal.element.querySelector('.js-code')
+        this.modal.link = this.modal.element.querySelector('.js-link')
+        this.modal.firstOpen = true
+        
+        modalItem.events.on('open', () =>
+        {
+            if(this.modal.firstOpen)
+            {
+                // Time
+                let elapsed = this.game.ticker.elapsed
+                const hours = Math.floor(elapsed / 60 / 60)
+
+                elapsed -= hours * 60 * 60
+                const minutes = Math.floor(elapsed / 60)
+
+                elapsed -= minutes * 60
+                const seconds = Math.floor(elapsed)
+                
+                const textParts = []
+
+                if(hours)
+                    textParts.push(`${hours} hour${hours > 1 ? 's' : ''}`)
+
+                if(hours || minutes)
+                    textParts.push(`${minutes} minute${minutes > 1 ? 's' : ''}`)
+
+                if(hours || minutes || seconds)
+                    textParts.push(`${seconds} second${seconds > 1 ? 's' : ''}`)
+
+                const text = textParts.join(' ')
+                this.modal.time.textContent = text
+
+                // Code
+                this.modal.code.textContent = this.code.toUpperCase()
+
+                // Link
+                this.modal.link.href = `https://threejs-journey.com/join/${this.code}`
+
+                // Save as already opened
+                this.modal.firstOpen = false
+            }
+        })
+    }
+
+    update()
+    {
+        this.eggs.closest = this.eggs.getClosest()
+
+        if(this.eggs.closest)
+        {
+            // this.game.vehicle.antenna.target.copy(this.eggs.closest.position)
+            this.eggs.tryCatch(this.eggs.closest)
+        }
+        else
+        {
+            // const forwardTarget = this.game.vehicle.position.clone().add(this.game.vehicle.forward.clone().multiplyScalar(35))
+            // forwardTarget.y += 1
+            // this.game.vehicle.antenna.target.copy(forwardTarget)
+        }
     }
 }
 

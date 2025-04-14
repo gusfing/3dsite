@@ -79,6 +79,7 @@ export class Lighting
         this.lightBounceMultiplier = uniform(float(1))
 
         this.shadowColor = uniform(this.game.dayCycles.properties.shadowColor.value)
+        this.bounceColor = uniform(color('#82487f'))
         this.coreShadowEdgeLow = uniform(float(-0.25))
         this.coreShadowEdgeHigh = uniform(float(1))
 
@@ -116,14 +117,14 @@ export class Lighting
                 if(withBounce)
                 {
                     // const terrainUv = this.game.terrainData.worldPositionToUvNode(positionWorld.xz)
-                    const terrainData = this.game.terrainData.terrainDataNode(positionWorld.xz)
+                    // const terrainData = this.game.terrainData.terrainDataNode(positionWorld.xz)
 
                     // Bounce color
                     const bounceOrientation = reorientedNormal.dot(vec3(0, - 1, 0)).smoothstep(this.lightBounceEdgeLow, this.lightBounceEdgeHigh)
                     const bounceDistance = this.lightBounceDistance.sub(max(0, positionWorld.y)).div(this.lightBounceDistance).max(0).pow(2)
-                    // const bounceWater = positionWorld.y.step(-0.3).mul(0.9).add(1)
-                    const bounceColor = this.game.terrainData.colorNode(terrainData)
-                    baseColor.assign(mix(baseColor, bounceColor, bounceOrientation.mul(bounceDistance).mul(this.lightBounceMultiplier)))
+                    // const bounceColor = this.game.terrainData.colorNode(terrainData)
+                    // const bounceColor = color('#ff0000')
+                    baseColor.assign(mix(baseColor, this.bounceColor, bounceOrientation.mul(bounceDistance).mul(this.lightBounceMultiplier)))
                 }
 
                 // Water
@@ -158,6 +159,7 @@ export class Lighting
         // Debug
         if(this.game.debug.active)
         {
+            this.game.debug.addThreeColorBinding(this.debugPanel, this.bounceColor.value, 'bounceColor')
             this.debugPanel.addBinding(this.lightBounceEdgeLow, 'value', { label: 'lightBounceEdgeLow', min: - 1, max: 1, step: 0.01 })
             this.debugPanel.addBinding(this.lightBounceEdgeHigh, 'value', { label: 'lightBounceEdgeHigh', min: - 1, max: 1, step: 0.01 })
             this.debugPanel.addBinding(this.lightBounceDistance, 'value', { label: 'lightBounceDistance', min: 0, max: 5, step: 0.01 })
