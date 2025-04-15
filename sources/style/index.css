@@ -42,6 +42,7 @@ html
 {
     background: radial-gradient(farthest-side at 0 0, #251f2b, #1d1721);
     /* background: radial-gradient(farthest-side at 0 0, #251f2b 99%, #ff0000); */
+    font-size: 20px;
 }
 
 .fonts-loader
@@ -67,7 +68,7 @@ html
 .title
 {
     margin-bottom: 0.25em;
-    font-size: 50px;
+    font-size: 2.5rem;
     font-family: "Amatic SC", sans-serif;
     font-weight: 700;
     font-style: normal;
@@ -76,12 +77,12 @@ html
 .text
 {
     margin-bottom: 0.75em;
-    font-size: 20px;
+    font-size: 1rem;
 }
 
 .text-small
 {
-    font-size: 16px;
+    font-size: 0.8rem;
 }
 
 .text-faded
@@ -92,6 +93,11 @@ html
 .text-align-right
 {
     text-align: right;
+}
+
+.text-align-center
+{
+    text-align: center;
 }
 
 .modals
@@ -152,7 +158,7 @@ html
     position: relative;
     background: #251f2b;
     padding: 0 15px 4px 15px;
-    font-size: 50px;
+    font-size: 2.5rem;
     white-space: nowrap;
     color: #ffffff;
     border: none;
@@ -277,4 +283,85 @@ html
 .modals .content .audio-toggle.is-active img.audio-off
 {
     display: none;
+}
+
+.modals .content .mobile
+{
+    display: none;
+}
+
+.modals .content .start
+{
+    display: block;
+}
+
+
+@media only screen and (orientation: portrait)
+{
+    .modals .container
+    {
+        flex-direction: column;
+        width: 500px;
+    }
+
+    .modals .preview
+    {
+        width: auto;
+        min-height: 250px;
+    }
+
+    .modals .content
+    {
+        width: auto;
+    }
+}
+
+@media only screen and (max-width: 1024px), only screen and (orientation: portrait)
+{
+    .modals .content .mobile
+    {
+        display: block;
+    }
+
+    .modals .content .start,
+    .modals .content .close
+    {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 520px)
+{
+    html
+    {
+        font-size: 16px;
+    }
+
+    .modals .container
+    {
+        width: 400px;
+    }
+
+    .modals .content
+    {
+        padding: 20px 30px 30px 30px;
+    }
+}
+
+@media only screen and (max-width: 420px)
+{
+    html
+    {
+        font-size: 13px;
+    }
+
+    .modals .container
+    {
+        width: 320px;
+    }
+
+    .modals .content
+    {
+        padding: 15px 20px 20px 20px;
+    }
 }
