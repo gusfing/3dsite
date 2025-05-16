@@ -233,54 +233,57 @@ export class Projects
         this.images.resources = new Map()
 
         // Textures (based on dummy image first)
-        const dummyImage = new Image()
-        dummyImage.with = 1920
-        dummyImage.height = 1080
+        const dummyImageOld = new Image()
+        dummyImageOld.width = 1920
+        dummyImageOld.height = 1080
 
-        this.images.textureA = new THREE.Texture(dummyImage)
-        this.images.textureA.colorSpace = THREE.SRGBColorSpace
-        this.images.textureA.flipY = false
+        const dummyImageNew = new Image()
+        dummyImageNew.width = 1920
+        dummyImageNew.height = 1080
+
+        this.images.textureOld = new THREE.Texture(dummyImageOld)
+        this.images.textureOld.colorSpace = THREE.SRGBColorSpace
+        this.images.textureOld.flipY = false
         
-        this.images.textureB = new THREE.Texture(dummyImage)
-        this.images.textureB.colorSpace = THREE.SRGBColorSpace
-        this.images.textureB.flipY = false
+        this.images.textureNew = new THREE.Texture(dummyImageNew)
+        this.images.textureNew.colorSpace = THREE.SRGBColorSpace
+        this.images.textureNew.flipY = false
 
-        this.images.texturePingPong = true
+        this.images.oldResource = this.images.textureNew.source
         
         // Material
         this.images.material = new THREE.MeshLambertNodeMaterial()
+        this.images.loadProgress = uniform(0)
         this.images.animationProgress = uniform(0)
-        this.images.animationPingPong = uniform(0)
         this.images.animationDirection = uniform(0)
 
         const totalShadows = this.game.lighting.addTotalShadowToMaterial(this.images.material)
 
         this.images.material.outputNode = Fn(() =>
         {
-            const progress = this.images.animationProgress.toVar()
+            // Parallax
+            const uvOld = uv().toVar()
+            const uvNew = uv().toVar()
 
-            If(this.images.animationPingPong.greaterThan(0.5), () =>
+            uvNew.x.addAssign(this.images.animationProgress.oneMinus().mul(-0.5).mul(this.images.animationDirection))
+            uvOld.x.addAssign(this.images.animationProgress.mul(0.5).mul(this.images.animationDirection))
+
+            // Textures
+            const textureOldColor = texture(this.images.textureOld, uvOld).rgb
+            const textureNewColor = texture(this.images.textureNew, uvNew).rgb.toVar()
+
+            // Load mix
+            textureNewColor.assign(mix(color('#333333'), textureNewColor, this.images.loadProgress))
+
+            // Reveal
+            const reveal = uv().x.toVar()
+            If(this.images.animationDirection.greaterThan(0), () =>
             {
-                progress.assign(progress.oneMinus())
+                reveal.assign(reveal.oneMinus())
             })
+            const threshold = step(this.images.animationProgress, reveal)
 
-            const parallaxUv = uv().toVar()
-            parallaxUv.x.addAssign(progress.oneMinus().mul(-0.5))
-            const textureAColor = texture(this.images.textureA, parallaxUv).rgb
-            const textureBColor = texture(this.images.textureB, parallaxUv).rgb
-
-            const uvX = uv().x.toVar()
-            If(this.images.animationPingPong.lessThan(0.5), () =>
-            {
-                uvX.assign(uvX.oneMinus())
-            })
-            If(this.images.animationDirection.lessThan(0.5), () =>
-            {
-                uvX.assign(uvX.oneMinus())
-            })
-            const threshold = step(this.images.animationProgress, uvX)
-
-            const textureColor = mix(textureBColor, textureAColor, threshold)
+            const textureColor = mix(textureNewColor, textureOldColor, threshold)
 
             const shadedOutput = this.game.lighting.lightOutputNodeBuilder(textureColor, float(1), normalWorld, totalShadows)
             return vec4(mix(shadedOutput.rgb, textureColor, this.shadeMix.images.uniform), 1)
@@ -301,49 +304,56 @@ export class Projects
             if(!resource)
             {
                 resource = {}
-                resource.image = new Image(1920, 1080)
+                resource.loaded = false
 
+                // Image
+                resource.image = new Image()
+                resource.image.width = 1920
+                resource.image.height = 1080
+
+                // Source
+                resource.source = new THREE.Source(resource.image)
+                
                 // Image loaded
                 resource.image.onload = () =>
                 {
-                    // Create source
-                    resource.source = new THREE.Source(resource.image)
+                    resource.loaded = true
 
-                    // Is still the current one
                     if(this.currentProject.images[this.imageIndex] === key)
                     {
-                        // Update texture
-                        const activeTexture = this.images.texturePingPong ? this.images.textureA : this.images.textureB
-                        activeTexture.source = resource.source
-                        activeTexture.needsUpdate = true
+                        this.images.textureNew.needsUpdate = true
+                        gsap.to(this.images.loadProgress, { value: 1, duration: 1, overwrite: true })
                     }
                 }
 
                 // Start loading
                 resource.image.src = path
 
+                // Reset load progress
+                this.images.loadProgress.value = 0
+
                 // Save
                 this.images.resources.set(key, resource)
             }
 
-            // Retrieved resource
+            // Resource already exist
             else
             {
-                // Already loaded
-                if(resource.source)
-                {
-                    // Update texture
-                    const activeTexture = this.images.texturePingPong ? this.images.textureB : this.images.textureA
-                    activeTexture.source = resource.source
-                    activeTexture.needsUpdate = true
-                }
+                if(resource.loaded)
+                    this.images.loadProgress.value = 1
             }
 
+            // Update textures
+            this.images.textureOld.source = this.images.textureNew.source
+            this.images.textureOld.needsUpdate = true
+
+            this.images.textureNew.source = resource.source
+            if(resource.loaded)
+                this.images.textureNew.needsUpdate = true
+
             // Animate right away
-            gsap.to(this.images.animationProgress, { value: this.images.texturePingPong ? 1 : 0, duration: 1, ease: 'power2.inOut', overwrite: true })
-            this.images.texturePingPong = !this.images.texturePingPong
-            this.images.animationPingPong.value = this.images.texturePingPong ? 1 : 0
-            this.images.animationDirection.value = direction === Projects.DIRECTION_NEXT ? 1 : 0
+            gsap.fromTo(this.images.animationProgress, { value: 0 }, { value: 1, duration: 1, ease: 'power2.inOut', overwrite: true })
+            this.images.animationDirection.value = direction === Projects.DIRECTION_NEXT ? 1 : -1
         }
     }
 
