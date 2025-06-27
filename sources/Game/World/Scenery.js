@@ -14,7 +14,8 @@ import { Intro } from './Intro.js'
 import { Controls } from './Controls.js'
 import { Projects } from './Projects.js'
 import { Lab } from './Lab.js'
-import { Bruno } from './Bruno.js'
+import { Career } from './Career.js'
+import { Social } from './Social.js'
 
 export class Scenery
 {
@@ -42,9 +43,13 @@ export class Scenery
         this.flowers = new Flowers()
         this.bricks = new Bricks()
 
-        const brunoReferences = this.references.getStartingWith('bruno')
-        if(brunoReferences.size)
-            this.bruno = new Bruno(brunoReferences)
+        const careerReferences = this.references.getStartingWith('career')
+        if(careerReferences.size)
+            this.career = new Career(careerReferences)
+
+        const socialReferences = this.references.getStartingWith('social')
+        if(socialReferences.size)
+            this.social = new Social(socialReferences)
 
         const labReferences = this.references.getStartingWith('lab')
         if(labReferences.size)

@@ -1,29 +1,26 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { InteractiveAreas } from '../InteractiveAreas.js'
-import { color, float, Fn, luminance, max, min, mix, normalWorld, positionGeometry, step, texture, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
+import { color, float, Fn, luminance, max, mix, positionGeometry, step, texture, uniform, uv, vec4 } from 'three/tsl'
 import gsap from 'gsap'
 import { clamp } from 'three/src/math/MathUtils.js'
 
-export class Bruno
+export class Career
 {
     constructor(references)
     {
         this.game = Game.getInstance()
 
         this.references = references
-        this.center = this.references.get('center')[0].position
 
         // Debug
         if(this.game.debug.active)
         {
             this.debugPanel = this.game.debug.panel.addFolder({
-                title: '👨‍🦲 Bruno',
+                title: '💼 Career',
                 expanded: false,
             })
         }
 
-        this.setSocial()
         this.setLines()
         this.updateDigits()
 
@@ -33,44 +30,6 @@ export class Bruno
         })
     }
 
-    setSocial()
-    {
-        const links = [
-            { name: 'X', url: 'https://x.com/bruno_simon', align: InteractiveAreas.ALIGN_RIGHT },
-            { name: 'Bluesky', url: 'https://bsky.app/profile/bruno-simon.bsky.social', align: InteractiveAreas.ALIGN_RIGHT },
-            { name: 'Youtube', url: 'https://www.youtube.com/@BrunoSimon', align: InteractiveAreas.ALIGN_RIGHT },
-            { name: 'simon.bruno.77@gmail.com', url: 'mailto:simon.bruno.77@gmail.com', align: InteractiveAreas.ALIGN_RIGHT },
-            { name: 'Twitch', url: 'https://www.twitch.tv/bruno_simon_dev', align: InteractiveAreas.ALIGN_RIGHT },
-            { name: 'GitHub', url: 'https://github.com/brunosimon', align: InteractiveAreas.ALIGN_RIGHT },
-            { name: 'LinkedIn', url: 'https://www.linkedin.com/in/simonbruno77/', align: InteractiveAreas.ALIGN_LEFT },
-            { name: 'Discord', url: 'https://discord.com/users/202907325722263553', align: InteractiveAreas.ALIGN_LEFT },
-        ]
-
-        const radius = 6
-        let i = 0
-
-        for(const link of links)
-        {
-            const angle = i * Math.PI / (links.length - 1)
-            const position = this.center.clone()
-            position.x += Math.cos(angle) * radius
-            position.y = 1
-            position.z -= Math.sin(angle) * radius
-
-            this.interactiveArea = this.game.interactiveAreas.create(
-                position,
-                link.name,
-                link.align,
-                () =>
-                {
-                    window.open(link.url, '_blank')
-                }
-            )
-            
-            i++
-        }
-    }
-
     setLines()
     {
         this.lines = {}
@@ -78,7 +37,7 @@ export class Bruno
         this.lines.activeElevation = 2.5
         this.lines.padding = 0.25
         
-        const lineGroups = this.references.get('careerLine')
+        const lineGroups = this.references.get('line')
 
         const colors = {
             blue: uniform(color('#5390ff')),
@@ -160,7 +119,7 @@ export class Bruno
     updateDigits()
     {
         this.year = {}
-        this.year.group = this.references.get('careerYear')[0]
+        this.year.group = this.references.get('year')[0]
         this.year.origin = new THREE.Vector2(this.year.group.position.x, this.year.group.position.z)
         this.year.size = 17
         this.year.offsetTarget = 0
