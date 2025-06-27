@@ -269,7 +269,6 @@ export class InteractiveAreas
         // Open
         item.open = () =>
         {
-            console.log('open')
             item.state = InteractiveAreas.STATE_OPEN
 
             diamond.visible = true

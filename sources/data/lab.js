@@ -6,6 +6,12 @@ export default [
         imageMini: 'black-hole-mini.webp'
     },
     {
+        title: 'Infinite World',
+        url: 'https://infinite-world.vercel.app',
+        image: 'infinite-world.webp',
+        imageMini: 'infinite-world-mini.webp'
+    },
+    {
         title: 'My Room in 3D',
         url: 'https://my-room-in-3d.vercel.app',
         image: 'my-room-in-3d.webp',
@@ -18,6 +24,12 @@ export default [
         imageMini: 'particles-system-mini.webp'
     },
     {
+        title: 'Stylized Low Poly',
+        url: 'https://stylized-low-poly.vercel.app',
+        image: 'stylized-low-poly.webp',
+        imageMini: 'stylized-low-poly-mini.webp'
+    },
+    {
         title: 'Holographic terrain',
         url: 'https://experiment-holographic-terrain.vercel.app',
         image: 'holographic-terrain.webp',
@@ -28,6 +40,12 @@ export default [
         url: 'https://experiment-woodkid-volcano-robot.vercel.app',
         image: 'woodkid-volcano-robot.webp',
         imageMini: 'woodkid-volcano-robot-mini.webp'
+    },
+    {
+        title: 'Bounce Friday',
+        url: 'https://threejs-journey.com/apps/bounce-friday/',
+        image: 'bounce-friday.webp',
+        imageMini: 'bounce-friday-mini.webp'
     },
     {
         title: 'VFX flames',
