@@ -36,7 +36,7 @@ import { InteractiveAreas } from './InteractiveAreas.js'
 import { Respawns } from './Respawns.js'
 import { Audio } from './Audio.js'
 import { ClosingManager } from './ClosingManager.js'
-import { Cursor } from './Cursor.js'
+import { RayCursor } from './RayCursor.js'
 
 export class Game
 {
@@ -120,13 +120,14 @@ export class Game
     {
         // Setup
         this.domElement = document.querySelector('.game')
+        this.canvasElement = this.domElement.querySelector('.js-canvas')
 
         this.scene = new THREE.Scene()
 
         this.server = new Server()
         this.ticker = new Ticker()
-        this.inputs = new Inputs([], ['modal'])
-        this.cursor = new Cursor()
+        this.inputs = new Inputs([], [])
+        this.rayCursor = new RayCursor()
         this.debug = new Debug()
         this.time = new Time()
         this.viewport = new Viewport(this.domElement)

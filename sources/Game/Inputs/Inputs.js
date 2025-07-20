@@ -6,6 +6,7 @@ import { Game } from '../Game.js'
 import { Gamepad } from './Gamepad.js'
 import { Pointer } from './Pointer.js'
 import Keyboard from './Keyboard.js'
+import { Nipple } from './Nipple.js'
 
 export class Inputs
 {
@@ -21,6 +22,7 @@ export class Inputs
         this.setGamepad()
         this.setPointer()
         this.setWheel()
+        this.setNipple()
 
         this.addActions(actions)
         
@@ -89,6 +91,11 @@ export class Inputs
                 }
             }
         }, { passive: true })
+    }
+
+    setNipple()
+    {
+        this.nipple = new Nipple(this.game.domElement, this.game.canvasElement)
     }
 
     addActions(actions)

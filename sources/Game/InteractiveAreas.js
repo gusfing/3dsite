@@ -251,7 +251,7 @@ export class InteractiveAreas
         /**
          * Cursor
          */
-        item.intersect = this.game.cursor.addIntersects({
+        item.intersect = this.game.rayCursor.addIntersects({
             active: true,
             shapes:
             [

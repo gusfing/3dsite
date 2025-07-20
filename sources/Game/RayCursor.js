@@ -1,7 +1,7 @@
 import * as THREE from 'three/webgpu'
 import { Game } from './Game.js'
 
-export class Cursor
+export class RayCursor
 {
     constructor()
     {

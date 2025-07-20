@@ -468,14 +468,17 @@ export class View
             // Focus point
             if(this.game.inputs.pointer.isDown)
             {
-                this.focusPoint.isTracking = false
-                
-                const mapMovement = new THREE.Vector2(this.game.inputs.pointer.delta.x, this.game.inputs.pointer.delta.y)
-                mapMovement.rotateAround(new THREE.Vector2(), -this.spherical.theta)
-                mapMovement.multiplyScalar(0.01)
-                
-                this.focusPoint.position.x -= mapMovement.x
-                this.focusPoint.position.z -= mapMovement.y
+                if(this.game.inputs.pointer.type === 'mouse' || this.game.inputs.pointer.touchesLength >= 2)
+                {
+                    this.focusPoint.isTracking = false
+                    
+                    const mapMovement = new THREE.Vector2(this.game.inputs.pointer.delta.x, this.game.inputs.pointer.delta.y)
+                    mapMovement.rotateAround(new THREE.Vector2(), -this.spherical.theta)
+                    mapMovement.multiplyScalar(0.01)
+                    
+                    this.focusPoint.position.x -= mapMovement.x
+                    this.focusPoint.position.z -= mapMovement.y
+                }
             }
 
             if(this.game.inputs.gamepad.joysticks.items.right.active)

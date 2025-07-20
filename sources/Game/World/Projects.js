@@ -482,7 +482,7 @@ export class Projects
                 // Intersect
                 item.intersectReference = intersectPagination[i]
 
-                item.intersect = this.game.cursor.addIntersects({
+                item.intersect = this.game.rayCursor.addIntersects({
                     active: false,
                     shapes:
                     [
@@ -517,7 +517,7 @@ export class Projects
         const arrowPrevious = this.references.get('arrowPreviousImage')[0]
         arrowPrevious.material = this.hover.inactiveMaterial
  
-        this.pagination.previousIntersect = this.game.cursor.addIntersects({
+        this.pagination.previousIntersect = this.game.rayCursor.addIntersects({
             active: false,
             shapes:
             [
@@ -542,7 +542,7 @@ export class Projects
         intersectNext.getWorldPosition(intersectNextPosition)
         const arrowNext = this.references.get('arrowNextImage')[0]
         arrowNext.material = this.hover.inactiveMaterial
-        this.pagination.nextIntersect = this.game.cursor.addIntersects({
+        this.pagination.nextIntersect = this.game.rayCursor.addIntersects({
             active: false,
             shapes:
             [
@@ -717,7 +717,7 @@ export class Projects
         const intersectPreviousPosition = new THREE.Vector3()
         intersectPrevious.getWorldPosition(intersectPreviousPosition)
 
-        this.adjacents.previous.intersect = this.game.cursor.addIntersects({
+        this.adjacents.previous.intersect = this.game.rayCursor.addIntersects({
             active: false,
             shapes:
             [
@@ -768,7 +768,7 @@ export class Projects
         const intersectNextPosition = new THREE.Vector3()
         intersectNext.getWorldPosition(intersectNextPosition)
 
-        this.adjacents.next.intersect = this.game.cursor.addIntersects({
+        this.adjacents.next.intersect = this.game.rayCursor.addIntersects({
             active: false,
             shapes:
             [
@@ -902,7 +902,7 @@ export class Projects
         const intersect = this.references.get('intersectUrl')[0]
         intersect.visible = false
  
-        this.url.intersect = this.game.cursor.addIntersects({
+        this.url.intersect = this.game.rayCursor.addIntersects({
             active: false,
             shapes:
             [

@@ -1,5 +1,6 @@
 import { Game } from './Game.js'
 import gsap from 'gsap'
+import { smallestAngle } from './utilities/maths.js'
 
 export class Player
 {
@@ -170,32 +171,91 @@ export class Player
         if(this.state !== Player.STATE_DEFAULT)
             return
 
-        // Accelerating (forward and backward)
+        /**
+         * Accelerating
+         */
         if(this.game.inputs.actions.get('forward').active)
             this.accelerating += this.game.inputs.actions.get('forward').value
 
         if(this.game.inputs.actions.get('backward').active)
             this.accelerating -= this.game.inputs.actions.get('backward').value
 
-        // Boosting
+        /**
+         * Boosting
+         */
         if(this.game.inputs.actions.get('boost').active)
             this.boosting = 1
 
-        // Braking
+        /**
+         * Braking
+         */
         if(this.game.inputs.actions.get('brake').active)
         {
             this.accelerating = 0
             this.braking = 1
         }
 
-        // Steering
+        /**
+         * Steering
+         */
+        // Left / right actions
         if(this.game.inputs.actions.get('right').active)
             this.steering -= 1
         if(this.game.inputs.actions.get('left').active)
             this.steering += 1
 
+        // Gamepad joystick
         if(this.steering === 0 && this.game.inputs.gamepad.joysticks.items.left.active)
             this.steering = - this.game.inputs.gamepad.joysticks.items.left.safeX
+
+        /**
+         * Nipple
+         */
+
+        if(this.game.inputs.nipple.active && this.game.inputs.nipple.strength > 0.2)
+        {
+            this.game.view.focusPoint.isTracking = true
+            this.accelerating = Math.pow(this.game.inputs.nipple.strength, 3)
+            this.boosting = this.game.inputs.nipple.strength > 0.999
+
+            let vehicleAngle = Math.atan2(this.game.physicalVehicle.forward.z, this.game.physicalVehicle.forward.x)
+            const nippleAngle = this.game.inputs.nipple.angle - Math.PI * 0.25
+            let angleDelta = smallestAngle(vehicleAngle, nippleAngle)
+            let angleDeltaAbs = Math.abs(angleDelta)
+
+            const forward = angleDeltaAbs < Math.PI * 0.5
+            
+            if(forward)
+            {
+                const angleDeltaSign = Math.sign(angleDelta)
+                const steering = - Math.min(angleDeltaAbs, 1) * angleDeltaSign
+
+                this.steering = steering
+            }
+            else
+            {
+                this.accelerating *= -1
+
+                vehicleAngle += Math.PI
+                angleDelta = smallestAngle(vehicleAngle, nippleAngle)
+                angleDeltaAbs = Math.abs(angleDelta)
+                const angleDeltaSign = Math.sign(angleDelta)
+                const steering = - Math.min(angleDeltaAbs, 1) * angleDeltaSign
+
+                this.steering = -steering
+            }
+
+            // if(Math.abs(angleDelta) > Math.PI * 0.5)
+            // {
+            //     this.accelerating *= -1
+            //     this.steering *= -1
+            // // }    
+            // const angleDeltaSign = Math.sign(angleDelta)
+            // const steering = - Math.min(Math.abs(angleDelta), 1) * angleDeltaSign
+
+            // this.steering = steering
+        
+        }
     }
 
     updatePostPhysics()

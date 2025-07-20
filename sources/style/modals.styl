@@ -111,8 +111,14 @@
             height 40px
             opacity 0.65
 
-            @media only screen and (max-width 1024px), only screen and (orientation portrait)
-                display none
+            @media only screen and (max-width 520px)
+                top 28px
+                right 28px
+
+            @media only screen and (max-width 420px)
+                top 18px
+                right 18px
+                transform scale(0.75, 0.75)
 
             &:hover
                 opacity 1
@@ -336,15 +342,3 @@
 
                     &.audio-off
                         display none
-
-        .mobile
-            display none
-
-            @media only screen and (max-width 1024px), only screen and (orientation portrait)
-                display block
-
-        .start
-            display block
-            
-            @media only screen and (max-width 1024px), only screen and (orientation portrait)
-                display none

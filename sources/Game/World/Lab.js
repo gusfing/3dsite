@@ -450,7 +450,7 @@ export class Lab
         const intersectPreviousPosition = new THREE.Vector3()
         intersectPrevious.getWorldPosition(intersectPreviousPosition)
 
-        this.adjacents.previousIntersect = this.game.cursor.addIntersects({
+        this.adjacents.previousIntersect = this.game.rayCursor.addIntersects({
             active: false,
             shapes:
             [
@@ -483,7 +483,7 @@ export class Lab
         const intersectNextPosition = new THREE.Vector3()
         intersectNext.getWorldPosition(intersectNextPosition)
 
-        this.adjacents.nextIntersect = this.game.cursor.addIntersects({
+        this.adjacents.nextIntersect = this.game.rayCursor.addIntersects({
             active: false,
             shapes:
             [
@@ -592,7 +592,7 @@ export class Lab
         const intersect = this.references.get('intersectUrl')[0]
         intersect.visible = false
  
-        this.url.intersect = this.game.cursor.addIntersects({
+        this.url.intersect = this.game.rayCursor.addIntersects({
             active: false,
             shapes:
             [
@@ -850,7 +850,7 @@ export class Lab
 
                 // Intersect  
                 intersectMesh.visible = false      
-                mini.intersect = this.game.cursor.addIntersects({
+                mini.intersect = this.game.rayCursor.addIntersects({
                     active: false,
                     shapes:
                     [

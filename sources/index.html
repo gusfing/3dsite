@@ -46,11 +46,13 @@
     
     <div class="game">
 
+        <canvas class="js-canvas"></canvas>
+
         <!-- Modals -->
-        <div class="js-modals modals is-displayed is-visible">
+        <div class="js-modals modals">
 
             <!-- Intro -->
-            <div class="js-modal modal intro is-displayed" data-name="intro" data-default>
+            <div class="js-modal modal intro" data-name="intro" data-default>
                 <div class="container">
                     <div class="preview">
                         <img class="background" src="ui/intro/preview.png">
@@ -59,13 +61,12 @@
                         <button class="js-close close js-main-focus">
                             <img src="ui/close.svg">
                         </button>
-                        <div class="title">Bruno's <span class="text-faded">(alpha)</span></div>
-                        <p class="text">This is an <strong>alpha</strong> version of my portfolio:</p>
+                        <div class="title">Bruno's <span class="text-faded">(beta)</span></div>
+                        <p class="text">This is an <strong>unfinished</strong> version of my portfolio:</p>
                         <p class="text text-small text-faded">
                             - Many features have been removed<br />
                             - Not optimised yet<br />
-                            - Press T to write whispers (visible by everyone)<br />
-                            - Desktop only
+                            - Press T to write whispers (visible by everyone)
                         </p>
                         <p class="text text-faded text-align-right">
                             — Bruno
@@ -78,10 +79,6 @@
                                 <img class="audio-on" src="ui/audio/audioOn.svg">
                                 <img class="audio-off" src="ui/audio/audioOff.svg">
                             </button>
-                        </p>
-
-                        <p class="text text-align-center mobile">
-                            <img src="ui/mobile.png">
                         </p>
                     </div>
                 </div>

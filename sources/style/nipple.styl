@@ -1,0 +1,32 @@
+.nipple
+    --edgeRadius 120px
+    --thumbRadius 50px
+
+    display none
+    position absolute
+    top 100px
+    left 100px
+    pointer-events none
+
+    &.is-visible
+        display block
+
+    .edge
+        width calc(var(--edgeRadius) * 2)
+        height calc(var(--edgeRadius) * 2)
+        position absolute
+        top calc(var(--edgeRadius) * -1)
+        left calc(var(--edgeRadius) * -1)
+        border-radius var(--edgeRadius)
+        border 2px solid #ffffff
+        opacity 0.5
+
+    .thumb
+        width calc(var(--thumbRadius) * 2)
+        height calc(var(--thumbRadius) * 2)
+        position absolute
+        top calc(var(--thumbRadius) * -1)
+        left calc(var(--thumbRadius) * -1)
+        border-radius var(--thumbRadius)
+        border 2px solid #ffffff
+        background #ffffff66
