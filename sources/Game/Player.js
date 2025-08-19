@@ -48,7 +48,7 @@ export class Player
             { name: 'boost',                 categories: [ 'playing'              ], keys: [ 'Keyboard.ShiftLeft', 'Keyboard.ShiftRight', 'Gamepad.circle' ] },
             { name: 'brake',                 categories: [ 'playing'              ], keys: [ 'Keyboard.KeyB', 'Gamepad.square' ] },
             { name: 'respawn',               categories: [ 'playing'              ], keys: [ 'Keyboard.KeyR', 'Gamepad.select' ] },
-            { name: 'suspensions',           categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad5', 'Keyboard.Space', 'Gamepad.cross' ] },
+            { name: 'suspensions',           categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad5', 'Keyboard.Space', 'Gamepad.triangle' ] },
             { name: 'suspensionsFront',      categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad8' ] },
             { name: 'suspensionsBack',       categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad2' ] },
             { name: 'suspensionsRight',      categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad6', 'Gamepad.r1' ] },

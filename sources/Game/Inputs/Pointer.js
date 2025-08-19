@@ -101,7 +101,7 @@ export class Pointer
             this.upcoming.y = y
         })
 
-        addEventListener('touchend', (_event) =>
+        this.element.addEventListener('touchend', (_event) =>
         {
             _event.preventDefault()
 

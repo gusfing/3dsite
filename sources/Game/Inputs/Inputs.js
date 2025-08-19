@@ -85,7 +85,7 @@ export class Inputs
 
     setPointer()
     {
-        this.pointer = new Pointer(this.game.domElement)
+        this.pointer = new Pointer(this.game.canvasElement)
 
         this.pointer.events.on('down', () =>
         {
