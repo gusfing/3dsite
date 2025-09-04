@@ -1083,9 +1083,9 @@ export class Projects
     {
         this.blackBoard = {}
         this.blackBoard.active = true
-        this.blackBoard.mesh = this.references.get('blackBoard')[0]
-        this.blackBoard.parent = this.blackBoard.mesh.parent
-        
+        this.blackBoard.group = this.references.get('blackBoard')[0]
+        this.blackBoard.parent = this.blackBoard.group.parent
+
         // Jump timeline
         this.blackBoard.timeline = gsap.timeline({
             repeat: -1,
@@ -1098,39 +1098,70 @@ export class Projects
             }
         })
 
-        this.blackBoard.timeline.to(this.blackBoard.mesh.position, { y: 0.25, ease: 'power2.out', duration: 0.7 }, 0 + 2)
-        this.blackBoard.timeline.to(this.blackBoard.mesh.position, { y: 0, ease: 'power2.in', duration: 0.7 }, 0.7 + 2)
+        this.blackBoard.timeline.to(this.blackBoard.group.position, { y: 0.25, ease: 'power2.out', duration: 0.7 }, 0 + 2)
+        this.blackBoard.timeline.to(this.blackBoard.group.position, { y: 0, ease: 'power2.in', duration: 0.7 }, 0.7 + 2)
 
-        this.blackBoard.timeline.to(this.blackBoard.mesh.rotation, { x: 0.1, duration: 0.15 }, 0 + 2)
-        this.blackBoard.timeline.to(this.blackBoard.mesh.rotation, { x: -0.1, duration: 0.3 }, 0.15 + 2)
-        this.blackBoard.timeline.to(this.blackBoard.mesh.rotation, { x: 0.1, duration: 0.3 }, 0.45 + 2)
-        this.blackBoard.timeline.to(this.blackBoard.mesh.rotation, { x: -0.1, duration: 0.3 }, 0.75 + 2)
-        this.blackBoard.timeline.to(this.blackBoard.mesh.rotation, { x: 0, duration: 0.3 }, 1.05 + 2)
+        this.blackBoard.timeline.to(this.blackBoard.group.rotation, { x: 0.1, duration: 0.15 }, 0 + 2)
+        this.blackBoard.timeline.to(this.blackBoard.group.rotation, { x: -0.1, duration: 0.3 }, 0.15 + 2)
+        this.blackBoard.timeline.to(this.blackBoard.group.rotation, { x: 0.1, duration: 0.3 }, 0.45 + 2)
+        this.blackBoard.timeline.to(this.blackBoard.group.rotation, { x: -0.1, duration: 0.3 }, 0.75 + 2)
+        this.blackBoard.timeline.to(this.blackBoard.group.rotation, { x: 0, duration: 0.3 }, 1.05 + 2)
 
         // Labels
-        this.blackBoard.labelsGamepad = this.references.get('blackboardLabelsGamepad')[0]
+        this.blackBoard.labelsGamepadPlaystation = this.references.get('blackboardLabelsGamepadPlaystation')[0]
+        this.blackBoard.labelsGamepadXbox = this.references.get('blackboardLabelsGamepadXbox')[0]
         this.blackBoard.labelsMouseKeyboard = this.references.get('blackboardLabelsMouseKeyboard')[0]
-        this.blackBoard.labelsGamepad.castShadow = false
+        this.blackBoard.labelsGamepadPlaystation.castShadow = false
+        this.blackBoard.labelsGamepadXbox.castShadow = false
         this.blackBoard.labelsMouseKeyboard.castShadow = false
-        this.blackBoard.labelsGamepad.visible = false
+        this.blackBoard.labelsGamepadPlaystation.visible = false
+        this.blackBoard.labelsGamepadXbox.visible = false
         
         this.game.inputs.events.on('modeChange', () =>
         {
             if(this.game.inputs.mode === Inputs.MODE_GAMEPAD)
             {
-                this.blackBoard.labelsGamepad.visible = true
+                if(this.game.inputs.gamepad.type === 'xbox')
+                {
+                    this.blackBoard.labelsGamepadXbox.visible = true
+                    this.blackBoard.labelsGamepadPlaystation.visible = false
+                }
+                else
+                {
+                    this.blackBoard.labelsGamepadXbox.visible = false
+                    this.blackBoard.labelsGamepadPlaystation.visible = true
+                }
                 this.blackBoard.labelsMouseKeyboard.visible = false
-                this.blackBoard.parent.add(this.blackBoard.mesh)
+
+                this.blackBoard.parent.add(this.blackBoard.group)
             }
             else if(this.game.inputs.mode === Inputs.MODE_MOUSEKEYBOARD)
             {
-                this.blackBoard.labelsGamepad.visible = false
+                this.blackBoard.labelsGamepadXbox.visible = false
+                this.blackBoard.labelsGamepadPlaystation.visible = false
                 this.blackBoard.labelsMouseKeyboard.visible = true
-                this.blackBoard.parent.add(this.blackBoard.mesh)
+                this.blackBoard.parent.add(this.blackBoard.group)
             }
             else if(this.game.inputs.mode === Inputs.MODE_TOUCH)
             {
-                this.blackBoard.parent.remove(this.blackBoard.mesh)
+                this.blackBoard.parent.remove(this.blackBoard.group)
+            }
+        })
+
+        this.game.inputs.gamepad.events.on('typeChange', () =>
+        {
+            if(this.game.inputs.mode === Inputs.MODE_GAMEPAD)
+            {
+                if(this.game.inputs.gamepad.type === 'xbox')
+                {
+                    this.blackBoard.labelsGamepadXbox.visible = true
+                    this.blackBoard.labelsGamepadPlaystation.visible = false
+                }
+                else
+                {
+                    this.blackBoard.labelsGamepadXbox.visible = false
+                    this.blackBoard.labelsGamepadPlaystation.visible = true
+                }
             }
         })
     }
