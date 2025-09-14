@@ -87,7 +87,7 @@ export class TerrainData
 
         const worldPositionToUvNode = Fn(([position]) =>
         {
-            return position.div(this.subdivision).add(0.5).toVar()
+            return position.div(this.subdivision).add(0.5)
         })
 
         this.terrainDataNode = Fn(([position]) =>

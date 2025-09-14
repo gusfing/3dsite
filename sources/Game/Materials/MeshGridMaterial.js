@@ -1,11 +1,11 @@
 import { Color, NodeMaterial } from 'three/webgpu'
-import { clamp, smoothstep, If, color, Fn, uniform, vec3, vec4, positionWorld, normalWorld, mix, vec2, uv } from 'three/tsl'
+import { clamp, smoothstep, If, color, Fn, uniform, vec3, vec4, positionWorld, normalWorld, mix, vec2, uv, step } from 'three/tsl'
 
 const toMask = Fn(([ normal ]) =>
 {
-    const vecX = vec3(1, 0, 0).toVar()
-    const vecY = vec3(0, 1, 0).toVar()
-    const vecZ = vec3(0, 0, 1).toVar()
+    const vecX = vec3(1, 0, 0)
+    const vecY = vec3(0, 1, 0)
+    const vecZ = vec3(0, 0, 1)
 
     const dotX = normal.dot(vecX).abs()
     const dotY = normal.dot(vecY).abs()
@@ -27,9 +27,9 @@ const toMask = Fn(([ normal ]) =>
 
 const toTriplanarUv = Fn(([ position, mask ]) =>
 {
-    const uvX = position.yz.toVar()
-    const uvY = position.xz.toVar()
-    const uvZ = position.xy.toVar()
+    const uvX = position.yz
+    const uvY = position.xz
+    const uvZ = position.xy
 
     let uv = uvX
 
@@ -42,9 +42,9 @@ const toTriplanarUv = Fn(([ position, mask ]) =>
 const toGrid = Fn(([uv, scale, thickness, offset, cross]) =>
 {
     const referenceUv = uv.div(scale).add(offset)
-    const crossGrid = referenceUv.fract().sub(0.5).abs().step(cross.oneMinus().mul(0.5))
+    const crossGrid = step(referenceUv.fract().sub(0.5).abs(), cross.oneMinus().mul(0.5))
     const crossMask = mix(crossGrid.x, 1, crossGrid.y).oneMinus()
-    const grid = referenceUv.sub(0.5).fract().sub(0.5).abs().mul(2).step(thickness).mul(crossMask)
+    const grid = step(referenceUv.sub(0.5).fract().sub(0.5).abs().mul(2), thickness).mul(crossMask)
     return mix(grid.x, 1, grid.y)
 })
 
@@ -57,7 +57,7 @@ const toAntialiasedGrid = Fn(([uv, scale, thickness, offset, cross, derivateMask
     const drawWidth = clamp(lineWidth, uvDeriv, 1);
     const lineAA = uvDeriv.mul(1.5);
 
-    const crossGrid = referenceUv.fract().sub(0.5).abs().step(cross.oneMinus().mul(0.5))
+    const crossGrid = step(referenceUv.fract().sub(0.5).abs(), cross.oneMinus().mul(0.5))
     const crossMask = mix(crossGrid.x, 1, crossGrid.y).oneMinus()
 
     const gridUV = referenceUv.fract().mul(2).sub(1).abs().oneMinus()

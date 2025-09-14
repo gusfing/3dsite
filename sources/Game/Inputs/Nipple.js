@@ -1,4 +1,4 @@
-import { abs, atan, float, Fn, If, max, min, PI, positionGeometry, positionWorld, uniform, vec2, vec3, vec4 } from 'three/tsl'
+import { abs, atan, float, Fn, If, max, min, PI, positionGeometry, positionWorld, step, uniform, vec2, vec3, vec4 } from 'three/tsl'
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import { clamp } from 'three/src/math/MathUtils.js'
@@ -66,17 +66,17 @@ export class Nipple
             {
                 directionAngleSDF.assign(directionAngleSDF.negate())
             })
-            const directionAngle = directionAngleSDF.step(0)
+            const directionAngle = step(directionAngleSDF, 0)
 
             // Edges
             const innerEdgeSDF = abs(radialCoord.length().sub(this.progressRadiusLow)).toVar()
             const outerEdgeSDF = abs(radialCoord.length().sub(this.progressRadiusHigh)).toVar()
 
-            const innerEdgeFill = innerEdgeSDF.step(this.edgesThickness / 2).toVar()
-            const innerEdgeOutline = innerEdgeSDF.step(this.outlineThickness / 2).toVar()
+            const innerEdgeFill = step(innerEdgeSDF, this.edgesThickness / 2).toVar()
+            const innerEdgeOutline = step(innerEdgeSDF, this.outlineThickness / 2).toVar()
 
-            const outerEdgeFill = outerEdgeSDF.step(this.edgesThickness / 2).mul(directionAngle).toVar()
-            const outerEdgeOutline = outerEdgeSDF.step(this.outlineThickness / 2).toVar()
+            const outerEdgeFill = step(outerEdgeSDF, this.edgesThickness / 2).mul(directionAngle).toVar()
+            const outerEdgeOutline = step(outerEdgeSDF, this.outlineThickness / 2).toVar()
 
             const edgesFill = max(innerEdgeFill, outerEdgeFill)
             const edgesOutline = max(innerEdgeOutline, outerEdgeOutline)
@@ -87,7 +87,7 @@ export class Nipple
             const progressLowSDF = radialCoord.length().sub(this.progressRadiusLow + this.outlineThickness / 2).negate()
             progressSDF.assign(max(progressSDF, progressLowSDF))
 
-            const progressFill = progressSDF.step(0).toVar()
+            const progressFill = step(progressSDF, 0).toVar()
 
             const inAngle = float(0).toVar()
             If(radialAngle.greaterThan(this.uniforms.progressStartAngle).and(radialAngle.lessThan(this.uniforms.progressEndAngle)), () =>
@@ -96,7 +96,7 @@ export class Nipple
             })
             progressFill.assign(progressFill.mul(inAngle))
 
-            const progressOutline = progressSDF.step(this.outlineThickness / 4).mul(directionAngle)
+            const progressOutline = step(progressSDF, this.outlineThickness / 4).mul(directionAngle)
 
             // Final fill and outline
             const outline = max(edgesOutline, progressOutline)

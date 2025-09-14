@@ -355,7 +355,7 @@ export class Lab
 
             // Textures
             const textureOldColor = texture(this.images.textureOld, uvOld).rgb
-            const textureNewColor = texture(this.images.textureNew, uvNew).rgb.toVar()
+            const textureNewColor = texture(this.images.textureNew, uvNew).rgb
 
             // Load mix
             textureNewColor.assign(mix(color('#333333'), textureNewColor, this.images.loadProgress))
@@ -1146,11 +1146,11 @@ export class Lab
 
             material.outputNode = Fn(() =>
             {
-                const noiseUv = uv().mul(vec2(2, 0.2)).toVar()
+                const noiseUv = uv().mul(vec2(2, 0.2))
                 noiseUv.y.addAssign(this.game.ticker.elapsedScaledUniform.mul(0.05))
                 const noise = texture(this.game.noises.others, noiseUv).r
 
-                const strength = noise.mul(uv().y.pow(2)).toVar()
+                const strength = noise.mul(uv().y.pow(2))
 
                 const emissiveMix = strength.smoothstep(0, 1)
                 const emissiveColor = mix(color('#ff3e00'), color('#ff8641'), emissiveMix).mul(strength.add(1).mul(2))
@@ -1174,12 +1174,12 @@ export class Lab
 
             material.outputNode = Fn(() =>
             {
-                const baseUv = uv().toVar()
+                const baseUv = uv()
 
                 const baseColor = color('#f29246')
                 const lightOutput = this.game.lighting.lightOutputNodeBuilder(baseColor, float(1), vec3(0, 1, 0), totalShadows, true, false)
 
-                const emissiveColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2)).toVar()
+                const emissiveColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2))
                 const emissiveOutput = emissiveColor.div(luminance(emissiveColor)).mul(intensity)
 
                 const mixStrength = baseUv.y.smoothstep(0, 1)
@@ -1201,7 +1201,7 @@ export class Lab
             const intensity = uniform(1.7)
     
             const material = new THREE.MeshBasicNodeMaterial({ transparent: true })
-            const mixedColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2)).toVar()
+            const mixedColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2))
             material.colorNode = mixedColor.div(luminance(mixedColor)).mul(intensity)
             material.fog = false
 

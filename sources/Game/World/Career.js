@@ -83,7 +83,7 @@ export class Career
                 {
                     const baseUv = uv().toVar()
 
-                    baseUv.x.step(item.labelReveal).lessThan(0.5).discard()
+                    step(baseUv.x, item.labelReveal).lessThan(0.5).discard()
 
                     const textureColor = texture(baseTexture, baseUv)
 

@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from './Game.js'
-import { bool, color, float, Fn, If, mix, positionGeometry, texture, uniform, vec2, vec3, vec4, viewportBottomLeft, viewportCoordinate, viewportSize, screenUV, min, max, mul } from 'three/tsl'
+import { bool, color, float, Fn, If, mix, positionGeometry, texture, uniform, vec2, vec3, vec4, viewportCoordinate, viewportSize, screenUV, min, max, mul } from 'three/tsl'
 import gsap from 'gsap'
 
 export class Overlay

@@ -168,7 +168,7 @@ export class Lightnings
         this.arc.vertexNode = Fn(([_startTime]) =>
         {
             const ratio = attribute('ratio')
-            const tipness = ratio.step(0.01)
+            const tipness = step(ratio, 0.01)
             const localTime = this.game.ticker.elapsedScaledUniform.sub(_startTime)
             const timeProgress = min(localTime.div(this.arc.duration), 1)
             
@@ -290,7 +290,7 @@ export class Lightnings
             const startTime = uniform(this.game.ticker.elapsedScaled)
         
             const material = new THREE.SpriteNodeMaterial()
-            material.color = this.materialReference.color
+            material.colorNode = this.materialReference.colorNode
             material.positionNode = this.explosionParticles.positionNode(startTime)
             material.scaleNode = this.explosionParticles.scaleNode(startTime)
             

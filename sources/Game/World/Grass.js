@@ -95,7 +95,7 @@ export class Grass
         // this.groundDataDelta = uniform(new THREE.Vector2())
 
         const vertexLoopIndex = varying(vertexIndex.toFloat().mod(3))
-        const tipness = varying(vertexLoopIndex.step(0.5))
+        const tipness = varying(step(vertexLoopIndex, 0.5))
         const wind = varying(vec2())
         const bladePosition = varying(vec2())
 
@@ -131,12 +131,12 @@ export class Grass
             const position = attribute('position')
 
             const loopPosition = position.sub(this.center)
-            const halfSize = this.sizeUniform.mul(0.5).toVar()
+            const halfSize = this.sizeUniform.mul(0.5)
             loopPosition.x.assign(mod(loopPosition.x.add(halfSize), this.sizeUniform).sub(halfSize))
             loopPosition.y.assign(mod(loopPosition.y.add(halfSize), this.sizeUniform).sub(halfSize))
 
             const position3 = vec3(loopPosition.x, 0, loopPosition.y).add(vec3(this.center.x, 0, this.center.y))
-            const worldPosition = modelWorldMatrix.mul(position3).toVar()
+            const worldPosition = modelWorldMatrix.mul(position3)
             bladePosition.assign(worldPosition.xz)
 
             // Height
@@ -145,7 +145,7 @@ export class Grass
                 .mul(this.bladeHeightRandomness.mul(attribute('heightRandomness')).add(this.bladeHeightRandomness.oneMinus()))
                 .mul(heightVariation)
                 .mul(terrainDataGrass)
-                .toVar()
+                
 
             // Shape
             const shape = vec3(
@@ -162,7 +162,7 @@ export class Grass
             vertexPosition.xz.assign(rotateUV(vertexPosition.xz, angleToCamera, worldPosition.xz))
 
             // Wind
-            wind.assign(this.game.wind.offsetNode([worldPosition.xz]).mul(tipness).mul(height).mul(2))
+            wind.assign(this.game.wind.offsetNode(worldPosition.xz).mul(tipness).mul(height).mul(2))
             vertexPosition.addAssign(vec3(wind.x, 0, wind.y))
 
             // Hide (far above)

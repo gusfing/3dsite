@@ -66,7 +66,7 @@ export class Bubble
         material.outputNode = Fn(() =>
         {
             // UV
-            // const newUV = uv().sub(0.5).mul(1.2).add(0.5).toVar()
+            // const newUV = uv().sub(0.5).mul(1.2).add(0.5)
             const newUV = uv().mul(vec2(this.textRatio, 1))
 
             // Text

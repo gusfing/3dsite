@@ -62,7 +62,7 @@ export class Altar
 
         cylinderMaterial.outputNode = Fn(() =>
         {
-            const baseUv = uv().toVar()
+            const baseUv = uv()
 
             // Noise
             const noiseUv = vec2(baseUv.x.mul(6).add(baseUv.y.mul(-2)), baseUv.y.mul(1).sub(this.game.ticker.elapsedScaledUniform.mul(0.2)))

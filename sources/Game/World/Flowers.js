@@ -172,17 +172,17 @@ export class Flowers
     
         // Received shadow position
         const shadowOffset = uniform(0.25)
-        this.material.shadowPositionNode = positionLocal.add(this.game.lighting.directionUniform.mul(shadowOffset))
+        this.material.receivedShadowPositionNode = positionLocal.add(this.game.lighting.directionUniform.mul(shadowOffset))
 
         // Position
-        const wind = this.game.wind.offsetNode([positionLocal.xz])
+        const wind = this.game.wind.offsetNode(positionLocal.xz)
         const multiplier = positionLocal.y.clamp(0, 1).mul(1)
 
         this.material.positionNode = Fn( ( { object } ) =>
         {
             // Sending "instanceMatrix" twice because mandatory 3 parameters
             // TODO: Update after Three.js fix
-            instance(object.count, this.instanceMatrix, this.instanceMatrix).append()
+            instance(object.count, this.instanceMatrix, this.instanceMatrix).toStack()
 
             return positionLocal.add(vec3(wind.x, 0, wind.y).mul(multiplier))
         })()

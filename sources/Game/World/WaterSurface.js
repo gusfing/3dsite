@@ -88,7 +88,7 @@ export class WaterSurface
 
         const ripplesNode = Fn(([terrainData]) =>
         {           
-            const baseRipple = terrainData.b.add(this.game.wind.localTime.mul(0.5)).mul(ripplesSlopeFrequency).toVar()
+            const baseRipple = terrainData.b.add(this.game.wind.localTime.mul(0.5)).mul(ripplesSlopeFrequency)
             const rippleIndex = baseRipple.floor()
 
             const ripplesNoise = texture(
@@ -102,7 +102,8 @@ export class WaterSurface
                 .mod(1)
                 .sub(terrainData.b.remap(0, 1, -0.3, 1).oneMinus())
                 .add(ripplesNoise)
-                .step(this.ripplesRatio.remap(0, 1, -1, -0.4))
+
+            ripples.assign(this.ripplesRatio.remap(0, 1, -1, -0.4).step(ripples))
 
             return ripples
         })
@@ -139,7 +140,8 @@ export class WaterSurface
                 positionWorld.xz.mul(iceNoiseFrequency)
             ).g
 
-            const ice = terrainData.b.remapClamp(0, this.iceRatio, 0, 1).step(iceVoronoi)
+            const ice = terrainData.b.remapClamp(0, this.iceRatio, 0, 1).toVar()
+            ice.assign(iceVoronoi.step(ice))
 
             return ice
         })
@@ -194,11 +196,12 @@ export class WaterSurface
             // Thickness
             const edgeMutliplier = splashesVoronoi.g.remapClamp(splashesEdgeAttenuationLow, splashesEdgeAttenuationHigh, 0, 1)
             const thickness = splashesThickness.mul(edgeMutliplier)
-            splash.assign(thickness.step(splash).oneMinus())
+            splash.assign(splash.step(thickness).oneMinus())
             
             // Visibility
             const splashVisibilityRandom = hash(splashesVoronoi.b.mul(654321))
-            const visible = splashVisibilityRandom.add(splashPerlin).mod(1).step(this.splashesRatio)
+            const visible = splashVisibilityRandom.add(splashPerlin).mod(1)
+            visible.assign(this.splashesRatio.step(visible))
             splash.assign(splash.mul(visible))
             
             return splash
@@ -221,7 +224,7 @@ export class WaterSurface
         
         const shoreNode = Fn(([terrainData]) =>
         {
-            return terrainData.b.step(shoreEdge)
+            return shoreEdge.step(terrainData.b)
         })
 
         // Debug
@@ -240,7 +243,7 @@ export class WaterSurface
                 // Terrain data
                 // const terrainUv = this.game.terrainData.worldPositionToUvNode(positionWorld.xz)
                 const terrainData = this.game.terrainData.terrainDataNode(positionWorld.xz)
-                const value = float(0).toVar()
+                const value = float(0)
 
                 // Ripples
                 if(this.hasRipples)
@@ -286,14 +289,13 @@ export class WaterSurface
 
     setMaterial()
     {
-        const material = new THREE.MeshLambertNodeMaterial({ color: '#ffffff', wireframe: false, depthWrite: false })
+        const material = new THREE.MeshLambertNodeMaterial({ color: '#ffffff', wireframe: false, depthWrite: false, transparent: true })
 
         const totalShadow = this.game.lighting.addTotalShadowToMaterial(material)
 
-        material.normalNode = vec3(0, 1, 0)
         material.outputNode = Fn(() =>
         {
-            const lightOutput = this.game.lighting.lightOutputNodeBuilder(vec3(1), float(1), material.normalNode, totalShadow, false, false).rgb
+            const lightOutput = this.game.lighting.lightOutputNodeBuilder(vec3(1), float(1), vec3(0, 1, 0), totalShadow, false, false).rgb
 
             const blurOutput = this.blurOutputNode()
 
@@ -333,7 +335,7 @@ export class WaterSurface
 
         this.mesh.position.y = - 0.3
         this.mesh.castShadow = true
-        this.mesh.receiveShadow = true
+        // this.mesh.receiveShadow = true
         this.game.scene.add(this.mesh)
 
         this.game.viewport.events.on('throttleChange', () =>

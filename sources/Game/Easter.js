@@ -38,7 +38,7 @@ export class Easter
         {
             const viewDirection = positionWorld.sub(cameraPosition).normalize()
                 
-            const fresnel = viewDirection.dot(normalWorld).abs().oneMinus().toVar()
+            const fresnel = viewDirection.dot(normalWorld).abs().oneMinus()
 
             const mixedColor = mix(colorB, colorA, fresnel)
 
@@ -63,7 +63,7 @@ export class Easter
 
             strength.greaterThan(0.2).discard()
 
-            const mixStrength = strength.mul(5).toVar()
+            const mixStrength = strength.mul(5)
             const mixedColor = mix(colorA, colorB, mixStrength)
 
             return vec4(vec3(mixedColor.mul(intensity)), 1)

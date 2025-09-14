@@ -70,7 +70,7 @@ export class Rain
         {
             // Position
             const dropPosition = this.positionBuffer.toAttribute().toVar()
-            dropPosition.y.addAssign(this.visibleRatio.step(float(instanceIndex).div(this.count)).mul(this.elevation).mul(2))
+            dropPosition.y.addAssign(step(this.visibleRatio, float(instanceIndex).div(this.count)).mul(this.elevation).mul(2))
             return dropPosition
         })()
 
@@ -103,7 +103,7 @@ export class Rain
             const noiseUv = position.xz.mul(this.windFrequency).add(this.game.wind.direction.mul(this.game.wind.localTime)).xy
             const noise = smoothstep(0.4, 1, texture(this.game.noises.others, noiseUv).r)
 
-            const windStrength = this.game.wind.strength.mul(noise).mul(this.windMultiplier).toVar()
+            const windStrength = this.game.wind.strength.mul(noise).mul(this.windMultiplier)
             velocity.x.addAssign(this.game.wind.direction.x.mul(windStrength))
             velocity.z.addAssign(this.game.wind.direction.y.mul(windStrength))
 
@@ -117,7 +117,7 @@ export class Rain
             position.addAssign(velocity)
 
             // Horizontal loop
-            const halfSize = this.size.mul(0.5).toVar()
+            const halfSize = this.size.mul(0.5)
             position.x.assign(mod(position.x.add(halfSize).sub(this.focusPoint.x), this.size).sub(halfSize).add(this.focusPoint.x))
             position.z.assign(mod(position.z.add(halfSize).sub(this.focusPoint.y), this.size).sub(halfSize).add(this.focusPoint.y))
             

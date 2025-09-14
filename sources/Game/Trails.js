@@ -4,21 +4,21 @@ import { attribute, cross, dot, float, Fn, mat3, modelViewMatrix, positionGeomet
 
 const getRotationMatrix = Fn(([u, v]) =>
 {
-    const cosTheta = dot(u, v).toVar()
-    const axis = cross(u, v).toVar()
-    const sinTheta = axis.length().toVar()
+    const cosTheta = dot(u, v)
+    const axis = cross(u, v)
+    const sinTheta = axis.length()
 
     axis.assign(axis.normalize())
 
-    const c = cosTheta.toVar()
-    const s = sinTheta.toVar()
-    const t = c.oneMinus().toVar()
+    const c = cosTheta
+    const s = sinTheta
+    const t = c.oneMinus()
 
     return mat3(
         t.mul(axis.x).mul(axis.x).add(c), t.mul(axis.x).mul(axis.y).sub(s.mul(axis.z)), t.mul(axis.x).mul(axis.z).add(s.mul(axis.y)),
         t.mul(axis.x).mul(axis.y).add(s.mul(axis.z)), t.mul(axis.y).mul(axis.y).add(c), t.mul(axis.y).mul(axis.z).sub(s.mul(axis.x)),
         t.mul(axis.x).mul(axis.z).sub(s.mul(axis.y)), t.mul(axis.y).mul(axis.z).add(s.mul(axis.x)), t.mul(axis.z).mul(axis.z).add(c)
-    ).toVar();
+    );
 })
 
 export class Trails
@@ -94,12 +94,12 @@ export class Trails
             ratio.assign(positionGeometry.z.oneMinus())
 
             // Trail data
-            const trailData = texture(item.dataTexture, vec2(ratio, 0.5)).toVar()
+            const trailData = texture(item.dataTexture, vec2(ratio, 0.5))
             const trailPosition = trailData.xyz
 
             // Direction
             const nextPosition = texture(item.dataTexture, vec2(ratio.add(this.texel), 0.5)).xyz
-            const direction = nextPosition.sub(trailPosition).normalize().toVar()
+            const direction = nextPosition.sub(trailPosition).normalize()
 
             // Rotation matrix
             const rotationMatrix = getRotationMatrix(direction, vec3(0, 0, -1))

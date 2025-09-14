@@ -126,7 +126,7 @@ export class Bonfire
 
         material.outputNode = Fn(() =>
         {
-            const baseUv = uv().toVar()
+            const baseUv = uv()
 
             const baseColor = color('#6F6A87')
             const lightOutput = this.game.lighting.lightOutputNodeBuilder(baseColor, float(1), vec3(0, 1, 0), totalShadows, true, false)

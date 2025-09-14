@@ -126,9 +126,9 @@ export class Leaves
             materialNormal.assign(modelViewMatrix.mul(vec4(normalBuffer, 0)))
 
             // Position
-            const leavePosition = this.positionBuffer.toAttribute().toVar()
+            const leavePosition = this.positionBuffer.toAttribute()
 
-            const newPosition = positionGeometry.mul(scaleBuffer).mul(this.scale).toVar()
+            const newPosition = positionGeometry.mul(scaleBuffer).mul(this.scale)
 
             const rotationMultiplier = max(leavePosition.y.mul(this.rotationElevationMultiplier), 0)
             
@@ -171,14 +171,14 @@ export class Leaves
             const position = this.positionBuffer.element(instanceIndex)
             const velocity = this.velocityBuffer.element(instanceIndex)
             const weight = weightBuffer.element(instanceIndex)
-            const inverseWeight = weight.oneMinus().toVar()
+            const inverseWeight = weight.oneMinus()
 
             // Terrain
             // const terrainUv = this.game.terrainData.worldPositionToUvNode(position.xz)
             const terrainData = this.game.terrainData.terrainDataNode(position.xz)
             
             // Push from vehicle
-            const vehicleDelta = position.sub(this.vehiclePosition).toVar()
+            const vehicleDelta = position.sub(this.vehiclePosition)
 
             const pushOut = vec3(vehicleDelta.x, 0, vehicleDelta.z).normalize().mul(this.pushOutMultiplier)
 
@@ -195,7 +195,7 @@ export class Leaves
             const noiseUv = position.xz.mul(this.windFrequency).add(this.game.wind.direction.mul(this.game.wind.localTime)).xy
             const noise = smoothstep(0.4, 1, texture(this.game.noises.others, noiseUv).r)
 
-            const windStrength = this.game.wind.strength.sub(weight).max(0).mul(noise).mul(this.windMultiplier).toVar()
+            const windStrength = this.game.wind.strength.sub(weight).max(0).mul(noise).mul(this.windMultiplier)
             velocity.x.addAssign(this.game.wind.direction.x.mul(windStrength))
             velocity.z.addAssign(this.game.wind.direction.y.mul(windStrength))
 
@@ -209,7 +209,7 @@ export class Leaves
             velocity.addAssign(vec3(explosionPush.x, 0, explosionPush.y))
 
             // //Tornado
-            // const toTornado = this.tornado.sub(position).toVar()
+            // const toTornado = this.tornado.sub(position)
             // const tornadoDistance = toTornado.length()
             // const strength = remapClamp(tornadoDistance, 20, 2, 0, 1)
             // const sideAngleStrength = remapClamp(tornadoDistance, 8, 2, 0, Math.PI * 0.25)
@@ -245,7 +245,7 @@ export class Leaves
             position.y.assign(max(position.y, floorY))
 
             // Loop
-            const halfSize = this.size.mul(0.5).toVar()
+            const halfSize = this.size.mul(0.5)
             position.x.assign(mod(position.x.add(halfSize).sub(this.focusPoint.x), this.size).sub(halfSize).add(this.focusPoint.x))
             position.z.assign(mod(position.z.add(halfSize).sub(this.focusPoint.y), this.size).sub(halfSize).add(this.focusPoint.y))
         })()

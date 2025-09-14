@@ -127,7 +127,7 @@ export class Materials
         const intensity = uniform(_intensity)
 
         const material = new THREE.MeshBasicNodeMaterial({ transparent: true })
-        let mixedColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2)).toVar()
+        let mixedColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2))
 
         if(normalize)
             mixedColor = mixedColor.div(luminance(mixedColor))

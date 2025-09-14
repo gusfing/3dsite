@@ -360,7 +360,7 @@ export class Projects
 
             // Textures
             const textureOldColor = texture(this.images.textureOld, uvOld).rgb
-            const textureNewColor = texture(this.images.textureNew, uvNew).rgb.toVar()
+            const textureNewColor = texture(this.images.textureNew, uvNew).rgb
 
             // Load mix
             textureNewColor.assign(mix(color('#333333'), textureNewColor, this.images.loadProgress))
@@ -1285,7 +1285,7 @@ export class Projects
             const baseColor = color('#a88c7f')
             const lightOutput = this.game.lighting.lightOutputNodeBuilder(baseColor, float(1), vec3(0, 1, 0), totalShadows, true, false)
 
-            const emissiveColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2)).toVar()
+            const emissiveColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2))
             const emissiveOutput = emissiveColor.div(luminance(emissiveColor)).mul(intensity)
 
             const mixStrength = baseUv.y.smoothstep(0.4, 0.9)

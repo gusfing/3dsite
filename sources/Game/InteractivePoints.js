@@ -116,8 +116,8 @@ export class InteractivePoints
 
         diamondMaterial.outputNode = Fn(() =>
         {
-            const _uv = uv().toVar()
-            const distance = max(_uv.x.sub(0.5).abs(), _uv.y.sub(0.5).abs()).mul(2).toVar()
+            const _uv = uv()
+            const distance = max(_uv.x.sub(0.5).abs(), _uv.y.sub(0.5).abs()).mul(2)
 
             // Line
             const lineDistance = threshold.sub(distance).sub(lineOffset).abs()
@@ -260,11 +260,11 @@ export class InteractivePoints
         const labelOffset = uniform(align === InteractivePoints.ALIGN_LEFT ? - 1 : 1)
         labelMaterial.outputNode = Fn(() =>
         {
-            // const _uv = uv().add(vec2(labelOffset, 0)).toVar()
+            // const _uv = uv().add(vec2(labelOffset, 0))
             const _uv = vec2(
                 uv().x.sub(labelOffset),
                 uv().y
-            ).toVar()
+            )
 
             const text = texture(labelTexture, _uv).r
             

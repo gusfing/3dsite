@@ -3,7 +3,7 @@ import { Game } from '../Game.js'
 import { Field } from './Field.js'
 import { Grid } from './Grid.js'
 import { Grass } from './Grass.js'
-import { Fn, instance, positionLocal } from 'three/tsl'
+import { float, Fn, instance, normalWorld, positionLocal, vec3 } from 'three/tsl'
 import { WaterSurface } from './WaterSurface.js'
 import { Scenery } from './Scenery.js'
 import { WindLines } from './WindLines.js'
@@ -41,6 +41,7 @@ export class World
         // this.setAxesHelper()
         // this.setCollisionGroupsTest()
         // this.setNormalTest()
+        // this.setTestCube()
     }
 
     setTestShadow()
@@ -60,7 +61,7 @@ export class World
         })
         material.positionNode = Fn( ( { object } ) =>
         {
-            instance(object.count, instanceMatrix).append()
+            instance(object.count, instanceMatrix).toStack()
             return positionLocal
         })()
 
@@ -93,10 +94,27 @@ export class World
 
     setTestCube()
     {
+        const caster = new THREE.Mesh(
+            new THREE.BoxGeometry(1, 1, 1),
+            new THREE.MeshBasicNodeMaterial()
+        )
+        caster.position.y = 1.5
+        caster.position.x = 1
+        caster.castShadow = true
+        this.game.scene.add(caster)
+
         const visualCube = new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 1),
-            new THREE.MeshNormalNodeMaterial()
+            new THREE.MeshLambertNodeMaterial()
         )
+        visualCube.receiveShadow = true
+        this.game.scene.add(visualCube)
+
+        // uvGridMaterial.outputNode = this.game.lighting.lightOutputNodeBuilder(vec3(1), float(1), normalWorld, this.game.lighting.addTotalShadowToMaterial(uvGridMaterial))
+        
+        const totalShadow = this.game.lighting.addTotalShadowToMaterial(visualCube.material)
+
+        visualCube.material.outputNode = this.game.lighting.lightOutputNodeBuilder(vec3(1), float(1), normalWorld, totalShadow)
 
         this.game.entities.add(
             visualCube,

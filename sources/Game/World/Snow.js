@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { attribute, cameraNormalMatrix, color, cross, dot, float, Fn, hash, If, materialNormal, min, mix, modelNormalMatrix, modelViewMatrix, normalWorld, PI, positionGeometry, positionLocal, positionWorld, rotateUV, texture, time, uniform, uv, uvec4, varying, vec2, vec3, vec4, viewportSize } from 'three/tsl'
+import { attribute, cameraNormalMatrix, color, cross, dot, float, Fn, hash, If, materialNormal, min, mix, modelNormalMatrix, modelViewMatrix, normalWorld, PI, positionGeometry, positionLocal, positionWorld, rotateUV, step, texture, time, uniform, uv, uvec4, varying, vec2, vec3, vec4, viewportSize } from 'three/tsl'
 import { clamp, remapClamp } from '../utilities/maths.js'
 
 export class Snow
@@ -79,8 +79,8 @@ export class Snow
                 position.xy.sub(- this.game.groundData.halfSize).sub(this.roundedPosition).add(this.groundDataDelta).div(this.game.groundData.size)
             )
 
-            const wheelsTracksHeight = groundDataColor.r.oneMinus().toVar()
-            const chassisTracksHeight = groundDataColor.g.oneMinus().toVar().remapClamp(0.5, 1, 0.25, 1)
+            const wheelsTracksHeight = groundDataColor.r.oneMinus()
+            const chassisTracksHeight = groundDataColor.g.oneMinus().remapClamp(0.5, 1, 0.25, 1)
             const tracksHeight = min(wheelsTracksHeight, chassisTracksHeight)
             elevation.mulAssign(tracksHeight)
 
@@ -287,14 +287,14 @@ export class Snow
             newPosition.z.addAssign(this.roundedPosition.y)
 
             // Rotate quad
-            const pivotCenter = vec3(pivot.x, 0, pivot.y).toVar()
+            const pivotCenter = vec3(pivot.x, 0, pivot.y)
             pivotCenter.x.addAssign(this.roundedPosition.x)
             pivotCenter.z.addAssign(this.roundedPosition.y)
 
-            const cornerA = pivotCenter.add(vec3(- this.subdivisionSize, 0, - this.subdivisionSize)).toVar()
-            const cornerB = pivotCenter.add(vec3(  this.subdivisionSize, 0, - this.subdivisionSize)).toVar()
-            const cornerC = pivotCenter.add(vec3(  this.subdivisionSize, 0,   this.subdivisionSize)).toVar()
-            const cornerD = pivotCenter.add(vec3(- this.subdivisionSize, 0,   this.subdivisionSize)).toVar()
+            const cornerA = pivotCenter.add(vec3(- this.subdivisionSize, 0, - this.subdivisionSize))
+            const cornerB = pivotCenter.add(vec3(  this.subdivisionSize, 0, - this.subdivisionSize))
+            const cornerC = pivotCenter.add(vec3(  this.subdivisionSize, 0,   this.subdivisionSize))
+            const cornerD = pivotCenter.add(vec3(- this.subdivisionSize, 0,   this.subdivisionSize))
 
             pivotCenter.y.assign(elevationFromTexture(pivotCenter.xz))
             cornerA.y.assign(elevationFromTexture(cornerA.xz).sub(pivotCenter.y))
@@ -305,7 +305,7 @@ export class Snow
             const acDelta = cornerA.y.sub(cornerC.y).abs()
             const bdDelta = cornerB.y.sub(cornerD.y).abs()
 
-            const rotation = float(0).toVar()
+            const rotation = float(0)
             If(acDelta.lessThan(bdDelta), () =>
             {
                 // debugColor.assign(color('cyan'))
@@ -315,9 +315,9 @@ export class Snow
             newPosition.xz.assign(rotateUV(newPosition.xz, rotation, pivotCenter.xz))
 
             // Position / Normal
-            const positionA = newPosition.toVar()
-            const positionB = positionA.toVar().add(vec3(this.normalNeighbourShift, 0, 0))
-            const positionC = positionA.toVar().add(vec3(0, 0, this.normalNeighbourShift.negate()))
+            const positionA = newPosition
+            const positionB = positionA.add(vec3(this.normalNeighbourShift, 0, 0))
+            const positionC = positionA.add(vec3(0, 0, this.normalNeighbourShift.negate()))
 
             positionA.y.assign(elevationFromTexture(positionA.xz))
             positionB.y.assign(elevationFromTexture(positionB.xz))
@@ -350,6 +350,7 @@ export class Snow
         this.material.outputNode = Fn(() =>
         {
             const lightOutput = this.game.lighting.lightOutputNodeBuilder(this.color, float(1), computeNormal, totalShadow, false, false).rgb
+            
             const alpha = deltaY.smoothstep(this.fadeEdgeLow, this.fadeEdgeHigh)
 
             // Twinkle
@@ -362,8 +363,10 @@ export class Snow
             const glittersRandom2 = texture(this.game.noises.others, noiseUv.add(0.5).mul(noiseSubdivisions).floor().div(noiseSubdivisions)).g
             const glittersProgress = this.glittersProgress.mul(this.glittersVariationFrequency)
             const glittersStrength = glittersProgress.sub(glittersRandom1).fract().sub(0.5).abs().remapClamp(0, this.glittersScarcity, 1, 0).toVar()
+            
 
-            const glittersShape = glittersUvLoop.sub(0.5).length().step(glittersRandom2.mul(0.5))
+            const glittersShape = glittersUvLoop.sub(0.5).length()
+            glittersShape.assign(step(glittersShape, glittersRandom2.mul(0.5)))
             glittersStrength.mulAssign(glittersShape.mul(this.glittersStrength))
 
             return vec4(lightOutput.add(glittersStrength), alpha)
@@ -372,7 +375,7 @@ export class Snow
         // this.material.outputNode = vec4(debugColor, 1)
 
         // this.shadowOffset = uniform(0.1)
-        // this.material.shadowPositionNode = positionLocal.add(this.game.lighting.directionUniform.mul(this.shadowOffset))
+        // this.material.receivedShadowPositionNode = positionLocal.add(this.game.lighting.directionUniform.mul(this.shadowOffset))
 
         // Debug
         if(this.game.debug.active)

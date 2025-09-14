@@ -86,21 +86,21 @@ export class Foliage
         this.material.instance = new THREE.MeshLambertNodeMaterial()
     
         // Position
-        const wind = this.game.wind.offsetNode([positionLocal.xz])
+        const wind = this.game.wind.offsetNode(positionLocal.xz)
         const multiplier = positionLocal.y.clamp(0, 1).mul(1)
 
         this.material.instance.positionNode = Fn( ( { object } ) =>
         {
             // Sending "instanceMatrix" twice because mandatory 3 parameters
             // TODO: Update after Three.js fix
-            instance(object.count, this.instanceMatrix, this.instanceMatrix).append()
+            instance(object.count, this.instanceMatrix, this.instanceMatrix).toStack()
 
             return positionLocal.add(vec3(wind.x, 0, wind.y).mul(multiplier))
         })()
 
         // Received shadow position
         this.material.shadowOffset = uniform(1)
-        this.material.instance.shadowPositionNode = positionLocal.add(this.game.lighting.directionUniform.mul(this.material.shadowOffset))
+        this.material.instance.receivedShadowPositionNode = positionLocal.add(this.game.lighting.directionUniform.mul(this.material.shadowOffset))
 
         // Shadow receive
         const totalShadows = this.game.lighting.addTotalShadowToMaterial(this.material.instance)
@@ -119,7 +119,7 @@ export class Foliage
             if(this.seeThrough)
             {
                 // Distance to vehicle fade
-                const toVehicle = screenUV.sub(this.material.seeThroughPosition).toVar()
+                const toVehicle = screenUV.sub(this.material.seeThroughPosition)
                 toVehicle.mulAssign(vec2(screenSize.x.div(screenSize.y), 1))
                 const distanceToVehicle = toVehicle.length()
                 const distanceFade = smoothstep(this.material.seeThroughEdgeMin, this.material.seeThroughEdgeMax, distanceToVehicle)

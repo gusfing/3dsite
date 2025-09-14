@@ -111,10 +111,11 @@ export class Lighting
         {
             return Fn(([inputColor, alpha, totalShadows]) =>
             {
-                const baseColor = inputColor.toVar()
+                const baseColor = vec3(inputColor.r, inputColor.g, inputColor.b)
+                // const baseColor = vec3(0)
                 // baseColor.assign(vec3(0.8))
 
-                const reorientedNormal = normal.toVar()
+                const reorientedNormal = normal
                 // If(frontFacing.not(), () =>
                 // {
                 //     reorientedNormal.mulAssign(-1)
@@ -148,6 +149,7 @@ export class Lighting
                 
                 // Cast shadow
                 const castShadowMix = totalShadows.oneMinus()
+                // const castShadowMix = float(0)
 
                 // Combined shadows
                 const combinedShadowMix = max(coreShadowMix, castShadowMix).clamp(0, 1)
@@ -163,7 +165,7 @@ export class Lighting
 
                 // Output
                 return vec4(foggedColor.rgb, alpha)
-            })([inputColor, alpha, totalShadows])
+            })(inputColor, alpha, totalShadows)
         }
 
         // Debug

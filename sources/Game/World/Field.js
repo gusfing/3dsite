@@ -47,7 +47,7 @@ export class Field
         {
             const uvDim = min(min(uv().x, uv().y).mul(20), 1)
 
-            const newPosition = positionLocal.toVar()
+            const newPosition = positionLocal
             newPosition.y.addAssign(terrainData.b.mul(-2).mul(uvDim))
 
 

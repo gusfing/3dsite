@@ -20,9 +20,10 @@ export class Player
         this.braking = 0
         this.suspensions = ['low', 'low', 'low', 'low']
 
-        const respawn = this.game.respawns.getByName('landing')
+        const respawn = this.game.respawns.getByName('projects')
 
         this.position = respawn.position.clone()
+        this.basePosition = this.position.clone()
         this.rotationY = 0
         
         this.setInputs()
