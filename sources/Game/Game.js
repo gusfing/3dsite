@@ -91,9 +91,9 @@ export class Game
                     [ 'tornadoPathModel',                      'tornado/tornadoPath.glb',                              'gltf'    ],
                     [ 'overlayPatternTexture',                 'overlay/overlayPattern.png',                           'texture', (resource) => { resource.wrapS = THREE.RepeatWrapping; resource.wrapT = THREE.RepeatWrapping } ],
                     [ 'cookieBannerTexture',                   'cookieStand/cookieBanner.png',                         'texture', (resource) => { resource.colorSpace = THREE.SRGBColorSpace; resource.flipY = false } ],
-                    [ 'interactivePointsKeyIconCircleTexture', 'interactivePoints/interactivePointsKeyIconCircle.png', 'texture', (resource) => { resource.flipY = true; resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false } ],
+                    [ 'interactivePointsKeyIconCrossTexture',  'interactivePoints/interactivePointsKeyIconCross.png', 'texture', (resource) => { resource.flipY = true; resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false } ],
                     [ 'interactivePointsKeyIconEnterTexture',  'interactivePoints/interactivePointsKeyIconEnter.png',  'texture', (resource) => { resource.flipY = true; resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false } ],
-                    [ 'interactivePointsKeyIconBTexture',      'interactivePoints/interactivePointsKeyIconB.png',      'texture', (resource) => { resource.flipY = true; resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false } ],
+                    [ 'interactivePointsKeyIconATexture',      'interactivePoints/interactivePointsKeyIconA.png',      'texture', (resource) => { resource.flipY = true; resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false } ],
                     [ 'respawnsModel',                         'respawns/respawns.glb',                                'gltf'    ],
 
                     // [ 'easterEggVisualModel',                 'easter/easterEggVisual.glb',                   'gltf'    ],

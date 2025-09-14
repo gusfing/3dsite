@@ -3,6 +3,7 @@ import { Game } from './Game.js'
 import { color, distance, float, Fn, max, min, mix, mul, normalWorld, positionWorld, step, texture, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
 import gsap from 'gsap'
 import { Inputs } from './Inputs/Inputs.js'
+import { Modals } from './Modals.js'
 
 export class InteractivePoints
 {
@@ -176,10 +177,10 @@ export class InteractivePoints
         {
             if(this.game.inputs.mode === Inputs.MODE_GAMEPAD)
             {
-                let keyIconTexture = this.game.resources.interactivePointsKeyIconCircleTexture
+                let keyIconTexture = this.game.resources.interactivePointsKeyIconCrossTexture
                 
                 if(this.game.inputs.gamepad.type === 'xbox')
-                     keyIconTexture = this.game.resources.interactivePointsKeyIconBTexture
+                     keyIconTexture = this.game.resources.interactivePointsKeyIconATexture
 
                 keyMaterial.outputNode = keyOutput(texture(keyIconTexture, uv()))
                 keyMaterial.needsUpdate = true
@@ -191,10 +192,10 @@ export class InteractivePoints
         {
             if(this.game.inputs.mode === Inputs.MODE_GAMEPAD)
             {
-                let keyIconTexture = this.game.resources.interactivePointsKeyIconCircleTexture
+                let keyIconTexture = this.game.resources.interactivePointsKeyIconCrossTexture
                 
                 if(this.game.inputs.gamepad.type === 'xbox')
-                     keyIconTexture = this.game.resources.interactivePointsKeyIconBTexture
+                     keyIconTexture = this.game.resources.interactivePointsKeyIconATexture
 
                 keyMaterial.outputNode = keyOutput(texture(keyIconTexture, uv()))
                 keyMaterial.needsUpdate = true

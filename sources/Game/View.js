@@ -404,12 +404,12 @@ export class View
                 this.cinematic.position.add(delta)
             }
 
-            gsap.to(this.cinematic, { progress: 1, duration: 2, ease: 'power2.inOut', overwrite: true })
+            gsap.to(this.cinematic, { progress: 1, duration: 1.5, ease: 'power2.inOut', overwrite: true })
         }
 
         this.cinematic.end = () =>
         {
-            gsap.to(this.cinematic, { progress: 0, duration: 1.5, ease: 'power2.inOut', overwrite: true })
+            gsap.to(this.cinematic, { progress: 0, duration: 1, ease: 'power2.inOut', overwrite: true })
         }
     }
 

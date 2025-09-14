@@ -60,7 +60,7 @@ export class Player
             { name: 'suspensionsFrontRight', categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad9' ] },
             { name: 'suspensionsBackRight',  categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad3' ] },
             { name: 'suspensionsBackLeft',   categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad1' ] },
-            { name: 'interact',              categories: [ 'playing', 'cinematic' ], keys: [ 'Keyboard.Enter', 'Gamepad.circle' ] },
+            { name: 'interact',              categories: [ 'playing'              ], keys: [ 'Keyboard.Enter', 'Gamepad.cross' ] },
         ])
 
         // Reset
