@@ -18,7 +18,7 @@ export class PhysicsVehicle
         this.brakeAmplitude = 35
         this.idleBrake = 0.06
         this.reverseBrake = 0.4
-        this.flipForce = 6
+        this.flipForce = 5
 
         this.sideward = new THREE.Vector3(0, 0, 1)
         this.upward = new THREE.Vector3(0, 1, 0)
@@ -236,7 +236,6 @@ export class PhysicsVehicle
             {
                 if(!this.upsideDown.active)
                 {
-                    console.log('upside down')
                     this.upsideDown.active = true
                     this.events.trigger('upsideDown')
                 }
