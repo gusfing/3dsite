@@ -22,6 +22,7 @@ import { Bushes } from './Bushes.js'
 import { MeshDefaultMaterial } from '../Materials/MeshDefaultMaterial.js'
 import { Fireballs } from './Fireballs.js'
 import { ExplosiveCrates } from './ExplosiveCrates.js'
+import { RainLines } from './RainLines.js'
 
 export class World
 {
@@ -36,7 +37,8 @@ export class World
         this.grass = new Grass()
         this.windLines = new WindLines()
         this.leaves = new Leaves()
-        this.rainSnow = new Rain()
+        // this.rainSnow = new Rain()
+        this.rainSnow = new RainLines()
         this.lightnings = new Lightnings()
         this.fireballs = new Fireballs()
         this.snow = new Snow()

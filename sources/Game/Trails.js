@@ -130,6 +130,7 @@ export class Trails
             return vec4(vec3(baseColor), ratio.oneMinus().mul(alpha))
         })()
         item.mesh = new THREE.Mesh(this.geometry, material)
+        item.mesh.renderOrder = 1
         item.mesh.frustumCulled = false
         this.game.scene.add(item.mesh)
 
