@@ -3,9 +3,10 @@ import { Game } from './Game.js'
 
 export class Respawns
 {
-    constructor()
+    constructor(defaultName = 'landing')
     {
         this.game = Game.getInstance()
+        this.defaultName = defaultName
 
         this.setItems()
     }
@@ -38,9 +39,12 @@ export class Respawns
 
     getByName(name)
     {
-        const item = this.items.get(name)
+        return this.items.get(name)
+    }
 
-        return item
+    getDefault()
+    {
+        return this.items.get(this.defaultName)
     }
 
     getClosest(position)

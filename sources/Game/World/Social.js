@@ -2,6 +2,7 @@ import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import { InteractivePoints } from '../InteractivePoints.js'
 import socialData from '../../data/social.js'
+import { InstancedGroup } from '../InstancedGroup.js'
 
 export class Social
 {
@@ -22,6 +23,8 @@ export class Social
         }
 
         this.setLinks()
+        this.setFans()
+        this.setOnlyFans()
     }
 
     setLinks()
@@ -61,5 +64,112 @@ export class Social
             
             i++
         }
+    }
+
+    setFans()
+    {
+        const baseFan = this.references.get('fan')[0]
+        baseFan.removeFromParent()
+
+        baseFan.traverse((child) =>
+        {
+            if(child.isMesh)
+                child.frustumCulled = false
+        })
+
+        this.fans = {}
+        this.fans.spawnerPosition = this.references.get('onlyFans')[0].position
+        this.fans.count = 30
+        this.fans.currentIndex = 0
+        this.fans.mass = 0.02
+        this.fans.objects = []
+
+        const references = []
+
+        for(let i = 0; i < this.fans.count; i++)
+        {
+            // Reference
+            const reference = new THREE.Object3D()
+
+            reference.position.copy(this.fans.spawnerPosition)
+            reference.position.y -= 4
+            references.push(reference)
+            
+            // Object
+            const object = this.game.objects.add(
+                {
+                    model: reference,
+                    updateMaterials: false,
+                    castShadow: false,
+                    receiveShadow: false,
+                    parent: null,
+                },
+                {
+                    type: 'dynamic',
+                    position: reference.position,
+                    rotation: reference.quaternion,
+                    friction: 0.7,
+                    sleeping: true,
+                    enabled: false,
+                    colliders: [ { shape: 'cuboid', parameters: [ 0.45, 0.65, 0.45 ], mass: this.fans.mass, category: 'object' } ],
+                    waterGravityMultiplier: - 1
+                },
+            )
+
+            this.fans.objects.push(object)
+        }
+
+        const instancedGroup = new InstancedGroup(references, baseFan, true)
+
+        this.fans.pop = () =>
+        {
+            const object = this.fans.objects[this.fans.currentIndex]
+
+            const spawnPosition = this.fans.spawnerPosition.clone()
+            spawnPosition.x += (Math.random() - 0.5) * 4
+            spawnPosition.y += 4 * Math.random()
+            spawnPosition.z += (Math.random() - 0.5) * 4
+            object.physical.body.setTranslation(spawnPosition)
+            object.physical.body.setEnabled(true)
+            object.physical.body.setLinvel({ x: 0, y: 0, z: 0 })
+            object.physical.body.setAngvel({ x: 0, y: 0, z: 0 })
+            object.physical.body.wakeUp()
+            requestAnimationFrame(() =>
+            {
+                // object.physical.body.applyImpulse({
+                //     x: (Math.random() - 0.5) * this.fans.mass * 2,
+                //     y: Math.random() * this.fans.mass * 3,
+                //     z: this.fans.mass * 7
+                // }, true)
+                // object.physical.body.applyTorqueImpulse({ x: 0, y: 0, z: 0 }, true)
+            })
+
+            this.fans.currentIndex = (this.fans.currentIndex + 1) % this.fans.count
+        }
+    }
+
+    setOnlyFans()
+    {
+        const interactiveArea = this.game.interactivePoints.create(
+            this.references.get('onlyFans')[0].position,
+            'OnlyFans',
+            InteractivePoints.ALIGN_RIGHT,
+            () =>
+            {
+                this.fans.pop()
+            },
+            () =>
+            {
+                this.game.inputs.interactiveButtons.addItems(['interact'])
+            },
+            () =>
+            {
+                this.game.inputs.interactiveButtons.removeItems(['interact'])
+            },
+            () =>
+            {
+                this.game.inputs.interactiveButtons.removeItems(['interact'])
+            }
+        )
     }
 }
