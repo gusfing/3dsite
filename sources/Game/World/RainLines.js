@@ -2,7 +2,7 @@ import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import { attribute, clamp, color, float, Fn, fract, hash, instancedArray, instanceIndex, max, mod, normalWorld, positionGeometry, rotateUV, sin, smoothstep, step, texture, uniform, vec2, vec3, vec4 } from 'three/tsl'
 import { MeshDefaultMaterial } from '../Materials/MeshDefaultMaterial.js'
-import { remapClamp } from '../utilities/maths.js'
+import { lerp, remap, remapClamp } from '../utilities/maths.js'
 
 export class RainLines
 {
@@ -34,7 +34,7 @@ export class RainLines
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '🌧️ Rain',
-                expanded: true,
+                expanded: false,
             })
             this.debugPanel.addBinding(this.elevation, 'value', { label: 'elevation', min: 0, max: 50, step: 0.1 })
             this.debugPanel.addBinding(this.thickness, 'value', { label: 'thickness', min: 0, max: 0.1, step: 0.001 })
@@ -62,7 +62,12 @@ export class RainLines
             { label: 'length', min: 0, max: 10, step: 0.001 },
             () =>
             {
-                return remapClamp(this.game.weather.rain.value, 0, 1, 1, 3)
+                const baseLength = remapClamp(this.game.weather.rain.value, 0, 1, 1, 3)
+
+                const snowRatio = 1 - Math.pow(1 - Math.max(this.game.weather.snow.value, 0), 4)
+                const snowLength = 0.03
+
+                return lerp(baseLength, snowLength, snowRatio)
             }
         )
 
@@ -73,7 +78,12 @@ export class RainLines
             { label: 'speed', min: 0, max: 1, step: 0.001 },
             () =>
             {
-                return remapClamp(this.game.weather.rain.value, 0, 1, 0.2, 0.4)
+                const baseSpeed = remapClamp(this.game.weather.rain.value, 0, 1, 0.2, 0.4)
+
+                const snowRatio = 1 - Math.pow(1 - Math.max(this.game.weather.snow.value, 0), 4)
+                const snowSpeed = 0.05
+
+                return lerp(baseSpeed, snowSpeed, snowRatio)
             }
         )
 
@@ -151,7 +161,13 @@ export class RainLines
             // side: THREE.BackSide,
             normalNode: vec3(0, 1, 0),
             transparent: true,
-            wireframe: false
+            wireframe: false,
+
+            hasCoreShadows: true,
+            hasDropShadows: false,
+            hasLightBounce: false,
+            hasFog: false,
+            hasWater: false,
         })
 
         this.thickness = uniform(0.015)
