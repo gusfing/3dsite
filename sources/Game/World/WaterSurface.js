@@ -184,7 +184,7 @@ export class WaterSurface
                 positionWorld.xz.mul(splashesNoiseFrequency)
             )
             const splashPerlin = texture(
-                this.game.noises.voronoi,
+                this.game.noises.others,
                 positionWorld.xz.mul(splashesNoiseFrequency.mul(0.25))
             ).r
 
