@@ -191,39 +191,41 @@ export class Objects
         return this.add(...this.getFromModel(_model, _visualDescription, _physicalDescription))
     }
 
-    reset()
+    resetObject(object)
+    {
+        if(!object.physical || (object.physical.type !== 'dynamic' && object.physical.type !== 'kinematicPositionBased'))
+            return
+
+        object.physical.body.setEnabled(false)
+        object.physical.body.setTranslation(object.physical.initialState.position, false)
+        object.physical.body.setRotation(object.physical.initialState.rotation, false)
+        object.physical.body.setLinvel({ x: 0, y: 0, z: 0 }, false)
+        object.physical.body.setAngvel({ x: 0, y: 0, z: 0 }, false)
+
+        // Wait a second and reactivate
+        requestAnimationFrame(() =>
+        {
+            object.physical.body.setEnabled(true)
+
+            // Sleep
+            if(object.physical.initialState.sleeping)
+                object.physical.body.sleep()
+        })
+        
+        if(object.visual)
+        {
+            if(object.visual.parent)
+                object.visual.parent.add(object.visual.object3D)
+            object.visual.object3D.position.copy(object.physical.initialState.position)
+            object.visual.object3D.quaternion.copy(object.physical.initialState.rotation)
+        }
+    }
+
+    resetAll()
     {
         this.list.forEach((object) =>
         {
-            if(object.physical)
-            {
-                if(object.physical.type === 'dynamic' || object.physical.type === 'kinematicPositionBased')
-                {
-                    object.physical.body.setEnabled(false)
-                    object.physical.body.setTranslation(object.physical.initialState.position, false)
-                    object.physical.body.setRotation(object.physical.initialState.rotation, false)
-                    object.physical.body.setLinvel({ x: 0, y: 0, z: 0 }, false)
-                    object.physical.body.setAngvel({ x: 0, y: 0, z: 0 }, false)
-
-                    // Wait a second and reactivate
-                    requestAnimationFrame(() =>
-                    {
-                        object.physical.body.setEnabled(true)
-
-                        // Sleep
-                        if(object.physical.initialState.sleeping)
-                            object.physical.body.sleep()
-                    })
-                    
-                    if(object.visual)
-                    {
-                        if(object.visual.parent)
-                            object.visual.parent.add(object.visual.object3D)
-                        object.visual.object3D.position.copy(object.physical.initialState.position)
-                        object.visual.object3D.quaternion.copy(object.physical.initialState.rotation)
-                    }
-                }
-            }
+            this.resetObject(object)
         })
     }
 

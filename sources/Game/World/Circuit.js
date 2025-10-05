@@ -29,6 +29,7 @@ export default class Circuit
         this.setTimer()
         this.setCountdown()
         this.setCheckpoints()
+        this.setObjects()
         this.setInteractivePoint()
 
         this.game.ticker.events.on('tick', () =>
@@ -383,6 +384,26 @@ export default class Circuit
         }
     }
 
+    setObjects()
+    {
+        this.objects = {}
+        this.objects.items = []
+
+        const baseObjects = this.references.get('objects')
+
+        for(const baseObject of baseObjects)
+        {
+
+            this.objects.items.push(baseObject.userData.object)
+        }
+
+        this.objects.reset = () =>
+        {
+            for(const object of this.objects.items)
+                this.game.objects.resetObject(object)
+        }
+    }
+
     setInteractivePoint()
     {
         this.interactivePoint = this.game.interactivePoints.create(
@@ -410,6 +431,7 @@ export default class Circuit
 
     restart()
     {
+        // Player > Lock
         this.game.player.state = Player.STATE_LOCKED
 
         // Overlay
@@ -426,6 +448,7 @@ export default class Circuit
             // Countdown
             this.countdown.start(() =>
             {
+                // Player > Unlock
                 this.game.player.state = Player.STATE_DEFAULT
 
                 this.timer.start()
@@ -438,6 +461,9 @@ export default class Circuit
             this.checkpoints.items[0].setTarget()
 
             this.checkpoints.reachedCount = 0
+
+            // Objects
+            this.objects.reset()
         })
     }
 
@@ -446,6 +472,7 @@ export default class Circuit
         this.timer.end()
 
         this.checkpoints.target = null
+        this.checkpoints.doorTarget.mesh.visible = false
     }
 
     update()

@@ -106,7 +106,7 @@ export class Bonfire
                     this.burn.material = this.game.materials.getFromName('emissiveOrangeRadialGradient')
 
                     // Objects reset
-                    this.game.objects.reset()
+                    this.game.objects.resetAll()
                 })
             },
             () =>
