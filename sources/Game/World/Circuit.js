@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { segmentCircleIntersection } from '../utilities/maths.js'
+import { lerp, segmentCircleIntersection } from '../utilities/maths.js'
 import { InteractivePoints } from '../InteractivePoints.js'
 import gsap from 'gsap'
 import { Player } from '../Player.js'
@@ -24,18 +24,28 @@ export default class Circuit
 
         this.references = references
 
-        this.setRoad()
         this.setStartPosition()
+        this.setRoad()
+        this.setStartingLights()
         this.setTimer()
-        this.setCountdown()
         this.setCheckpoints()
         this.setObjects()
         this.setInteractivePoint()
+        this.setStartAnimation()
 
         this.game.ticker.events.on('tick', () =>
         {
             this.update()
         })
+    }
+
+    setStartPosition()
+    {
+        const baseStart = this.references.get('start')[0]
+
+        this.startPosition = {}
+        this.startPosition.position = baseStart.position.clone()
+        this.startPosition.rotation = baseStart.rotation.y
     }
 
     setRoad()
@@ -84,13 +94,20 @@ export default class Circuit
         }
     }
 
-    setStartPosition()
+    setStartingLights()
     {
-        const baseStart = this.references.get('start')[0]
-
-        this.startPosition = {}
-        this.startPosition.position = baseStart.position.clone()
-        this.startPosition.rotation = baseStart.rotation.y
+        this.startingLights = {}
+        this.startingLights.mesh = this.references.get('startingLights')[0]
+        this.startingLights.mesh.visible = false
+        this.startingLights.redMaterial = this.game.materials.getFromName('emissiveOrangeRadialGradient')
+        this.startingLights.greenMaterial = this.game.materials.getFromName('emissiveGreenRadialGradient')
+        this.startingLights.baseZ = this.startingLights.mesh.position.z
+        
+        this.startingLights.reset = () =>
+        {
+            this.startingLights.mesh.visible = false
+            this.startingLights.mesh.material = this.startingLights.redMaterial
+        }
     }
 
     setTimer()
@@ -145,48 +162,6 @@ export default class Circuit
                 this.timer.digits[i].textContent = digit
                 i++
             }
-        }
-    }
-
-    setCountdown()
-    {
-        this.countdown = {}
-
-        this.countdown.element = this.game.domElement.querySelector('.js-circuit-countdown')
-        this.countdown.timeline = gsap.timeline({ paused: true })
-        this.countdown.interDuration = 0.5
-        this.countdown.endCallback = null
-
-        this.countdown.timeline.add(gsap.delayedCall(this.countdown.interDuration, () =>
-        {
-            this.countdown.element.textContent = '3'
-            this.countdown.element.classList.add('is-visible')
-        }))
-        this.countdown.timeline.add(gsap.delayedCall(this.countdown.interDuration, () =>
-        {
-            this.countdown.element.textContent = '2'
-        }))
-        this.countdown.timeline.add(gsap.delayedCall(this.countdown.interDuration, () =>
-        {
-            this.countdown.element.textContent = '1'
-        }))
-        this.countdown.timeline.add(gsap.delayedCall(this.countdown.interDuration, () =>
-        {
-            if(typeof this.countdown.endCallback === 'function')
-                this.countdown.endCallback()
-                
-            this.countdown.element.textContent = 'GO!'
-        }))
-        this.countdown.timeline.add(gsap.delayedCall(this.countdown.interDuration, () =>
-        {
-            this.countdown.element.classList.remove('is-visible')
-        }))
-
-        this.countdown.start = (endCallback) =>
-        {
-            this.countdown.endCallback = endCallback
-            this.countdown.timeline.seek(0)
-            this.countdown.timeline.play()
         }
     }
 
@@ -429,30 +404,61 @@ export default class Circuit
         )
     }
 
+    setStartAnimation()
+    {
+        this.startAnimation = {}
+        this.startAnimation.timeline = gsap.timeline({ paused: true })
+        this.startAnimation.interDuration = 2
+        this.startAnimation.endCallback = null
+
+        this.startAnimation.timeline.add(() =>
+        {
+            this.startingLights.mesh.visible = true
+            this.startingLights.mesh.position.z = this.startingLights.baseZ + 0.01
+        })
+        this.startAnimation.timeline.add(gsap.delayedCall(this.startAnimation.interDuration, () =>
+        {
+            this.startingLights.mesh.position.z = this.startingLights.baseZ + 0.02
+        }))
+        this.startAnimation.timeline.add(gsap.delayedCall(this.startAnimation.interDuration, () =>
+        {
+            this.startingLights.mesh.position.z = this.startingLights.baseZ + 0.03
+        }))
+        this.startAnimation.timeline.add(gsap.delayedCall(this.startAnimation.interDuration, () =>
+        {
+            this.startingLights.mesh.material = this.startingLights.greenMaterial
+
+            if(typeof this.startAnimation.endCallback === 'function')
+                this.startAnimation.endCallback()
+        }))
+        this.startAnimation.timeline.add(gsap.delayedCall(this.startAnimation.interDuration, () =>
+        {
+        }))
+
+        this.startAnimation.start = (endCallback) =>
+        {
+            this.startAnimation.endCallback = endCallback
+            this.startAnimation.timeline.seek(0)
+            this.startAnimation.timeline.play()
+        }
+    }
+
     restart()
     {
         // Player > Lock
         this.game.player.state = Player.STATE_LOCKED
 
-        // Overlay
+        // Overlay > Show
         this.game.overlay.show(() =>
         {
-            this.game.overlay.hide()
-
             // Update physical vehicle
             this.game.physicalVehicle.moveTo(
                 this.startPosition.position,
                 this.startPosition.rotation
             )
 
-            // Countdown
-            this.countdown.start(() =>
-            {
-                // Player > Unlock
-                this.game.player.state = Player.STATE_DEFAULT
-
-                this.timer.start()
-            })
+            // Starting lights
+            this.startingLights.reset()
 
             // Checkpoints
             for(const checkpoint of this.checkpoints.items)
@@ -464,6 +470,47 @@ export default class Circuit
 
             // Objects
             this.objects.reset()
+
+            // Weather
+            this.game.weather.override.start(
+                {
+                    humidity: 0,
+                    electricField: 0,
+                    clouds: 0,
+                    wind: 0
+                },
+                3
+            )
+    
+            // Day cycles
+            const dayPresetMix = 0.25
+            this.game.dayCycles.override.start(
+                {
+                    lightColor: this.game.dayCycles.presets.day.lightColor.clone().lerp(this.game.dayCycles.presets.dawn.lightColor, dayPresetMix),
+                    lightIntensity: lerp(this.game.dayCycles.presets.day.lightIntensity, this.game.dayCycles.presets.dawn.lightIntensity, dayPresetMix),
+                    shadowColor: this.game.dayCycles.presets.day.shadowColor.clone().lerp(this.game.dayCycles.presets.dawn.shadowColor, dayPresetMix),
+                    fogColorA: this.game.dayCycles.presets.day.fogColorA.clone().lerp(this.game.dayCycles.presets.dawn.fogColorA, dayPresetMix),
+                    fogColorB: this.game.dayCycles.presets.day.fogColorB.clone().lerp(this.game.dayCycles.presets.dawn.fogColorB, dayPresetMix),
+                    fogNearRatio: lerp(this.game.dayCycles.presets.day.fogNearRatio, this.game.dayCycles.presets.dawn.fogNearRatio, dayPresetMix),
+                    fogFarRatio: lerp(this.game.dayCycles.presets.day.fogFarRatio, this.game.dayCycles.presets.dawn.fogFarRatio, dayPresetMix)
+                },
+                1
+            )
+
+            // Overlay > Hide
+            this.game.overlay.hide(() =>
+            {
+
+                // Start animation
+                this.startAnimation.start(() =>
+                {
+                    // Player > Unlock
+                    this.game.player.state = Player.STATE_DEFAULT
+
+                    this.timer.start()
+                })
+
+            })
         })
     }
 
@@ -473,6 +520,9 @@ export default class Circuit
 
         this.checkpoints.target = null
         this.checkpoints.doorTarget.mesh.visible = false
+
+        this.game.weather.override.end()
+        this.game.dayCycles.override.end()
     }
 
     update()

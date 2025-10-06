@@ -316,7 +316,7 @@ export class Altar
     {
         this.skullEyes = this.references.get('skullEyes')
         for(const skullEyes of this.skullEyes)
-            skullEyes.visible = false
+            skullEyes.visible = true
     }
 
     updateSkullEyes(progress)

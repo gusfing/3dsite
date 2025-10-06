@@ -106,12 +106,15 @@ export class Overlay
         } })
     }
 
-    hide()
+    hide(callback)
     {
         this.inverted.value = 1
         gsap.to(this.progress, { value: 0, ease: 'power1.inOut', overwrite: true, duration: 4, onComplete: () =>
         {
             this.mesh.visible = false
+
+            if(typeof callback === 'function')
+                callback()
         } })
     }
 }
