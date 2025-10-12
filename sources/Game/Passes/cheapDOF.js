@@ -21,8 +21,10 @@ class CheapDOFNode extends TempNode
 	{
 		const outputNode = Fn( () =>
 		{
-			const strength = uv().y.sub(0.5).abs()
-			strength.assign(strength.mul(this.strength).pow(2))
+			const strength = uv().y.sub(0.5).abs().mul(this.strength).pow(2)
+
+			// const strength = uv().sub(0.5).length().sub(0.3).max(0).mul(this.strength).pow(2)
+
 			// return vec4(vec3(strength), 1)
 
 			// return gaussianBlur(this.textureNode, 2, 3)

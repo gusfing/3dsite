@@ -48,6 +48,7 @@ export default class Circuit
         this.setAirDancers()
         this.setBanners()
         this.setLeaderboard()
+        this.setPodium()
 
         this.game.materials.getFromName('circuitBrand').map.minFilter = THREE.LinearFilter
         this.game.materials.getFromName('circuitBrand').map.magFilter = THREE.LinearFilter
@@ -147,7 +148,7 @@ export default class Circuit
         this.timer.group = this.references.get('timer')[0]
         this.timer.group.rotation.y = Math.PI * 0.1
         this.timer.group.visible = false
-        this.timer.defaultPosition = this.references.get('interactivePoint')[0].position.clone()
+        this.timer.defaultPosition = this.timer.group.position.clone()
 
         // Digits
         {
@@ -275,9 +276,9 @@ export default class Circuit
 
             if(this.state === Circuit.STATE_PENDING)
             {
-                target.x = this.timer.defaultPosition.x - 2
+                target.x = this.timer.defaultPosition.x
                 target.y = 2.5
-                target.z = this.timer.defaultPosition.z + 1
+                target.z = this.timer.defaultPosition.z
             }
             else
             {
@@ -601,7 +602,7 @@ export default class Circuit
     {
         this.startAnimation = {}
         this.startAnimation.timeline = gsap.timeline({ paused: true })
-        this.startAnimation.interDuration = 2
+        this.startAnimation.interDuration = 0.5
         this.startAnimation.endCallback = null
 
         this.startAnimation.timeline.add(() =>
@@ -871,6 +872,58 @@ export default class Circuit
         ])
     }
 
+    setPodium()
+    {
+        this.podium = {}
+        this.podium.object = this.references.get('podium')[0].userData.object
+        this.podium.confettiPositionA = this.references.get('podiumConfettiA')[0].position.clone()
+        this.podium.confettiPositionB = this.references.get('podiumConfettiB')[0].position.clone()
+        this.podium.respawn = this.references.get('podiumRespawn')[0]
+        this.podium.viewFocusPosition = this.podium.respawn.position.clone()
+        this.podium.viewFocusPosition.x -= 4
+        this.podium.viewFocusPosition.y = 0
+        this.podium.viewFocusPosition.z -= 3
+        this.podium.confettiIndex = 0
+        
+        this.podium.popConfetti = () =>
+        {
+            if(!this.game.world.confetti)
+                return
+            
+            this.game.world.confetti.pop(this.podium.confettiIndex % 2 === 0 ? this.podium.confettiPositionA : this.podium.confettiPositionB)
+            this.podium.confettiIndex++
+            
+            if(!this.game.view.focusPoint.isTracking)
+            {
+                gsap.delayedCall(2 + Math.random() * 3, () =>
+                {
+                    this.podium.popConfetti()
+                })
+            }
+        }
+
+        this.podium.show = () =>
+        {
+            // Object
+            this.game.objects.enable(this.podium.object)
+
+            // View
+            this.game.view.focusPoint.isTracking = false
+            this.game.view.focusPoint.position.copy(this.podium.viewFocusPosition)
+
+            // Confetti
+            this.podium.popConfetti()
+        }
+        
+        this.podium.hide = () =>
+        {
+            // Object
+            this.game.objects.disable(this.podium.object)
+        }
+
+        this.podium.hide()
+    }
+
     restart()
     {
         if(this.state === Circuit.STATE_STARTING)
@@ -878,6 +931,9 @@ export default class Circuit
             
         // State
         this.state = Circuit.STATE_STARTING
+
+        // Interactive point
+        this.interactivePoint.hide()
 
         // Player > Lock
         this.game.player.state = Player.STATE_LOCKED
@@ -932,7 +988,6 @@ export default class Circuit
             )
     
             // Day cycles
-            const dayPresetMix = 0.25
             this.game.dayCycles.override.start(
                 {
                     progress: 0.85,
@@ -946,6 +1001,9 @@ export default class Circuit
 
             // Rails
             this.rails.activate()
+
+            // Podium => Hide
+            this.podium.hide()
 
             // Overlay > Hide
             this.game.overlay.hide(() =>
@@ -990,14 +1048,15 @@ export default class Circuit
                 // State
                 this.state = Circuit.STATE_PENDING
 
+                // Interactive point
+                this.interactivePoint.show()
+
                 // Inputs filters
                 this.game.inputs.filters.clear()
                 this.game.inputs.filters.add('wandering')
                 
                 // Update physical vehicle
-                const respawn = this.game.respawns.getByName('circuit')
-                if(respawn)
-                    this.game.physicalVehicle.moveTo(respawn.position, respawn.rotation)
+                this.game.physicalVehicle.moveTo(this.podium.respawn.position, this.podium.respawn.rotation.y)
 
                 // Activate terrain physics
                 if(this.game.world.floor)
@@ -1019,6 +1078,9 @@ export default class Circuit
 
                 // Rails
                 this.rails.deactivate()
+
+                // Podium => Show
+                this.podium.show()
 
                 // Overlay > Hide
                 this.game.overlay.hide(() =>
