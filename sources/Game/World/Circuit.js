@@ -631,7 +631,7 @@ export default class Circuit
     {
         this.startAnimation = {}
         this.startAnimation.timeline = gsap.timeline({ paused: true })
-        this.startAnimation.interDuration = 0.5
+        this.startAnimation.interDuration = 2
         this.startAnimation.endCallback = null
 
         this.startAnimation.timeline.add(() =>
