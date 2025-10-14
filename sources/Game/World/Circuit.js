@@ -348,6 +348,7 @@ export default class Circuit
         this.checkpoints.target = null
         this.checkpoints.last = null
         this.checkpoints.reachedCount = 0
+        this.checkpoints.timings = []
 
         // Create checkpoints
         const baseCheckpoints = this.references.get('checkpoints').sort((a, b) => a.name.localeCompare(b.name))
@@ -437,6 +438,9 @@ export default class Circuit
                 // Update reach count and last
                 this.checkpoints.last = checkpoint
                 this.checkpoints.reachedCount++
+
+                // Timings
+                this.checkpoints.timings.push(this.timer.elapsedTime)
 
                 // Final checkpoint (start line)
                 if(this.checkpoints.reachedCount === this.checkpoints.count + 2)
@@ -1294,6 +1298,7 @@ export default class Circuit
                     countryCode: this.modal.inputFlag.country ? this.modal.inputFlag.country.code : '',
                     tag: sanatized,
                     duration: Math.round(this.timer.elapsedTime * 1000),
+                    checkpointTimings: this.checkpoints.timings
                 })
 
                 // Close modal
@@ -1394,6 +1399,8 @@ export default class Circuit
 
             this.checkpoints.reachedCount = 0
             this.checkpoints.last = null
+
+            this.checkpoints.timings = []
 
             // Objects
             this.objects.reset()

@@ -194,6 +194,9 @@
                         font-size 30px
                         font-weight 900
 
+                .or
+                    padding 12px
+
         &.is-double
             .container
                 display flex
@@ -397,8 +400,11 @@
 
         .horizontal-group
             display flex
-            align-items flex-end
+            align-items center
             justify-content center
+
+            @media only screen and (max-width 520px)
+                flex-direction column
 
             > *
                 margin-right 10px
