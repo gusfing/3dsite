@@ -273,12 +273,12 @@ export class Altar extends Area
             'enter',
             () =>
             {
-                // Inside the area
                 this.animateBeam()
                 this.animateBeamParticles()
                 this.data.insert()
                 this.updateValue(this.value + 1)
                 this.game.player.die()
+                this.game.achievements.setProgress('sacrifice', 1)
             }
         )
     }
@@ -399,7 +399,7 @@ export class Altar extends Area
     {
         this.events.on('enter', () =>
         {
-            this.game.achievements.setProgress('altarEnter', 1)
+            this.game.achievements.setProgress('areas', 'altar')
         })
     }
 }

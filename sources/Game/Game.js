@@ -165,6 +165,11 @@ export class Game
         {
             this.reveal.step(0)
         })
+
+        if(this.debug.active)
+        {
+            this.achievements.setProgress('debug', 1)
+        }
     }
 }
 

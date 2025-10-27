@@ -5,6 +5,7 @@ import { InteractivePoints } from '../../InteractivePoints.js'
 import { MeshDefaultMaterial } from '../../Materials/MeshDefaultMaterial.js'
 import { alea } from 'seedrandom'
 import { Area } from './Area.js'
+import gsap from 'gsap'
 
 export class Bonfire extends Area
 {
@@ -111,6 +112,20 @@ export class Bonfire extends Area
                     // Bowling
                     if(this.game.world.areas.bowling)
                         this.game.world.areas.bowling.restart()
+
+                    // Toilet
+                    if(this.game.world.areas.toilet)
+                        this.game.world.areas.toilet.cabin.down = false
+
+                    // Social
+                    if(this.game.world.areas.social)
+                        this.game.world.areas.social.statue.down = false
+
+                    // Achievement
+                    gsap.delayedCall(2, () =>
+                    {
+                        this.game.achievements.setProgress('reset', 1)
+                    })
                 })
             },
             () =>

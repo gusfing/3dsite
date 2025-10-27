@@ -6,71 +6,72 @@ export default
         'Get out of the landing area.',
         1
     ],
+    // [
+    //     'projectsEnter',
+    //     'Projects',
+    //     'Visit the Projects area.',
+    //     1
+    // ],
+    // [
+    //     'labEnter',
+    //     'Lab',
+    //     'Visit the Lab area.',
+    //     1
+    // ],
+    // [
+    //     'careerEnter',
+    //     'Career',
+    //     'Visit the Career area.',
+    //     1
+    // ],
+    // [
+    //     'socialEnter',
+    //     'Social',
+    //     'Visit the Social area.',
+    //     1
+    // ],
+    // [
+    //     'cookieEnter',
+    //     'Cookie',
+    //     'Visit the Cookie area.',
+    //     1
+    // ],
+    // [
+    //     'bowlingEnter',
+    //     'Bowling',
+    //     'Visit the Bowling area.',
+    //     1
+    // ],
+    // [
+    //     'circuitEnter',
+    //     'Circuit',
+    //     'Visit the Circuit area.',
+    //     1
+    // ],
+    // [
+    //     'toiletEnter',
+    //     'Toilet',
+    //     'Visit the Toilet area.',
+    //     1
+    // ],
+    // [
+    //     'altarEnter',
+    //     'Altar',
+    //     'Visit the Altar area.',
+    //     1
+    // ],
+    // [
+    //     'behindTheSceneEnter',
+    //     'Behind The Scene',
+    //     'Visit the Behind The Scene area.',
+    //     1
+    // ],
     [
-        'projectsEnter',
-        'Projects',
-        'Visit the Projects area.',
-        1
-    ],
-    [
-        'labEnter',
-        'Lab',
-        'Visit the Lab area.',
-        1
-    ],
-    [
-        'careerEnter',
-        'Career',
-        'Visit the Career area.',
-        1
-    ],
-    [
-        'socialEnter',
-        'Social',
-        'Visit the Social area.',
-        1
-    ],
-    [
-        'cookieEnter',
-        'Cookie',
-        'Visit the Cookie area.',
-        1
-    ],
-    [
-        'bowlingEnter',
-        'Bowling',
-        'Visit the Bowling area.',
-        1
-    ],
-    [
-        'circuitEnter',
-        'Circuit',
-        'Visit the Circuit area.',
-        1
-    ],
-    [
-        'toiletEnter',
-        'Toilet',
-        'Visit the Toilet area.',
-        1
-    ],
-    [
-        'altarEnter',
-        'Altar',
-        'Visit the Altar area.',
-        1
-    ],
-    [
-        'behindTheSceneEnter',
-        'Behind The Scene',
-        'Visit the Behind The Scene area.',
-        1
-    ],
-    [
-        'allEnter',
+        'areas',
         'Traveler',
-        'Vist all areas.',
-        1
+        'Vist every area.',
+        11,
+        true // Unique
     ],
     [
         'cookie',
@@ -133,10 +134,112 @@ export default
         4
     ],
     [
+        'honk',
+        'Honk',
+        'Honk me like one of your french driver',
+        10
+    ],
+    [
         'explosiveCrates',
         'Great Explosion Murder God Dynamight',
         'Blow up every explosive crate.',
         20,
         true // Unique
+    ],
+    [
+        'goHigh',
+        'Limit the sky',
+        'Reach <strong>15 meters</strong> high.',
+        15
+    ],
+    [
+        'strike',
+        'Strike!',
+        'Accomplished a strike.',
+        1
+    ],
+    [
+        'toiletDown',
+        'Do not disturb',
+        'Knock down the latrine.',
+        1
+    ],
+    [
+        'speed',
+        'I feel the need — the need for speed!',
+        'Reach <strong>130 km/h</strong>',
+        130
+    ],
+    [
+        'circuitFinish',
+        'Participation medal',
+        'Finish a race.',
+        1
+    ],
+    [
+        'circuitFinishFast',
+        'KA-CHOW!',
+        'Finish a race in less than <strong>30s</strong>.',
+        1
+    ],
+    [
+        'distanceDriven',
+        'Baby step',
+        'Drive 1km.',
+        1
+    ],
+    [
+        'distanceDriven',
+        'Are we there yet?',
+        'Drive 10km.',
+        10
+    ],
+    [
+        'distanceDriven',
+        'Honey, I’m home!',
+        'Drive 100km.',
+        100
+    ],
+    [
+        'sacrifice',
+        'Cut my life into pieces',
+        'Sacrifice yourself into the altar.',
+        1
+    ],
+    [
+        'fan',
+        'You’re my only fan',
+        'Spawn a fan.',
+        1
+    ],
+    [
+        'reset',
+        'Clean your room',
+        'Put back everything as it was.',
+        1
+    ],
+    [
+        'statueDown',
+        'Revolution!',
+        'Tear that statue down.',
+        1
+    ],
+    [
+        'konami',
+        'Up up down down…',
+        'You know the rest.',
+        1
+    ],
+    [
+        'debug',
+        'It\'s not a bug, it\'s a feature',
+        'Access the debug UI.',
+        1
+    ],
+    [
+        'hacker',
+        'Hacker',
+        'This one can’t be achieved.',
+        1
     ],
 ]

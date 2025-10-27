@@ -441,6 +441,8 @@ export class PhysicsVehicle
         this.chassis.physical.body.setRotation(quaternion)
         this.chassis.physical.body.setLinvel({ x: 0, y: 0, z: 0 })
         this.chassis.physical.body.setAngvel({ x: 0, y: 0, z: 0 })
+
+        this.position.copy(position)
     }
 
     updatePrePhysics()
@@ -512,8 +514,8 @@ export class PhysicsVehicle
         this.upward.set(0, 1, 0).applyQuaternion(this.quaternion)
         this.forward.set(1, 0, 0).applyQuaternion(this.quaternion)
         // this.speed = this.controller.currentVehicleSpeed()
-        this.speed = this.velocity.length() / this.game.ticker.delta
-        this.xzSpeed = Math.hypot(this.velocity.x, this.velocity.z) / this.game.ticker.delta
+        this.speed = this.velocity.length() / this.game.ticker.deltaScaled
+        this.xzSpeed = Math.hypot(this.velocity.x, this.velocity.z) / this.game.ticker.deltaScaled
         this.forwardRatio = this.direction.dot(this.forward)
         this.goingForward = this.forwardRatio > 0.5
         this.forwardSpeed = this.speed * this.forwardRatio

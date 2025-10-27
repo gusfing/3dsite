@@ -15,7 +15,6 @@ export class Achievements
         this.setGlobalProgress()
         this.setReset()
 
-        this.checkDependencies()
         this.globalProgress.update()
 
         const localAchievements = this.storage.get()
@@ -302,7 +301,6 @@ export class Achievements
 
         if(progressDelta)
         {
-            this.checkDependencies()
             this.globalProgress.update()
             this.storage.save()
         }
@@ -317,28 +315,8 @@ export class Achievements
             
         group.addProgress()
 
-        this.checkDependencies()
         this.globalProgress.update()
         this.storage.save()
-    }
-
-    checkDependencies()
-    {
-        if(
-            // this.groups.get('projectsEnter').items[0].achieved &&
-            // this.groups.get('labEnter').items[0].achieved &&
-            // this.groups.get('careerEnter').items[0].achieved &&
-            // this.groups.get('socialEnter').items[0].achieved &&
-            this.groups.get('cookieEnter').items[0].achieved// &&
-            // this.groups.get('bowlingEnter').items[0].achieved &&
-            // this.groups.get('circuitEnter').items[0].achieved &&
-            // this.groups.get('toiletEnter').items[0].achieved &&
-            // this.groups.get('altarEnter').items[0].achieved &&
-            // this.groups.get('behindTheSceneEnter').items[0].achieved
-        )
-        {
-            this.setProgress('allEnter', 1)
-        }
     }
 
     reset()

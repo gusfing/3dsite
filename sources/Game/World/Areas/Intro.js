@@ -47,6 +47,10 @@ export class Intro extends Area
 
     setAchievement()
     {
+        this.events.on('enter', () =>
+        {
+            this.game.achievements.setProgress('areas', 'landing')
+        })
         this.events.on('leave', () =>
         {
             this.game.achievements.setProgress('introLeave', 1)

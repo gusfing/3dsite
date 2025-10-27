@@ -26,6 +26,7 @@ export class Player
         this.basePosition = this.position.clone()
         this.position2 = new THREE.Vector2(this.position.x, this.position.z)
         this.rotationY = 0
+        this.distanceDriven = 0
         
         this.setInputs()
         this.setUnstuck()
@@ -51,26 +52,27 @@ export class Player
     setInputs()
     {
         this.game.inputs.addActions([
-            { name: 'forward',               categories: [ 'wandering', 'racing', 'cinematic' ], keys: [ 'Keyboard.ArrowUp', 'Keyboard.KeyW', 'Gamepad.up', 'Gamepad.r2' ] },
-            { name: 'right',                 categories: [ 'wandering', 'racing', 'cinematic' ], keys: [ 'Keyboard.ArrowRight', 'Keyboard.KeyD', 'Gamepad.right' ] },
-            { name: 'backward',              categories: [ 'wandering', 'racing', 'cinematic' ], keys: [ 'Keyboard.ArrowDown', 'Keyboard.KeyS', 'Gamepad.down', 'Gamepad.l2' ] },
-            { name: 'left',                  categories: [ 'wandering', 'racing', 'cinematic' ], keys: [ 'Keyboard.ArrowLeft', 'Keyboard.KeyA', 'Gamepad.left' ] },
-            { name: 'boost',                 categories: [ 'wandering', 'racing'              ], keys: [ 'Keyboard.ShiftLeft', 'Keyboard.ShiftRight', 'Gamepad.circle' ] },
-            { name: 'brake',                 categories: [ 'wandering', 'racing'              ], keys: [ 'Keyboard.KeyB', 'Gamepad.square' ] },
-            { name: 'respawn',               categories: [ 'wandering',                       ], keys: [ 'Keyboard.KeyR', 'Gamepad.select' ] },
-            { name: 'suspensions',           categories: [ 'wandering', 'racing'              ], keys: [ 'Keyboard.Numpad5', 'Keyboard.Space', 'Gamepad.triangle' ] },
-            { name: 'suspensionsFront',      categories: [ 'wandering', 'racing'              ], keys: [ 'Keyboard.Numpad8' ] },
-            { name: 'suspensionsBack',       categories: [ 'wandering', 'racing'              ], keys: [ 'Keyboard.Numpad2' ] },
-            { name: 'suspensionsRight',      categories: [ 'wandering', 'racing'              ], keys: [ 'Keyboard.Numpad6', 'Gamepad.r1' ] },
-            { name: 'suspensionsLeft',       categories: [ 'wandering', 'racing'              ], keys: [ 'Keyboard.Numpad4', 'Gamepad.l1' ] },
-            { name: 'suspensionsFrontLeft',  categories: [ 'wandering', 'racing'              ], keys: [ 'Keyboard.Numpad7' ] },
-            { name: 'suspensionsFrontRight', categories: [ 'wandering', 'racing'              ], keys: [ 'Keyboard.Numpad9' ] },
-            { name: 'suspensionsBackRight',  categories: [ 'wandering', 'racing'              ], keys: [ 'Keyboard.Numpad3' ] },
-            { name: 'suspensionsBackLeft',   categories: [ 'wandering', 'racing'              ], keys: [ 'Keyboard.Numpad1' ] },
-            { name: 'interact',              categories: [ 'wandering', 'racing'              ], keys: [ 'Keyboard.Enter', 'Gamepad.cross' ] },
+            { name: 'forward',               categories: [ 'wandering', 'racing', 'cinematic'          ], keys: [ 'Keyboard.ArrowUp', 'Keyboard.KeyW', 'Gamepad.up', 'Gamepad.r2' ] },
+            { name: 'right',                 categories: [ 'wandering', 'racing', 'cinematic'          ], keys: [ 'Keyboard.ArrowRight', 'Keyboard.KeyD', 'Gamepad.right' ] },
+            { name: 'backward',              categories: [ 'wandering', 'racing', 'cinematic'          ], keys: [ 'Keyboard.ArrowDown', 'Keyboard.KeyS', 'Gamepad.down', 'Gamepad.l2' ] },
+            { name: 'left',                  categories: [ 'wandering', 'racing', 'cinematic'          ], keys: [ 'Keyboard.ArrowLeft', 'Keyboard.KeyA', 'Gamepad.left' ] },
+            { name: 'boost',                 categories: [ 'wandering', 'racing'                       ], keys: [ 'Keyboard.ShiftLeft', 'Keyboard.ShiftRight', 'Gamepad.circle' ] },
+            { name: 'brake',                 categories: [ 'wandering', 'racing'                       ], keys: [ 'Keyboard.KeyB', 'Gamepad.square' ] },
+            { name: 'respawn',               categories: [ 'wandering',                                ], keys: [ 'Keyboard.KeyR', 'Gamepad.select' ] },
+            { name: 'suspensions',           categories: [ 'wandering', 'racing'                       ], keys: [ 'Keyboard.Numpad5', 'Keyboard.Space', 'Gamepad.triangle' ] },
+            { name: 'suspensionsFront',      categories: [ 'wandering', 'racing'                       ], keys: [ 'Keyboard.Numpad8' ] },
+            { name: 'suspensionsBack',       categories: [ 'wandering', 'racing'                       ], keys: [ 'Keyboard.Numpad2' ] },
+            { name: 'suspensionsRight',      categories: [ 'wandering', 'racing'                       ], keys: [ 'Keyboard.Numpad6', 'Gamepad.r1' ] },
+            { name: 'suspensionsLeft',       categories: [ 'wandering', 'racing'                       ], keys: [ 'Keyboard.Numpad4', 'Gamepad.l1' ] },
+            { name: 'suspensionsFrontLeft',  categories: [ 'wandering', 'racing'                       ], keys: [ 'Keyboard.Numpad7' ] },
+            { name: 'suspensionsFrontRight', categories: [ 'wandering', 'racing'                       ], keys: [ 'Keyboard.Numpad9' ] },
+            { name: 'suspensionsBackRight',  categories: [ 'wandering', 'racing'                       ], keys: [ 'Keyboard.Numpad3' ] },
+            { name: 'suspensionsBackLeft',   categories: [ 'wandering', 'racing'                       ], keys: [ 'Keyboard.Numpad1' ] },
+            { name: 'interact',              categories: [ 'wandering', 'racing'                       ], keys: [ 'Keyboard.Enter', 'Gamepad.cross' ] },
+            { name: 'honk',                  categories: [ 'wandering', 'racing', 'cinematic', 'modal' ], keys: [ 'Keyboard.KeyH', 'Gamepad.l3' ] },
         ])
 
-        // Reset
+        // Respawn
         this.game.inputs.events.on('respawn', (action) =>
         {
             if(this.state !== Player.STATE_DEFAULT)
@@ -80,6 +82,13 @@ export class Player
             {
                 this.respawn()
             }
+        })
+
+        // Honk
+        this.game.inputs.events.on('honk', (action) =>
+        {
+            if(action.active)
+                this.honk()
         })
 
         // Suspensions
@@ -276,6 +285,14 @@ export class Player
         })
     }
 
+    honk()
+    {
+        console.log('honk')
+
+        // Achievement
+        this.game.achievements.addProgress('honk')
+    }
+
     updatePrePhysics()
     {
         this.accelerating = 0
@@ -379,5 +396,23 @@ export class Player
         const distanceToCenter = this.position2.length()
         if(distanceToCenter > 120)
             this.game.achievements.setProgress('sea', 1)
+
+        // Go high achievements
+        const elevation = Math.floor(this.position.y)
+        if(elevation > this.game.achievements.groups.get('goHigh').progress)
+            this.game.achievements.setProgress('goHigh', elevation)
+
+        // Speed achievement
+        const speedKmPerHour = Math.floor(this.game.physicalVehicle.xzSpeed / 1000 * 3600)
+
+        if(speedKmPerHour > this.game.achievements.groups.get('speed').progress)
+            this.game.achievements.setProgress('speed', speedKmPerHour)
+
+        // Drive achievement
+        this.distanceDriven += this.game.physicalVehicle.xzSpeed * this.game.ticker.deltaScaled
+        const distanceDrivenKm = Math.floor(this.distanceDriven / 1000)
+
+        if(distanceDrivenKm > this.game.achievements.groups.get('distanceDriven').progress)
+            this.game.achievements.setProgress('distanceDriven', distanceDrivenKm)
     }
 }

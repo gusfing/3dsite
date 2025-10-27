@@ -229,7 +229,7 @@ export class Career extends Area
     {
         this.events.on('enter', () =>
         {
-            this.game.achievements.setProgress('careerEnter', 1)
+            this.game.achievements.setProgress('areas', 'career')
         })
     }
 

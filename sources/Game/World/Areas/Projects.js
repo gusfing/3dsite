@@ -1310,7 +1310,7 @@ export class Projects extends Area
     {
         this.events.on('enter', () =>
         {
-            this.game.achievements.setProgress('projectsEnter', 1)
+            this.game.achievements.setProgress('areas', 'projects')
         })
     }
 

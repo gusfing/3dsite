@@ -413,7 +413,7 @@ export class CookieStand extends Area
     {
         this.events.on('enter', () =>
         {
-            this.game.achievements.setProgress('cookieEnter', 1)
+            this.game.achievements.setProgress('areas', 'cookie')
         })
     }
 

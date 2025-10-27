@@ -8,8 +8,22 @@ export class Toilet extends Area
     {
         super(references)
 
+        this.setCabin()
         this.setCandleFlames()
         this.setAchievement()
+
+        this.game.ticker.events.on('tick', () =>
+        {
+            this.update()
+        }, 3)
+    }
+
+    setCabin()
+    {
+        this.cabin = {}
+        this.cabin.body = this.references.get('cabin')[0].userData.object.physical.body
+        this.cabin.isSleeping = true
+        this.cabin.down = false
     }
 
     setCandleFlames()
@@ -27,7 +41,21 @@ export class Toilet extends Area
     {
         this.events.on('enter', () =>
         {
-            this.game.achievements.setProgress('toiletEnter', 1)
+            this.game.achievements.setProgress('areas', 'toilet')
         })
+    }
+
+    update()
+    {
+        if(!this.cabin.down && !this.cabin.body.isSleeping())
+        {
+            const cabinUp = new THREE.Vector3(0, 1, 0)
+            cabinUp.applyQuaternion(this.cabin.body.rotation())
+            if(cabinUp.y < 0.25)
+            {
+                this.cabin.down = true
+                this.game.achievements.setProgress('toiletDown', 1)
+            }
+        }
     }
 }

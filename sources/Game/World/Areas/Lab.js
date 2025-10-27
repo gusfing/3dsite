@@ -1268,7 +1268,7 @@ export class Lab extends Area
     {
         this.events.on('enter', () =>
         {
-            this.game.achievements.setProgress('labEnter', 1)
+            this.game.achievements.setProgress('areas', 'lab')
         })
     }
 

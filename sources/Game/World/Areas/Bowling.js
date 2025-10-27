@@ -464,7 +464,7 @@ export class Bowling extends Area
     {
         this.events.on('enter', () =>
         {
-            this.game.achievements.setProgress('bowlingEnter', 1)
+            this.game.achievements.setProgress('areas', 'bowling')
         })
     }
 
@@ -540,6 +540,8 @@ export class Bowling extends Area
                         this.game.world.confetti.pop(this.screen.group.position.clone().add(new THREE.Vector3(- 1, - 1, 0)))
                         this.game.world.confetti.pop(this.screen.group.position.clone().add(new THREE.Vector3(- 3.4, - 1, 0)))
                     }
+
+                    this.game.achievements.setProgress('strike', 1)
                 }
             }
         }

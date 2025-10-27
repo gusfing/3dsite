@@ -74,6 +74,8 @@ export class Physics
 
         // Attributes
         physical.waterGravityMultiplier = typeof _physicalDescription.waterGravityMultiplier !== 'undefined' ? _physicalDescription.waterGravityMultiplier : - 1.5
+        physical.linearDamping = typeof _physicalDescription.linearDamping !== 'undefined' ? _physicalDescription.linearDamping : 0.1
+        physical.angularDamping = typeof _physicalDescription.angularDamping !== 'undefined' ? _physicalDescription.angularDamping : 0.1
 
         // Body
         let rigidBodyDesc = this.game.RAPIER.RigidBodyDesc
@@ -108,15 +110,9 @@ export class Physics
         if(typeof _physicalDescription.canSleep !== 'undefined')
             rigidBodyDesc.setCanSleep(_physicalDescription.canSleep)
 
-        if(typeof _physicalDescription.linearDamping !== 'undefined')
-            rigidBodyDesc.setLinearDamping(_physicalDescription.linearDamping)
-        else
-            rigidBodyDesc.setLinearDamping(0.1)
+        rigidBodyDesc.setLinearDamping(physical.linearDamping)
 
-        if(typeof _physicalDescription.angularDamping !== 'undefined')
-            rigidBodyDesc.setAngularDamping(_physicalDescription.angularDamping)
-        else
-            rigidBodyDesc.setAngularDamping(0.1)
+        rigidBodyDesc.setAngularDamping(physical.angularDamping)
 
         if(typeof _physicalDescription.sleeping !== 'undefined')
             rigidBodyDesc.setSleeping(_physicalDescription.sleeping)
@@ -227,6 +223,17 @@ export class Physics
         {
             const waterDepth = Math.max(- physical.body.translation().y, this.game.water.elevation)
             physical.body.setGravityScale(1 + waterDepth * physical.waterGravityMultiplier)
+
+            if(waterDepth > 0)
+            {
+                physical.body.setLinearDamping(1)
+                physical.body.setAngularDamping(1)
+            }
+            else
+            {
+                physical.body.setLinearDamping(physical.linearDamping)
+                physical.body.setAngularDamping(physical.angularDamping)
+            }
         }
         
         this.world.step()

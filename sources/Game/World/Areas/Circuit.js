@@ -1498,7 +1498,7 @@ export default class Circuit extends Area
     {
         this.events.on('enter', () =>
         {
-            this.game.achievements.setProgress('circuitEnter', 1)
+            this.game.achievements.setProgress('areas', 'circuit')
         })
     }
 
@@ -1568,6 +1568,15 @@ export default class Circuit extends Area
                 // Podium => Show
                 if(!forced)
                     this.podium.show()
+
+                // Achievement
+                if(!forced)
+                {
+                    this.game.achievements.setProgress('circuitFinish', 1)
+
+                    if(this.timer.elapsedTime < 30)
+                        this.game.achievements.setProgress('circuitFinishFast', 1)
+                }
 
                 // Circuit en modal (if server connected)
                 if(this.game.server.connected)

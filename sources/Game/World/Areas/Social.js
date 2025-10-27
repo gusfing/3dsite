@@ -25,6 +25,7 @@ export class Social extends Area
         this.setLinks()
         this.setFans()
         this.setOnlyFans()
+        this.setStatue()
         this.setAchievement()
 
         this.game.ticker.events.on('tick', () =>
@@ -150,6 +151,9 @@ export class Social extends Area
             this.fans.currentIndex = (this.fans.currentIndex + 1) % this.fans.count
 
             this.fans.visibleCount = Math.min(this.fans.visibleCount + 1, this.fans.count)
+
+            // Achievement
+            this.game.achievements.setProgress('fan', 1)
         }
     }
 
@@ -179,11 +183,19 @@ export class Social extends Area
         )
     }
 
+    setStatue()
+    {
+        this.statue = {}
+        this.statue.body = this.references.get('statue')[0].userData.object.physical.body
+        this.statue.isSleeping = true
+        this.statue.down = false
+    }
+
     setAchievement()
     {
         this.events.on('enter', () =>
         {
-            this.game.achievements.setProgress('socialEnter', 1)
+            this.game.achievements.setProgress('areas', 'social')
         })
     }
 
@@ -197,6 +209,17 @@ export class Social extends Area
 
             if(!allFansSleeping)
                 this.fans.instancedGroup.updateBoundings()
+        }
+    
+        if(!this.statue.down && !this.statue.body.isSleeping())
+        {
+            const statueUp = new THREE.Vector3(0, 1, 0)
+            statueUp.applyQuaternion(this.statue.body.rotation())
+            if(statueUp.y < 0.25)
+            {
+                this.statue.down = true
+                this.game.achievements.setProgress('statueDown', 1)
+            }
         }
     }
 }

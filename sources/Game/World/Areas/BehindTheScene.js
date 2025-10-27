@@ -141,7 +141,7 @@ export class BehindTheScene extends Area
     {
         this.events.on('enter', () =>
         {
-            this.game.achievements.setProgress('behindTheSceneEnter', 1)
+            this.game.achievements.setProgress('areas', 'behindTheScene')
         })
     }
 
