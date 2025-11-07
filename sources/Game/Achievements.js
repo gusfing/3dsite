@@ -15,7 +15,7 @@ export class Achievements
 
         this.setStorage()
         this.setModal()
-        this.setSound()
+        this.setSounds()
         this.setGroups()
         this.setItems()
         this.setGlobalProgress()
@@ -213,6 +213,10 @@ export class Achievements
                 this.rewards.current = item
                 this.rewards.current.element.classList.add('is-active')
 
+                // Sound
+                this.sounds.paint.play()
+
+                // Event
                 this.events.trigger('rewardActiveChange', [ this.rewards.current ])
 
                 // Save
@@ -429,7 +433,7 @@ export class Achievements
                     }
 
                     // Sound
-                    this.sound.play()
+                    this.sounds.achieve.play()
 
                     // Notification
                     const html = /* html */`
@@ -467,13 +471,25 @@ export class Achievements
         this.modal.instance = this.game.modals.items.get('achievements')
     }
 
-    setSound()
+    setSounds()
     {
-
-        this.sound = this.game.audio.register(
+        this.sounds = {}
+        
+        this.sounds.achieve = this.game.audio.register(
             'achievement',
             {
                 path: 'sounds/achievements/Money Reward 2.mp3',
+                autoplay: false,
+                loop: false,
+                volume: 0.4,
+                antiSpam: 0.5
+            }
+        )
+
+        this.sounds.paint = this.game.audio.register(
+            'paint',
+            {
+                path: 'sounds/paint/Spray Paint 14.mp3',
                 autoplay: false,
                 loop: false,
                 volume: 0.4,
