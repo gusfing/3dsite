@@ -33,6 +33,7 @@ export class CircuitArea extends Area
 
         this.state = CircuitArea.STATE_PENDING
 
+        this.setSounds()
         this.setStartPosition()
         this.setRoad()
         this.setStartingLights()
@@ -62,6 +63,70 @@ export class CircuitArea extends Area
         {
             this.update()
         })
+    }
+
+    setSounds()
+    {
+        this.sounds = {}
+
+        this.sounds.countdown1 = this.game.audio.register(
+            'countdown1',
+            {
+                path: 'sounds/circuit/countdown/Game Start Countdown 31-1.mp3',
+                autoplay: false,
+                loop: false,
+                volume: 0.5,
+                antiSpam: 0.1
+            }
+        )
+
+        this.sounds.countdown2 = this.game.audio.register(
+            'countdown2',
+            {
+                path: 'sounds/circuit/countdown/Game Start Countdown 31-2.mp3',
+                autoplay: false,
+                loop: false,
+                volume: 0.5,
+                antiSpam: 0.1
+            }
+        )
+
+        this.sounds.checkpoint = this.game.audio.register(
+            'checkpoint',
+            {
+                path: 'sounds/circuit/checkpoint/Win Score 1.mp3',
+                autoplay: false,
+                loop: false,
+                volume: 0.5,
+                antiSpam: 0.1,
+                playBinding: (item, reachedCount) =>
+                {
+                    item.rate = 1 + (reachedCount - 1) * 0.06
+                }
+            }
+        )
+
+        this.sounds.finish = this.game.audio.register(
+            'finish',
+            {
+                path: 'sounds/circuit/finish/Big Win Fanfare 2.mp3',
+                autoplay: false,
+                loop: false,
+                volume: 0.5,
+                antiSpam: 0.1
+            }
+        )
+
+        this.sounds.applause = this.game.audio.register(
+            'applause',
+            {
+                path: 'sounds/circuit/applause/huge win.mp3',
+                autoplay: false,
+                loop: false,
+                volume: 0.5,
+                antiSpam: 0.1
+            }
+        )
     }
 
     setStartPosition()
@@ -409,6 +474,9 @@ export class CircuitArea extends Area
                 this.checkpoints.last = checkpoint
                 this.checkpoints.reachedCount++
 
+                // Sound
+                this.sounds.checkpoint.play(this.checkpoints.reachedCount)
+
                 // Timings
                 this.checkpoints.timings.push(this.timer.elapsedTime)
 
@@ -607,19 +675,23 @@ export class CircuitArea extends Area
 
         this.startAnimation.timeline.add(() =>
         {
+            this.sounds.countdown1.play()
             this.startingLights.mesh.visible = true
             this.startingLights.mesh.position.z = this.startingLights.baseZ + 0.01
         })
         this.startAnimation.timeline.add(gsap.delayedCall(this.startAnimation.interDuration, () =>
         {
+            this.sounds.countdown1.play()
             this.startingLights.mesh.position.z = this.startingLights.baseZ + 0.02
         }))
         this.startAnimation.timeline.add(gsap.delayedCall(this.startAnimation.interDuration, () =>
         {
+            this.sounds.countdown1.play()
             this.startingLights.mesh.position.z = this.startingLights.baseZ + 0.03
         }))
         this.startAnimation.timeline.add(gsap.delayedCall(this.startAnimation.interDuration, () =>
         {
+            this.sounds.countdown2.play()
             this.startingLights.mesh.material = this.startingLights.greenMaterial
 
             if(typeof this.startAnimation.endCallback === 'function')
@@ -1489,6 +1561,12 @@ export class CircuitArea extends Area
         this.checkpoints.target = null
         this.checkpoints.doorTarget.mesh.visible = false
 
+        // Sound
+        if(!forced)
+        {
+            this.sounds.finish.play()
+        }
+
         gsap.delayedCall(forced ? 1 : 4, () =>
         {
             // Overlay > Show
@@ -1545,6 +1623,15 @@ export class CircuitArea extends Area
 
                     if(this.timer.elapsedTime < 30)
                         this.game.achievements.setProgress('circuitFinishFast', 1)
+                }
+
+                // Sound
+                if(!forced)
+                {
+                    gsap.delayedCall(2, () =>
+                    {
+                        this.sounds.applause.play()
+                    })
                 }
 
                 // Circuit en modal (if server connected)

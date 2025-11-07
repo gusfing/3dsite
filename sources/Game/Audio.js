@@ -166,7 +166,7 @@ export class Audio
                 volume: 0,
                 tickBinding: (item) =>
                 {
-                    const directionRatio = (1 - Math.abs(this.game.physicalVehicle.forwardRatio)) * 0.3
+                    const directionRatio = (1 - Math.abs(this.game.physicalVehicle.forwardRatio)) * 0.6
                     
                     let brakeEffect = Math.max(directionRatio, this.game.player.braking) * this.game.physicalVehicle.xzSpeed * 0.15 * this.game.physicalVehicle.wheels.inContactCount / 4
                     brakeEffect = clamp(brakeEffect, 0, 1)

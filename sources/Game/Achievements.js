@@ -15,6 +15,7 @@ export class Achievements
 
         this.setStorage()
         this.setModal()
+        this.setSound()
         this.setGroups()
         this.setItems()
         this.setGlobalProgress()
@@ -427,6 +428,9 @@ export class Achievements
                         this.game.world.confetti.pop(this.game.player.position.clone().add(new THREE.Vector3(1, -1, -1.5)))
                     }
 
+                    // Sound
+                    this.sound.play()
+
                     // Notification
                     const html = /* html */`
                         <div class="top">
@@ -461,6 +465,21 @@ export class Achievements
     {
         this.modal = {}
         this.modal.instance = this.game.modals.items.get('achievements')
+    }
+
+    setSound()
+    {
+
+        this.sound = this.game.audio.register(
+            'achievement',
+            {
+                path: 'sounds/achievements/Money Reward 2.mp3',
+                autoplay: false,
+                loop: false,
+                volume: 0.4,
+                antiSpam: 0.5
+            }
+        )
     }
 
     setReset()
