@@ -1,7 +1,7 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../../Game.js'
 import { InteractivePoints } from '../../InteractivePoints.js'
-import { clamp, lerp } from '../../utilities/maths.js'
+import { clamp, lerp, remapClamp } from '../../utilities/maths.js'
 import gsap from 'gsap'
 import { color, float, Fn, instancedBufferAttribute, instanceIndex, max, min, mix, positionGeometry, sin, step, texture, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
 import { InstancedGroup } from '../../InstancedGroup.js'
@@ -24,6 +24,7 @@ export class BowlingArea extends Area
         this.won = false
         this.wonTime = 0
 
+        this.setSounds()
         this.setPins()
         this.setBall()
         this.setRestart()
@@ -36,6 +37,48 @@ export class BowlingArea extends Area
         {
             this.update()
         }, 5)
+    }
+
+    setSounds()
+    {
+        this.sounds = {}
+
+        this.sounds.pin = this.game.audio.register(
+            'hitPin',
+            {
+                path: 'sounds/hits/pins/ComedyCrash 6115_16_4.mp3',
+                autoplay: false,
+                volume: 0.5,
+                antiSpam: 0.05,
+                positions: new THREE.Vector3(),
+                distanceFade: 35,
+                playBinding: (item, force, position) =>
+                {
+                    item.positions[0].copy(position)
+                    const forceRemaped = remapClamp(force, 3, 10, 0, 1)
+                    item.volume = forceRemaped * 0.5
+                    item.rate = 1.2 - forceRemaped * 0.2
+                }
+            }
+        )
+
+        this.sounds.rolling = this.game.audio.register(
+            'rolling',
+            {
+                path: 'sounds/rolling/06290 medium ball rolling lp.mp3',
+                autoplay: true,
+                loop: true,
+                volume: 0.5,
+                rate: 0.8,
+                positions: new THREE.Vector3(),
+                distanceFade: 25,
+                tickBinding: (item) =>
+                {
+                    item.positions[0].copy(this.ball.position)
+                    item.volume = remapClamp(this.ball.speed, 0, 5, 0, 0.6)
+                }
+            }
+        )
     }
 
     setPins()
@@ -83,10 +126,11 @@ export class BowlingArea extends Area
                     colliders: descriptions[1].colliders,
                     waterGravityMultiplier: - 1,
                     mass: 0.02,
-                    // collidersOverwrite:
-                    // {
-                        
-                    // }
+                    contactThreshold: 5,
+                    onCollision: (force, position) =>
+                    {
+                        this.sounds.pin.play(force, position)
+                    }
                 },
             )
 
@@ -130,8 +174,11 @@ export class BowlingArea extends Area
                 pin.body.resetTorques()
                 pin.body.setLinvel({ x: 0, y: 0, z: 0 })
                 pin.body.setAngvel({ x: 0, y: 0, z: 0 })
-                pin.body.setEnabled(true)
-                pin.body.sleep()
+                // pin.body.setEnabled(true)
+                this.game.ticker.wait(2, () =>
+                {
+                    pin.body.sleep()
+                })
             }
         }
     }
@@ -144,6 +191,8 @@ export class BowlingArea extends Area
         this.ball.isSleeping = true
         this.ball.body = baseBall.userData.object.physical.body
         this.ball.basePosition = baseBall.position.clone()
+        this.ball.position = new THREE.Vector3().copy(this.ball.body.translation())
+        this.ball.speed = 0
         // this.ball.basePosition.y += 1
 
         this.ball.reset = () =>
@@ -153,8 +202,11 @@ export class BowlingArea extends Area
             this.ball.body.resetTorques()
             this.ball.body.setLinvel({ x: 0, y: 0, z: 0 })
             this.ball.body.setAngvel({ x: 0, y: 0, z: 0 })
-            this.ball.body.setEnabled(true)
-            this.ball.body.sleep()
+            // this.ball.body.setEnabled(true)
+            this.game.ticker.wait(2, () =>
+            {
+                this.ball.body.sleep()
+            })
         }
     }
 
@@ -331,6 +383,8 @@ export class BowlingArea extends Area
                     },
                 }
             )
+
+            this.game.player.sounds.suspensions.play()
         }
 
         // Interactive point
@@ -542,6 +596,8 @@ export class BowlingArea extends Area
                         this.game.world.confetti.pop(this.screen.group.position.clone().add(new THREE.Vector3(- 3.4, - 1, 0)))
                     }
 
+                    this.game.achievements.sounds.achieve.play()
+
                     this.game.achievements.setProgress('strike', 1)
                 }
             }
@@ -564,6 +620,18 @@ export class BowlingArea extends Area
 
             if(!this.ball.isSleeping)
                 showRestartInteractivePoint = true
+        }
+        if(!ballIsSleeping)
+        {
+            const ballPosition = new THREE.Vector3().copy(this.ball.body.translation())
+            const delta = ballPosition.clone().sub(this.ball.position)
+            
+            this.ball.position.copy(ballPosition)
+            this.ball.speed = delta.length() / this.game.ticker.delta
+        }
+        else
+        {
+            this.ball.speed = 0
         }
 
         // Restart interactive point

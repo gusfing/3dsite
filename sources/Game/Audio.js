@@ -29,12 +29,12 @@ export class Audio
         this.setAmbiants()
         this.setPunctuals()
         
-        // this.music.play()
+        this.music.play()
 
         // Play all autoplays that didn't start because not initated
         this.groups.forEach((group, name) =>
         {
-            for(const item of group)
+            for(const item of group.items)
             {
                 if(item.autoplay && !item.playing)
                     item.play()
@@ -113,10 +113,21 @@ export class Audio
 
         if(!group)
         {
-            group = []
+            group = {}
+            group.items = []
+            group.lastPlayedId = -1
+            group.playRandomNext = (...parameters) =>
+            {
+                const delta = 1 + Math.floor(Math.random() * (group.items.length - 2))
+                const id = (group.lastPlayedId + delta) % (group.items.length - 1)
+
+                const item = group.items[id]
+                item.play(...parameters)
+                group.lastPlayedId = id
+            }
             this.groups.set(name, group)
         }
-        group.push(item)
+        group.items.push(item)
 
         return item
     }
@@ -422,7 +433,7 @@ export class Audio
                 volume: 0,
                 tickBinding: (item) =>
                 {
-                    item.volume = this.groups.get('floor')[0].volume * 0.5
+                    item.volume = this.groups.get('floor').items[0].volume * 0.5
                     
                     item.rate = 1.2
                 }
@@ -605,7 +616,116 @@ export class Audio
                 volume: 0.3
             }
         )
+
+        // Hits default
+        {
+            const paths = [
+                [ 'sounds/hits/defaults/Stone_Hit_Crash_106-2.mp3', 0.35 ],
+                [ 'sounds/hits/defaults/Stone_Hit_Crash_071-1.mp3', 0.35 ],
+                [ 'sounds/hits/defaults/Stone_Hit_Crash_106-1.mp3', 0.35 ],
+                [ 'sounds/hits/defaults/Impact Soft 01.mp3', 0.8 ],
+                [ 'sounds/hits/defaults/Impact Soft 02.mp3', 0.8 ],
+                [ 'sounds/hits/defaults/Impact Soft 03.mp3', 0.8 ],
+                [ 'sounds/hits/defaults/Impact Soft 04.mp3', 0.8 ],
+            ]
+
+            for(const [path, baseVolume] of paths)
+            {
+                this.register(
+                    'hitDefault',
+                    {
+                        path: path,
+                        autoplay: false,
+                        volume: baseVolume,
+                        antiSpam: 0.1,
+                        positions: new THREE.Vector3(),
+                        distanceFade: 20,
+                        playBinding: (item, force, position) =>
+                        {
+                            item.positions[0].copy(position)
+                            const forceVolume = remapClamp(force, 0, 200, 0, 1)
+                            item.volume = baseVolume * forceVolume
+                            item.rate = 0.9 + Math.random() * 0.2
+                        }
+                    }
+                )
+            }
+        }
+
+        // Hits bricks
+        {
+            const paths = [
+                [ 'sounds/hits/bricks/24445 brick light hitting-full-2.mp3', 0.6 ],
+                [ 'sounds/hits/bricks/41559 Stone brick fall hit 01-full-1.mp3', 0.6 ],
+                [ 'sounds/hits/bricks/41563 Stone brick fall hit 05-full-1.mp3', 0.6 ],
+                [ 'sounds/hits/bricks/BrickSetDown_BW.5803-1.mp3', 0.6 ],
+            ]
+
+            for(const [path, baseVolume] of paths)
+            {
+                this.register(
+                    'hitBrick',
+                    {
+                        path: path,
+                        autoplay: false,
+                        volume: baseVolume,
+                        antiSpam: 0.1,
+                        positions: new THREE.Vector3(),
+                        distanceFade: 20,
+                        playBinding: (item, force, position) =>
+                        {
+                            item.positions[0].copy(position)
+                            item.volume = baseVolume * Math.pow(remapClamp(force, 5, 20, 0, 1), 2)
+                            item.rate = 0.9 + Math.random() * 0.2
+                        }
+                    }
+                )
+            }
+        }
+
+        // Hits metal
+        {
+            const paths = [
+                [ 'sounds/hits/metal/EQUIPTact_Fire Gear_SDFIRE0411.mp3', 0.6 ],
+                [ 'sounds/hits/metal/Metal Clip Hit.mp3', 0.6 ],
+                [ 'sounds/hits/metal/Metalic 3.mp3', 0.6 ],
+            ]
+
+            for(const [path, baseVolume] of paths)
+            {
+                this.register(
+                    'hitMetal',
+                    {
+                        path: path,
+                        autoplay: false,
+                        volume: baseVolume,
+                        antiSpam: 0.1,
+                        positions: new THREE.Vector3(),
+                        distanceFade: 20,
+                        playBinding: (item, force, position) =>
+                        {
+                            item.positions[0].copy(position)
+                            item.volume = baseVolume * Math.pow(remapClamp(force, 5, 20, 0, 1), 2)
+                            item.rate = 0.9 + Math.random() * 0.2
+                        }
+                    }
+                )
+            }
+        }
     }
+
+    // playRandomNextFromGroup(groupName)
+    // {
+    //     const group = this.groups.get(groupName)
+
+    //     if(!group)
+    //         return false
+
+    //     const delta = 1 + Math.floor(Math.random() * (group.length - 2))
+    //     id += delta
+    //     id = id % (group.length - 1)
+    //     group[id].play(force)
+    // }
 
     setMuteToggle()
     {
@@ -669,7 +789,7 @@ export class Audio
         this.globalRate = this.game.time.scale / this.game.time.defaultScale
         this.groups.forEach((group) =>
         {
-            for(const item of group)
+            for(const item of group.items)
             {
                 // Apply tick binding
                 if(typeof item.tickBinding === 'function')

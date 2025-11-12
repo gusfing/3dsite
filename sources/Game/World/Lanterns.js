@@ -41,7 +41,12 @@ export class Lanterns
                     mass: 0.1,
                     sleeping: true,
                     colliders: [ { shape: 'cuboid', parameters: [ 0.7 * 0.5, 1 * 0.5, 0.7 * 0.5 ], category: 'object' } ],
-                    waterGravityMultiplier: - 1
+                    waterGravityMultiplier: - 1,
+                    contactThreshold: 10,
+                    onCollision: (force, position) =>
+                    {
+                        this.game.audio.groups.get('hitMetal').playRandomNext(force, position)
+                    }
                 },
             )
         }

@@ -36,7 +36,12 @@ export class Bricks
                     mass: 0.1,
                     sleeping: true,
                     colliders: [ { shape: 'cuboid', parameters: [ 0.75 * 0.75, 0.5 * 0.75, 1 * 0.75 ], category: 'object' } ],
-                    waterGravityMultiplier: - 1
+                    waterGravityMultiplier: - 1,
+                    contactThreshold: 15,
+                    onCollision: (force, position) =>
+                    {
+                        this.game.audio.groups.get('hitBrick').playRandomNext(force, position)
+                    }
                 },
             )
         }

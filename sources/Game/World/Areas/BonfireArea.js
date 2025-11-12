@@ -122,7 +122,7 @@ export class BonfireArea extends Area
                         this.game.world.areas.social.statue.down = false
 
                     // Sound
-                    this.game.audio.groups.get('campfire')[0].positions.push(this.references.get('interactivePoint')[0].position)
+                    this.game.audio.groups.get('campfire').items[0].positions.push(this.references.get('interactivePoint')[0].position)
 
                     // Achievement
                     gsap.delayedCall(2, () =>

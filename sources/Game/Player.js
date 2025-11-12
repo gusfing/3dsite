@@ -64,7 +64,7 @@ export class Player
                 antiSpam: 0.1,
                 playBinding: (item, count) =>
                 {
-                    item.volume = 0.25 + count * 0.05
+                    item.volume = 0.3 + count * 0.08
                     item.rate = 0.9 + Math.random() * 0.2
                 }
             }

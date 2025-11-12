@@ -83,10 +83,13 @@ export class Objects
         /**
          * Save physical in visual and vis versa
          */
-        if(object.physical && object.visual)
+        if(object.physical)
+        {
+            object.physical.body.userData = { object: object }
+        }
+        if(object.visual)
         {
             object.visual.object3D.userData.object = object
-            object.physical.body.userData = { object: object }
         }
 
         /**
@@ -141,6 +144,12 @@ export class Objects
             // Category
             if(typeof _model.userData.category !== 'undefined')
                 _physicalDescription.category = _model.userData.category
+
+            // Collision
+            _physicalDescription.onCollision = (force, position) =>
+            {
+                this.game.audio.groups.get('hitDefault').playRandomNext(force, position)
+            }
 
             _model.name = name.replaceAll(cleanUpRegexp, '')
 

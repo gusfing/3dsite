@@ -106,7 +106,11 @@ export class Trees
                     rotation: treeReference.quaternion,
                     friction: 0.7,
                     sleeping: true,
-                    colliders: [ { shape: 'cylinder', parameters: [ 2.5, 0.15 ], category: 'object' } ]
+                    colliders: [ { shape: 'cylinder', parameters: [ 2.5, 0.15 ], category: 'object' } ],
+                    onCollision: (force, position) =>
+                    {
+                        this.game.audio.groups.get('hitDefault').playRandomNext(force, position)
+                    }
                 }
             )
         }

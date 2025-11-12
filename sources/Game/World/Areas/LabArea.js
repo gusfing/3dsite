@@ -1459,9 +1459,9 @@ export class LabArea extends Area
         // Sounds
         if(!silent)
         {
-            this.game.audio.groups.get('click')[0].play()
-            this.game.audio.groups.get('slide')[0].play()
-            this.game.audio.groups.get('assemble')[0].play()
+            this.game.audio.groups.get('click').items[0].play()
+            this.game.audio.groups.get('slide').items[0].play()
+            this.game.audio.groups.get('assemble').items[0].play()
         }
 
         // Achievements

@@ -197,9 +197,16 @@ export class Physics
                 category = _colliderDescription.category
 
             colliderDescription = colliderDescription.setCollisionGroups(this.categories[category])
+            
+            if(typeof _physicalDescription.onCollision === 'function' || typeof _physicalDescription.contactThreshold !== 'undefined')
+            {
+                colliderDescription = colliderDescription.setActiveEvents(this.game.RAPIER.ActiveEvents.CONTACT_FORCE_EVENTS)
+                
+                colliderDescription = colliderDescription.setContactForceEventThreshold(typeof _physicalDescription.contactThreshold !== 'undefined' ? _physicalDescription.contactThreshold : 15)
 
-            // if(typeof _colliderDescription.hasEvents !== 'undefined' && _colliderDescription.hasEvents === true)
-            //     colliderDescription = colliderDescription.setActiveEvents(this.game.RAPIER.ActiveEvents.COLLISION_EVENTS)
+                if(typeof _physicalDescription.onCollision === 'function')
+                    physical.onCollision = _physicalDescription.onCollision
+            }
 
             const collider = this.world.createCollider(colliderDescription, physical.body)
             physical.colliders.push(collider)
@@ -241,26 +248,54 @@ export class Physics
         // this.world.step()
         this.world.step(this.eventQueue)
 
-        // Works but not handy
-        this.eventQueue.drainCollisionEvents((handle1, handle2, started) =>
-        {
-            if(started)
-            {
-                const collider1 = this.world.getCollider(handle1)
-                const collider2 = this.world.getCollider(handle2)
+        // // Works but not handy
+        // this.eventQueue.drainCollisionEvents((handle1, handle2, started) =>
+        // {
+        //     if(started)
+        //     {
+        //         const collider1 = this.world.getCollider(handle1)
+        //         const collider2 = this.world.getCollider(handle2)
 
-                console.log('---')
-                console.log(collider1)
-                console.log(collider2)
-            }
-        })
+        //         console.log('---')
+        //         console.log(handle1)
+        //         console.log(handle2)
+        //         console.log(collider1)
+        //         console.log(collider2)
+        //     }
+        // })
 
         // Doesn't work
-        // this.eventQueue.drainContactForceEvents(event =>
-        // {
-        //     // let handle1 = event.collider1(); // Handle of the first collider involved in the event.
-        //     // let handle2 = event.collider2(); // Handle of the second collider involved in the event.
-        //     console.log('b')
-        // })
+        this.eventQueue.drainContactForceEvents(event =>
+        {
+            // Retrieve colliders
+            const collider1 = this.world.getCollider(event.collider1())
+            const collider2 = this.world.getCollider(event.collider2())
+
+            // Retrieve bodies
+            const body1 = collider1.parent()
+            const body2 = collider2.parent()
+
+            // Retrieve callbacks
+            const callback1 = body1.userData?.object?.physical?.onCollision
+            const callback2 = body2.userData?.object?.physical?.onCollision
+
+            // Trigger callbacks with force
+            if(typeof callback1 === 'function' || typeof callback2 === 'function')
+            {
+                const mass1 = body1.mass()
+                const mass2 = body2.mass()
+                const force = event.maxForceMagnitude() / (mass1 + mass2)
+                
+                const position1 = body1.translation()
+                const position2 = body2.translation()
+                
+                const bodyPosition = (position1.x === 0 && position1.y === 0 && position1.z === 0) ? position2 : position1
+
+                if(typeof callback1 === 'function')
+                    callback1(force, bodyPosition)
+                if(typeof callback2 === 'function')
+                    callback2(force, bodyPosition)
+            }
+        })
     }
 }
