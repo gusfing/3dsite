@@ -23,7 +23,7 @@ import { Fireballs } from './Fireballs.js'
 import { ExplosiveCrates } from './ExplosiveCrates.js'
 import { RainLines } from './RainLines.js'
 import { Confetti } from './Confetti.js'
-import { IntroLoader } from './IntroLoader.js'
+import { Intro } from './Intro.js'
 import { PoleLights } from './PoleLights.js'
 import { Lanterns } from './Lanterns.js'
 import { Fences } from './Fences.js'
@@ -49,7 +49,7 @@ export class World
         if(step === 0)
         {
             this.grid = new Grid()
-            this.introLoader = new IntroLoader()
+            this.intro = new Intro()
         }
         else if(step === 1)
         {

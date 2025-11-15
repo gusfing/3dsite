@@ -4,7 +4,7 @@ import { atan, Fn, PI, PI2, positionGeometry, texture, uniform, vec3, vec4 } fro
 import gsap from 'gsap'
 import { Inputs } from '../Inputs/Inputs.js'
 
-export class IntroLoader
+export class Intro
 {
     constructor()
     {

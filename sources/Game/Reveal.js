@@ -50,7 +50,7 @@ export class Reveal
         if(step === 0)
         {
             // Intro loader => Hide circle
-            this.game.world.introLoader.circle.hide(() =>
+            this.game.world.intro.circle.hide(() =>
             {
                 // Grid
                 this.game.world.grid.show()
@@ -84,7 +84,7 @@ export class Reveal
                 )
 
                 // Intro loader => Show label
-                this.game.world.introLoader.setLabel()
+                this.game.world.intro.setLabel()
 
                 // Cherry trees
                 if(this.game.world.cherryTrees)
@@ -168,7 +168,7 @@ export class Reveal
             )
 
             // Intro loader => Hide label
-            this.game.world.introLoader.hideLabel()
+            this.game.world.intro.hideLabel()
 
             // Inputs
             this.game.inputs.filters.clear()

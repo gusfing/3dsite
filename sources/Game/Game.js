@@ -142,7 +142,7 @@ export class Game
             ],
             (toLoad, total) =>
             {
-                this.world.introLoader.updateProgress(1 - toLoad / total)
+                this.world.intro.updateProgress(1 - toLoad / total)
             }
         )
 

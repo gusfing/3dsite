@@ -2,7 +2,7 @@ import { Game } from '../../Game.js'
 import { InteractivePoints } from '../../InteractivePoints.js'
 import { Area } from './Area.js'
 
-export class IntroArea extends Area
+export class LandingArea extends Area
 {
     constructor(references)
     {
@@ -70,7 +70,7 @@ export class IntroArea extends Area
         })
         this.events.on('leave', () =>
         {
-            this.game.achievements.setProgress('introLeave', 1)
+            this.game.achievements.setProgress('landingLeave', 1)
         })
     }
 }

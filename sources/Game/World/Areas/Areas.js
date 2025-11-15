@@ -2,7 +2,7 @@ import { Game } from '../../Game.js'
 import { AltarArea } from './AltarArea.js'
 import { CookieArea } from './CookieArea.js'
 import { BonfireArea } from './BonfireArea.js'
-import { IntroArea } from './IntroArea.js'
+import { LandingArea } from './LandingArea.js'
 import { ControlsArea } from './ControlsArea.js'
 import { ProjectsArea } from './ProjectsArea.js'
 import { LabArea } from './LabArea.js'
@@ -22,6 +22,10 @@ export class Areas
 
         this.setReferences()
         this.setObjects()
+
+        const landingReferences = this.references.getStartingWith('landing')
+        if(landingReferences.size)
+            this.landing = new LandingArea(landingReferences)
 
         const achievementsReferences = this.references.getStartingWith('achievements')
         if(achievementsReferences.size)
@@ -63,10 +67,6 @@ export class Areas
         if(bonfireReferences.size)
             this.poleLights = new BonfireArea(bonfireReferences)
             
-        const introReferences = this.references.getStartingWith('intro')
-        if(introReferences.size)
-            this.intro = new IntroArea(introReferences)
-
         const controlsReferences = this.references.getStartingWith('controls')
         if(controlsReferences.size)
             this.controls = new ControlsArea(controlsReferences)
