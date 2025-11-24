@@ -145,15 +145,20 @@ export class Audio
     setPlaylist()
     {
         const paths = [
-            'sounds/musics/scarborough-fair-dance_stem-04.mp3',
-            'sounds/musics/Moonglow.mp3',
-            'sounds/musics/Healing Native Flute 01.mp3',
-            'sounds/musics/omaha_main-full.mp3',
+            // 'sounds/musics/scarborough-fair-dance_stem-04.mp3',
+            // 'sounds/musics/Moonglow.mp3',
+            // 'sounds/musics/Healing Native Flute 01.mp3',
+            // 'sounds/musics/omaha_main-full.mp3',
+            'sounds/musics/Portfolio BS - Track 1.mp3',
+            'sounds/musics/Portfolio BS - Track 2.mp3',
+            'sounds/musics/Portfolio BS - Track 3.mp3',
+            'sounds/musics/Portfolio BS - Track 4.mp3',
         ]
 
         this.playlist = {}
         this.playlist.songs = []
-        this.playlist.index = (Math.floor(Date.now() / 1000 / 60 / 3) % paths.length) - 1 // Different music every X minutes
+        // this.playlist.index = (Math.floor(Date.now() / 1000 / 60 / 3) % paths.length) - 1 // Different music every X minutes
+        this.playlist.index = -1 // Different music every X minutes
         this.playlist.current = null
 
         for(const path of paths)
@@ -181,6 +186,8 @@ export class Audio
 
             if(this.playlist.index >= this.playlist.songs.length)
                 this.playlist.index = 0
+
+            console.log('playing', this.playlist.index)
 
             // Old one
             if(this.playlist.current)
@@ -421,9 +428,9 @@ export class Audio
         {
             const positions = []
             if(this.game.world.areas?.cookieStand)
-                positions.push(this.game.world.areas.cookieStand.references.get('spawner')[0].position)
+                positions.push(this.game.world.areas.cookieStand.references.items.get('spawner')[0].position)
             if(this.game.world.areas?.projects)
-                positions.push(this.game.world.areas.projects.references.get('oven')[0].position)
+                positions.push(this.game.world.areas.projects.references.items.get('oven')[0].position)
 
             if(positions.length)
             {
@@ -443,7 +450,7 @@ export class Audio
         {
             const positions = []
             if(this.game.world.areas?.lab)
-                positions.push(this.game.world.areas.lab.references.get('fire')[0].position)
+                positions.push(this.game.world.areas.lab.references.items.get('fire')[0].position)
 
             if(positions.length)
             {

@@ -10,9 +10,9 @@ import { Area } from './Area.js'
 
 export class CookieArea extends Area
 {
-    constructor(references)
+    constructor(model)
     {
-        super(references)
+        super(model)
 
         if(this.game.debug.active)
         {
@@ -32,11 +32,6 @@ export class CookieArea extends Area
         this.setInteractivePoint()
         this.setCounter()
         this.setAchievement()
-
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        })
     }
 
     setSound()
@@ -59,14 +54,14 @@ export class CookieArea extends Area
 
     setBlower()
     {
-        this.blower = this.references.get('blower')[0]
+        this.blower = this.references.items.get('blower')[0]
     }
 
     setBanner()
     {
         const windStrength = float(0).toVarying()
 
-        const mesh = this.references.get('banner')[0]
+        const mesh = this.references.items.get('banner')[0]
 
         // Position
         mesh.material.positionNode = Fn(() =>
@@ -141,16 +136,27 @@ export class CookieArea extends Area
         const geometry = new THREE.CircleGeometry(0.015, 8)
 
         const mesh = new THREE.Mesh(geometry, material)
-        mesh.position.copy(this.references.get('chimney')[0].position)
+        mesh.position.copy(this.references.items.get('chimney')[0].position)
         mesh.count = count
         mesh.frustumCulled = true
 
-        this.game.ticker.wait(2, () =>
-        {
-            mesh.geometry.boundingSphere.center.y = 1
-            mesh.geometry.boundingSphere.radius = 1
-        })
         this.game.scene.add(mesh)
+
+        let frustumNeedsUpdate = true
+        this.events.on('frustumIn', () =>
+        {
+            if(frustumNeedsUpdate)
+            {
+                this.game.ticker.wait(2, () =>
+                {
+                    mesh.geometry.boundingSphere.center.y = 1
+                    mesh.geometry.boundingSphere.radius = 1
+                })
+                frustumNeedsUpdate = false
+            }
+        })
+
+        this.objects.hideable.push(mesh)
     }
 
     setOvenHeat()
@@ -171,21 +177,21 @@ export class CookieArea extends Area
             return vec4(vec3(emissiveColor), strength)
         })()
 
-        this.ovenHeat = this.references.get('ovenHeat')[0]
+        this.ovenHeat = this.references.items.get('ovenHeat')[0]
         this.ovenHeat.material = material
         this.ovenHeat.castShadow = false
     }
 
     setCookies()
     {
-        const baseCookie = this.references.get('cookie')[0]
+        const baseCookie = this.references.items.get('cookie')[0]
         // for(const child of baseCookie.children)
         //     child.position.sub(baseCookie.position)
         
         baseCookie.removeFromParent()
 
         this.cookies = {}
-        this.cookies.spawnerPosition = this.references.get('spawner')[0].position
+        this.cookies.spawnerPosition = this.references.items.get('spawner')[0].position
         this.cookies.count = 20
         this.cookies.visibleCount = 0
         this.cookies.realCount = this.cookies.count + 2
@@ -204,7 +210,7 @@ export class CookieArea extends Area
 
             if(onTable)
             {
-                reference.position.copy(this.references.get('table')[0].position)
+                reference.position.copy(this.references.items.get('table')[0].position)
                 reference.position.y += (i - this.cookies.count) * 0.25
             }
             else
@@ -260,7 +266,7 @@ export class CookieArea extends Area
     setInteractivePoint()
     {
         this.game.interactivePoints.create(
-            this.references.get('interactivePoint')[0].position,
+            this.references.items.get('interactivePoint')[0].position,
             'Accept cookie',
             InteractivePoints.ALIGN_RIGHT,
             InteractivePoints.STATE_CONCEALED,
@@ -287,7 +293,7 @@ export class CookieArea extends Area
     {
         this.counter = {}
         this.counter.value = 11
-        this.counter.panel = this.references.get('counterPanel')[0]
+        this.counter.panel = this.references.items.get('counterPanel')[0]
         this.counter.texture = null
         this.counter.initialised = false
 
@@ -345,8 +351,8 @@ export class CookieArea extends Area
 
             // Mesh
             const mesh = new THREE.Mesh(geometry, material)
-            mesh.position.copy(this.references.get('counterLabel')[0].position)
-            mesh.quaternion.copy(this.references.get('counterLabel')[0].quaternion)
+            mesh.position.copy(this.references.items.get('counterLabel')[0].position)
+            mesh.quaternion.copy(this.references.items.get('counterLabel')[0].quaternion)
             mesh.receiveShadow = true
             mesh.scale.y = 0.75
             mesh.scale.x = 0.75 * width / height
@@ -439,7 +445,7 @@ export class CookieArea extends Area
 
     setAchievement()
     {
-        this.events.on('enter', () =>
+        this.events.on('boundingIn', () =>
         {
             this.game.achievements.setProgress('areas', 'cookie')
         })

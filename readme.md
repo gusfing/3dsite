@@ -36,3 +36,23 @@ npm run build
 | 12 | Sounds |
 | 998 | Rendering |
 | 999 | Monitoring |
+
+## Blender
+
+### Export
+
+- Use corresponding presets
+- Mute the palette texture (loaded and set in Three.js `Material` directly)
+- Quantizing
+    - Terrain
+        - Position: 12
+        - Normal: 2
+        - Tex Coord: 2
+        - Color: 2
+        - Generic: 2
+    - Others
+        - Position: 12
+        - Normal: 6
+        - Tex Coord: 6
+        - Color: 2
+        - Generic: 2

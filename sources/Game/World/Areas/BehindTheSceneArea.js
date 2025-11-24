@@ -7,9 +7,9 @@ import { Area } from './Area.js'
 
 export class BehindTheSceneArea extends Area
 {
-    constructor(references)
+    constructor(model)
     {
-        super(references)
+        super(model)
 
         // Debug
         if(this.game.debug.active)
@@ -20,17 +20,12 @@ export class BehindTheSceneArea extends Area
             })
         }
 
-        this.center = this.references.get('center')[0].position
+        this.center = this.references.items.get('center')[0].position
 
         this.setSounds()
         this.setSlabs()
         this.setInteractivePoint()
         this.setAchievement()
-
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        }, 9)
     }
 
     setSounds()
@@ -42,7 +37,7 @@ export class BehindTheSceneArea extends Area
             autoplay: true,
             loop: true,
             volume: 0.15,
-            positions: this.references.get('interactivePoint')[0].position,
+            positions: this.references.items.get('interactivePoint')[0].position,
             distanceFade: 20
         })
     }
@@ -105,11 +100,12 @@ export class BehindTheSceneArea extends Area
         })()
 
         // Mesh
-        this.mesh = new THREE.Mesh(geometry, material)
-        this.mesh.frustumCulled = false
-        this.mesh.position.copy(this.center)
-        this.mesh.position.y += 0.01
-        this.game.scene.add(this.mesh)
+        this.slabs = new THREE.Mesh(geometry, material)
+        this.slabs.frustumCulled = false
+        this.slabs.position.copy(this.center)
+        this.slabs.position.y += 0.01
+        this.game.scene.add(this.slabs)
+        this.objects.hideable.push(this.slabs)
 
         // Debug
         if(this.game.debug.active)
@@ -122,7 +118,7 @@ export class BehindTheSceneArea extends Area
     setInteractivePoint()
     {
         this.interactivePoint = this.game.interactivePoints.create(
-            this.references.get('interactivePoint')[0].position,
+            this.references.items.get('interactivePoint')[0].position,
             'Behind the scene',
             InteractivePoints.ALIGN_RIGHT,
             InteractivePoints.STATE_CONCEALED,
@@ -154,7 +150,7 @@ export class BehindTheSceneArea extends Area
 
     setAchievement()
     {
-        this.events.on('enter', () =>
+        this.events.on('boundingIn', () =>
         {
             this.game.achievements.setProgress('areas', 'behindTheScene')
         })
@@ -162,8 +158,8 @@ export class BehindTheSceneArea extends Area
 
     update()
     {
-        this.vehicleRelativePosition.value.x = this.game.physicalVehicle.position.x - this.mesh.position.x
-        this.vehicleRelativePosition.value.y = this.game.physicalVehicle.position.z - this.mesh.position.z
+        this.vehicleRelativePosition.value.x = this.game.physicalVehicle.position.x - this.slabs.position.x
+        this.vehicleRelativePosition.value.y = this.game.physicalVehicle.position.z - this.slabs.position.z
 
         const viewOffset = new THREE.Vector2(this.game.view.focusPoint.smoothedPosition.x, this.game.view.focusPoint.smoothedPosition.z)
         viewOffset.rotateAround(new THREE.Vector2(), Math.PI * 0.25)

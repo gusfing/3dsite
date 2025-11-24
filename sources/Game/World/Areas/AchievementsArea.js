@@ -9,20 +9,15 @@ const rng = new alea('achievements')
 
 export class AchievementsArea extends Area
 {
-    constructor(references)
+    constructor(model)
     {
-        super(references)
+        super(model)
 
         this.setSounds()
         this.setWaterfall()
         this.setPillar()
         this.setInteractivePoint()
         this.setAchievement()
-
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        }, 9)
     }
 
     setSounds()
@@ -34,7 +29,7 @@ export class AchievementsArea extends Area
             autoplay: true,
             loop: true,
             volume: 0.15,
-            positions: this.references.get('pillar')[0].position,
+            positions: this.references.items.get('pillar')[0].position,
             distanceFade: 20
         })
     }
@@ -84,7 +79,7 @@ export class AchievementsArea extends Area
                 hasWater: false,
                 hasReveal: false
             })
-            const mesh = this.references.get('waterfallStill')[0]
+            const mesh = this.references.items.get('waterfallStill')[0]
             // mesh.visible = false
             mesh.material = material
         }
@@ -117,14 +112,14 @@ export class AchievementsArea extends Area
                 hasWater: false,
                 hasReveal: false
             })
-            const mesh = this.references.get('waterfallDrop')[0]
+            const mesh = this.references.items.get('waterfallDrop')[0]
             // mesh.visible = false
             mesh.material = material
         }
 
         // Particles
         {
-            const reference = this.references.get('waterfallParticles')[0]
+            const reference = this.references.items.get('waterfallParticles')[0]
             reference.removeFromParent()
             
             const origin = new THREE.Vector3(
@@ -203,12 +198,13 @@ export class AchievementsArea extends Area
             mesh.position.copy(origin)
             mesh.count = count
             this.game.scene.add(mesh)
+            this.objects.hideable.push(mesh)
         }
     }
 
     setPillar()
     {
-        this.pillar = this.references.get('pillar')[0]
+        this.pillar = this.references.items.get('pillar')[0]
 
         // Glyphs
         {
@@ -288,13 +284,14 @@ export class AchievementsArea extends Area
             mesh.count = count
 
             this.game.scene.add(mesh)
+            this.objects.hideable.push(mesh)
         }
     }
 
     setInteractivePoint()
     {
         this.interactivePoint = this.game.interactivePoints.create(
-            this.references.get('interactivePoint')[0].position,
+            this.references.items.get('interactivePoint')[0].position,
             'Achievements',
             InteractivePoints.ALIGN_RIGHT,
             InteractivePoints.STATE_CONCEALED,
@@ -326,13 +323,13 @@ export class AchievementsArea extends Area
 
     setAchievement()
     {
-        this.events.on('enter', () =>
+        this.events.on('boundingIn', () =>
         {
             this.game.achievements.setProgress('areas', 'achievements')
         })
 
         // Behind waterfall
-        const zoneReference = this.references.get('waterfallZone')[0]
+        const zoneReference = this.references.items.get('waterfallZone')[0]
         const position = zoneReference.position.clone()
         const radius = zoneReference.scale.x
         const zone = this.game.zones.create('cylinder', position, radius)

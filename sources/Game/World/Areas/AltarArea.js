@@ -7,9 +7,9 @@ import { Area } from './Area.js'
 
 export class AltarArea extends Area
 {
-    constructor(references)
+    constructor(model)
     {
-        super(references)
+        super(model)
 
         if(this.game.debug.active)
         {
@@ -20,7 +20,7 @@ export class AltarArea extends Area
         }
 
         this.value = 0
-        this.position = this.references.get('altar')[0].position.clone()
+        this.position = this.references.items.get('altar')[0].position.clone()
 
         this.color = uniform(color('#ff544d'))
         this.emissive = uniform(8)
@@ -61,7 +61,7 @@ export class AltarArea extends Area
             autoplay: true,
             loop: true,
             volume: 0.15,
-            positions: this.references.get('altar')[0].position,
+            positions: this.references.items.get('altar')[0].position,
             distanceFade: 20
         })
 
@@ -120,6 +120,7 @@ export class AltarArea extends Area
         const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial)
         cylinder.position.copy(this.position)
         this.game.scene.add(cylinder)
+        this.objects.hideable.push(cylinder)
 
         // Bottom
         const bottomGeometry = new THREE.PlaneGeometry(radius * 2, radius * 2, 1, 1)
@@ -148,6 +149,7 @@ export class AltarArea extends Area
         bottom.position.copy(this.position)
         bottom.rotation.x = - Math.PI * 0.5
         this.game.scene.add(bottom)
+        this.objects.hideable.push(bottom)
 
         this.animateBeam = () =>
         {
@@ -235,6 +237,7 @@ export class AltarArea extends Area
         particles.position.copy(this.position)
         particles.position.y -= 0.1
         this.game.scene.add(particles)
+        this.objects.hideable.push(particles)
 
         this.animateBeamParticles = () =>
         {
@@ -313,11 +316,20 @@ export class AltarArea extends Area
         mesh.position.z = this.position.z
         mesh.count = count
         this.game.scene.add(mesh)
+        this.objects.hideable.push(mesh)
 
-        this.game.ticker.wait(2, () =>
+        let frustumNeedsUpdate = true
+        this.events.on('frustumIn', () =>
         {
-            mesh.geometry.boundingSphere.center.y = 2
-            mesh.geometry.boundingSphere.radius = 5
+            if(frustumNeedsUpdate)
+            {
+                this.game.ticker.wait(2, () =>
+                {
+                    mesh.geometry.boundingSphere.center.y = 2
+                    mesh.geometry.boundingSphere.radius = 5
+                })
+                frustumNeedsUpdate = false
+            }
         })
     }
 
@@ -364,7 +376,7 @@ export class AltarArea extends Area
 
         // Mesh
         this.mesh = new THREE.Mesh(geometry, material)
-        this.references.get('counter')[0].add(this.mesh)
+        this.references.items.get('counter')[0].add(this.mesh)
     }
 
     setDeathZone()
@@ -424,7 +436,7 @@ export class AltarArea extends Area
 
     setSkullEyes()
     {
-        this.skullEyes = this.references.get('skullEyes')
+        this.skullEyes = this.references.items.get('skullEyes')
         for(const skullEyes of this.skullEyes)
             skullEyes.visible = true
     }
@@ -506,7 +518,7 @@ export class AltarArea extends Area
 
     setAchievement()
     {
-        this.events.on('enter', () =>
+        this.events.on('boundingIn', () =>
         {
             this.game.achievements.setProgress('areas', 'altar')
         })

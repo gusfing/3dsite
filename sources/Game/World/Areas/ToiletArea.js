@@ -4,30 +4,25 @@ import { Area } from './Area.js'
 
 export class ToiletArea extends Area
 {
-    constructor(references)
+    constructor(model)
     {
-        super(references)
+        super(model)
 
         this.setCabin()
         this.setCandleFlames()
         this.setAchievement()
-
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        }, 3)
     }
 
     setCabin()
     {
         this.cabin = {}
-        this.cabin.body = this.references.get('cabin')[0].userData.object.physical.body
+        this.cabin.body = this.references.items.get('cabin')[0].userData.object.physical.body
         this.cabin.down = false
     }
 
     setCandleFlames()
     {
-        const mesh = this.references.get('moon')[0]
+        const mesh = this.references.items.get('moon')[0]
         mesh.visible = this.game.dayCycles.intervalEvents.get('night').inInterval
 
         this.game.dayCycles.events.on('night', (inInterval) =>
@@ -38,7 +33,7 @@ export class ToiletArea extends Area
 
     setAchievement()
     {
-        this.events.on('enter', () =>
+        this.events.on('boundingIn', () =>
         {
             this.game.achievements.setProgress('areas', 'toilet')
         })

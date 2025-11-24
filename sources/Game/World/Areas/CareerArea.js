@@ -24,11 +24,6 @@ export class CareerArea extends Area
         this.setLines()
         this.setYears()
         this.setAchievement()
-
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        })
     }
 
     setSounds()
@@ -72,7 +67,7 @@ export class CareerArea extends Area
         this.lines.activeElevation = 2.5
         this.lines.padding = 0.25
         
-        const lineGroups = this.references.get('line')
+        const lineGroups = this.references.items.get('line')
 
         const colors = {
             blue: uniform(color('#5390ff')),
@@ -163,7 +158,7 @@ export class CareerArea extends Area
     setYears()
     {
         this.year = {}
-        this.year.group = this.references.get('year')[0]
+        this.year.group = this.references.items.get('year')[0]
         this.year.originZ = this.year.group.position.z
         this.year.size = 17
         this.year.offsetTarget = 0
@@ -271,7 +266,7 @@ export class CareerArea extends Area
 
     setAchievement()
     {
-        this.events.on('enter', () =>
+        this.events.on('boundingIn', () =>
         {
             this.game.achievements.setProgress('areas', 'career')
         })

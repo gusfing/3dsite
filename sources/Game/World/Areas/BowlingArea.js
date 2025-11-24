@@ -9,9 +9,9 @@ import { Area } from './Area.js'
 
 export class BowlingArea extends Area
 {
-    constructor(references)
+    constructor(model)
     {
-        super(references)
+        super(model)
 
         // Debug
         if(this.game.debug.active)
@@ -32,11 +32,6 @@ export class BowlingArea extends Area
         this.setBumpers()
         this.setJukebox()
         this.setAchievement()
-
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        }, 5)
     }
 
     setSounds()
@@ -83,10 +78,10 @@ export class BowlingArea extends Area
         this.pins.boundingUpdateTime = 0
         
         // References
-        const references = InstancedGroup.getReferencesFromChildren(this.references.get('pinPositions')[0].children)
+        const references = InstancedGroup.getReferencesFromChildren(this.references.items.get('pinPositions')[0].children)
 
         // Instances
-        const basePin = this.references.get('pinPhysicalDynamic')[0]
+        const basePin = this.references.items.get('pinPhysicalDynamic')[0]
         basePin.castShadow = true
         basePin.receiveShadow = true
         basePin.frustumCulled = true
@@ -183,7 +178,7 @@ export class BowlingArea extends Area
 
     setBall()
     {
-        const baseBall = this.references.get('ball')[0]
+        const baseBall = this.references.items.get('ball')[0]
 
         this.ball = {}
         this.ball.isSleeping = true
@@ -225,7 +220,7 @@ export class BowlingArea extends Area
     setRestart()
     {
         this.restartInteractivePoint = this.game.interactivePoints.create(
-            this.references.get('restartInteractivePoint')[0].position,
+            this.references.items.get('restartInteractivePoint')[0].position,
             'Restart',
             InteractivePoints.ALIGN_RIGHT,
             InteractivePoints.STATE_HIDDEN,
@@ -251,13 +246,13 @@ export class BowlingArea extends Area
     setScreen()
     {
         this.screen = {}
-        this.screen.group = this.references.get('screen')[0]
+        this.screen.group = this.references.items.get('screen')[0]
         this.screen.object = this.screen.group.userData.object
         this.screen.x = this.screen.group.position.x
         this.screen.max = this.screen.group.position.x
         this.screen.min = this.screen.max - (28.2 - 3.81)
-        this.screen.discsMesh = this.references.get('discs')[0]
-        this.screen.crossesMesh = this.references.get('crosses')[0]
+        this.screen.discsMesh = this.references.items.get('discs')[0]
+        this.screen.crossesMesh = this.references.items.get('crosses')[0]
 
         const data = new Uint8Array(10)
         this.dataTexture = new THREE.DataTexture(
@@ -303,7 +298,7 @@ export class BowlingArea extends Area
         this.screen.crossesMesh.material = crossesMaterial
 
         // Strike label
-        this.screen.labelStrike = this.references.get('labelStrike')[0]
+        this.screen.labelStrike = this.references.items.get('labelStrike')[0]
 
         {
             const material = new THREE.MeshBasicNodeMaterial()
@@ -344,7 +339,7 @@ export class BowlingArea extends Area
     setBumpers()
     {
         this.bumpers = {}
-        this.bumpers.mesh = this.references.get('bumpers')[0]
+        this.bumpers.mesh = this.references.items.get('bumpers')[0]
         this.bumpers.object = this.bumpers.mesh.userData.object
         this.bumpers.progress = 0
         this.bumpers.active = false
@@ -385,7 +380,7 @@ export class BowlingArea extends Area
 
         // Interactive point
         this.game.interactivePoints.create(
-            this.references.get('bumpersInteractivePoint')[0].position,
+            this.references.items.get('bumpersInteractivePoint')[0].position,
             'Bumpers',
             InteractivePoints.ALIGN_LEFT,
             InteractivePoints.STATE_CONCEALED,
@@ -473,7 +468,7 @@ export class BowlingArea extends Area
         points.count = count
         points.position.y = 1
         points.position.z = 0.5
-        this.references.get('jukebox')[0].add(points)
+        this.references.items.get('jukebox')[0].add(points)
 
         // Sound
         const sound = this.game.audio.register({
@@ -486,7 +481,7 @@ export class BowlingArea extends Area
         // Interactive point
         let switching = false
         this.game.interactivePoints.create(
-            this.references.get('jukeboxInteractivePoint')[0].position,
+            this.references.items.get('jukeboxInteractivePoint')[0].position,
             'Change song',
             InteractivePoints.ALIGN_LEFT,
             InteractivePoints.STATE_CONCEALED,
@@ -535,7 +530,7 @@ export class BowlingArea extends Area
 
     setAchievement()
     {
-        this.events.on('enter', () =>
+        this.events.on('boundingIn', () =>
         {
             this.game.achievements.setProgress('areas', 'bowling')
         })

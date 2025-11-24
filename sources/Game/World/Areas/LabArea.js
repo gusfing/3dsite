@@ -19,9 +19,9 @@ export class LabArea extends Area
     static STATE_CLOSED = 5
     static STATE_CLOSING = 6
 
-    constructor(references)
+    constructor(model)
     {
-        super(references)
+        super(model)
 
         // Debug
         if(this.game.debug.active)
@@ -62,11 +62,6 @@ export class LabArea extends Area
             this.debugPanel.addButton({ title: 'open', label: 'open' }).on('click', () => { this.open() })
             this.debugPanel.addButton({ title: 'close', label: 'close' }).on('click', () => { this.close() })
         }
-
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        })
     }
 
     setSounds()
@@ -78,7 +73,7 @@ export class LabArea extends Area
             autoplay: true,
             loop: true,
             volume: 0.5,
-            positions: this.references.get('mecanism')[0].position,
+            positions: this.references.items.get('mecanism')[0].position,
             onPlaying: (item) =>
             {
                 const absoluteSpeed = Math.abs(this.scroller.speed)
@@ -92,7 +87,7 @@ export class LabArea extends Area
     setInteractivePoint()
     {
         this.interactivePoint = this.game.interactivePoints.create(
-            this.references.get('interactivePoint')[0].position,
+            this.references.items.get('interactivePoint')[0].position,
             'Lab',
             InteractivePoints.ALIGN_RIGHT,
             InteractivePoints.STATE_CONCEALED,
@@ -189,7 +184,7 @@ export class LabArea extends Area
 
         const applyPositionAndTarget = () =>
         {
-            const flatPosition = this.references.get('interactivePoint')[0].position.clone()
+            const flatPosition = this.references.items.get('interactivePoint')[0].position.clone()
             flatPosition.y = 0
             this.cinematic.position.copy(flatPosition).add(this.cinematic.positionOffset)
             this.cinematic.target.copy(flatPosition).add(this.cinematic.targetOffset)
@@ -346,7 +341,7 @@ export class LabArea extends Area
         this.images.animationDirection = uniform(0)
 
         // Mesh
-        this.images.mesh = this.references.get('images')[0]
+        this.images.mesh = this.references.items.get('images')[0]
         this.images.mesh.receiveShadow = true
         this.images.mesh.castShadow = false
         this.images.mesh.visible = false // Wait for first load to display
@@ -547,11 +542,11 @@ export class LabArea extends Area
          * Previous
          */
         // Arrow
-        const arrowPrevious = this.references.get('arrowPrevious')[0]
+        const arrowPrevious = this.references.items.get('arrowPrevious')[0]
         arrowPrevious.material = this.hover.inactiveMaterial
         
         // Intersect
-        const intersectPrevious = this.references.get('intersectPrevious')[0]
+        const intersectPrevious = this.references.items.get('intersectPrevious')[0]
         const intersectPreviousPosition = new THREE.Vector3()
         intersectPrevious.getWorldPosition(intersectPreviousPosition)
 
@@ -579,11 +574,11 @@ export class LabArea extends Area
          * Next
          */
         // Arrow
-        const arrowNext = this.references.get('arrowNext')[0]
+        const arrowNext = this.references.items.get('arrowNext')[0]
         arrowNext.material = this.hover.inactiveMaterial
         
         // Intersect
-        const intersectNext = this.references.get('intersectNext')[0]
+        const intersectNext = this.references.items.get('intersectNext')[0]
 
         const intersectNextPosition = new THREE.Vector3()
         intersectNext.getWorldPosition(intersectNextPosition)
@@ -613,7 +608,7 @@ export class LabArea extends Area
     {
         this.title = {}
         this.title.status = 'hidden'
-        this.title.group = this.references.get('title')[0]
+        this.title.group = this.references.items.get('title')[0]
         this.title.inner = this.title.group.children[0]
         this.title.textMesh = this.title.inner.children.find(_child => _child.name.startsWith('text'))
         this.title.textCanvas = new TextCanvas(
@@ -652,7 +647,7 @@ export class LabArea extends Area
     {
         this.url = {}
         this.url.status = 'hidden'
-        this.url.group = this.references.get('url')[0]
+        this.url.group = this.references.items.get('url')[0]
         this.url.inner = this.url.group.children[0]
 
         // Text
@@ -701,7 +696,7 @@ export class LabArea extends Area
         this.url.textMesh.material = material
 
         // Intersect
-        const intersect = this.references.get('intersectUrl')[0]
+        const intersect = this.references.items.get('intersectUrl')[0]
         intersect.visible = false
  
         this.url.intersect = this.game.rayCursor.addIntersects({
@@ -763,12 +758,12 @@ export class LabArea extends Area
     {
         this.scroller = {}
         this.scroller.repeatAmplitude = 0.5444
-        this.scroller.chainLeft = this.references.get('chainLeft')[0]
-        this.scroller.chainRight = this.references.get('chainRight')[0]
-        this.scroller.chainPulley = this.references.get('chainPulley')[0]
-        this.scroller.gearA = this.references.get('gearA')[0]
-        this.scroller.gearB = this.references.get('gearB')[0]
-        this.scroller.gearC = this.references.get('gearC')[0]
+        this.scroller.chainLeft = this.references.items.get('chainLeft')[0]
+        this.scroller.chainRight = this.references.items.get('chainRight')[0]
+        this.scroller.chainPulley = this.references.items.get('chainPulley')[0]
+        this.scroller.gearA = this.references.items.get('gearA')[0]
+        this.scroller.gearB = this.references.items.get('gearB')[0]
+        this.scroller.gearC = this.references.items.get('gearC')[0]
         this.scroller.progress = 0
         this.scroller.targetProgress = 0
         this.scroller.wheelSensitivity = 0.1
@@ -802,7 +797,7 @@ export class LabArea extends Area
 
         // Minis
         {
-            const groupTemplate = this.references.get('mini')[0]
+            const groupTemplate = this.references.items.get('mini')[0]
             const parent = groupTemplate.parent
             groupTemplate.removeFromParent()
             
@@ -1058,19 +1053,19 @@ export class LabArea extends Area
 
     setPendulum()
     {
-        this.references.get('balls')[0].rotation.reorder('YXZ')
+        this.references.items.get('balls')[0].rotation.reorder('YXZ')
         const timeline0 = gsap.timeline({ yoyo: true, repeat: -1 })
-        timeline0.to(this.references.get('balls')[0].rotation, { x: 0.75, ease: 'power2.out', delay: 0.75, duration: 0.75 })
+        timeline0.to(this.references.items.get('balls')[0].rotation, { x: 0.75, ease: 'power2.out', delay: 0.75, duration: 0.75 })
         
         const timeline1 = gsap.timeline({ yoyo: true, repeat: -1, delay: 1.5 })
-        timeline1.to(this.references.get('balls')[1].rotation, { x: -0.75, ease: 'power2.out', delay: 0.75, duration: 0.75 })
+        timeline1.to(this.references.items.get('balls')[1].rotation, { x: -0.75, ease: 'power2.out', delay: 0.75, duration: 0.75 })
     }
 
     setBlackBoard()
     {
         this.blackBoard = {}
         this.blackBoard.active = true
-        this.blackBoard.group = this.references.get('blackBoard')[0]
+        this.blackBoard.group = this.references.items.get('blackBoard')[0]
         this.blackBoard.parent = this.blackBoard.group.parent
 
         // Jump timeline
@@ -1095,9 +1090,9 @@ export class LabArea extends Area
         this.blackBoard.timeline.to(this.blackBoard.group.rotation, { x: 0, duration: 0.3 }, 1.05 + 2)
 
         // Labels
-        this.blackBoard.labelsGamepadPlaystation = this.references.get('blackboardLabelsGamepadPlaystation')[0]
-        this.blackBoard.labelsGamepadXbox = this.references.get('blackboardLabelsGamepadXbox')[0]
-        this.blackBoard.labelsMouseKeyboard = this.references.get('blackboardLabelsMouseKeyboard')[0]
+        this.blackBoard.labelsGamepadPlaystation = this.references.items.get('blackboardLabelsGamepadPlaystation')[0]
+        this.blackBoard.labelsGamepadXbox = this.references.items.get('blackboardLabelsGamepadXbox')[0]
+        this.blackBoard.labelsMouseKeyboard = this.references.items.get('blackboardLabelsMouseKeyboard')[0]
         this.blackBoard.labelsGamepadPlaystation.castShadow = false
         this.blackBoard.labelsGamepadXbox.castShadow = false
         this.blackBoard.labelsMouseKeyboard.castShadow = false
@@ -1155,7 +1150,7 @@ export class LabArea extends Area
 
     setCandleFlames()
     {
-        const meshes = this.references.get('candleFlame')
+        const meshes = this.references.items.get('candleFlame')
 
         const baseMaterial = this.game.materials.getFromName('emissiveOrangeRadialGradient')
         const material = new THREE.MeshBasicNodeMaterial({ transparent: true })
@@ -1224,7 +1219,7 @@ export class LabArea extends Area
                 return vec4(vec3(emissiveColor), strength)
             })()
 
-            this.cauldron.heat = this.references.get('heat')[0]
+            this.cauldron.heat = this.references.items.get('heat')[0]
             this.cauldron.heat.material = material
             this.cauldron.heat.castShadow = false
         }
@@ -1256,7 +1251,7 @@ export class LabArea extends Area
                 return vec4(output.rgb, 1)
             })()
 
-            this.cauldron.wood = this.references.get('wood')[0]
+            this.cauldron.wood = this.references.items.get('wood')[0]
             this.cauldron.wood.material = material
 
             if(this.game.debug.active)
@@ -1283,13 +1278,8 @@ export class LabArea extends Area
             material.colorNode = mixedColor.div(luminance(mixedColor)).mul(intensity)
             material.fog = false
 
-            this.cauldron.liquid.surface = this.references.get('liquid')[0]
+            this.cauldron.liquid.surface = this.references.items.get('liquid')[0]
             this.cauldron.liquid.surface.material = material
-
-            this.cauldron.liquid.update = () =>
-            {
-
-            }
 
             if(this.game.debug.active)
             {
@@ -1305,7 +1295,7 @@ export class LabArea extends Area
 
     setAchievement()
     {
-        this.events.on('enter', () =>
+        this.events.on('boundingIn', () =>
         {
             this.game.achievements.setProgress('areas', 'lab')
         })
@@ -1475,10 +1465,5 @@ export class LabArea extends Area
         // Achievements
         if(this.state === LabArea.STATE_OPEN)
             this.game.achievements.setProgress('lab', this.navigation.current.title)
-    }
-
-    update()
-    {
-        this.cauldron.liquid.update()
     }
 }

@@ -7,17 +7,17 @@ import { Area } from './Area.js'
 
 export class SocialArea extends Area
 {
-    constructor(references)
+    constructor(model)
     {
-        super(references)
+        super(model)
 
-        this.center = this.references.get('center')[0].position
+        this.center = this.references.items.get('center')[0].position
 
         // Debug
         if(this.game.debug.active)
         {
             this.debugPanel = this.game.debug.panel.addFolder({
-                title: '👨‍🦲 Bruno',
+                title: '👨‍🦲 Social',
                 expanded: false,
             })
         }
@@ -27,11 +27,6 @@ export class SocialArea extends Area
         this.setOnlyFans()
         this.setStatue()
         this.setAchievement()
-
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        })
     }
 
     setLinks()
@@ -76,7 +71,7 @@ export class SocialArea extends Area
 
     setFans()
     {
-        const baseFan = this.references.get('fan')[0]
+        const baseFan = this.references.items.get('fan')[0]
         baseFan.castShadow = true
         baseFan.receiveShadow = true
         baseFan.frustumCulled = false
@@ -85,7 +80,7 @@ export class SocialArea extends Area
         this.game.materials.updateObject(baseFan)
         
         this.fans = {}
-        this.fans.spawnerPosition = this.references.get('onlyFans')[0].position
+        this.fans.spawnerPosition = this.references.items.get('onlyFans')[0].position
         this.fans.count = 30
         this.fans.visibleCount = 0
         this.fans.currentIndex = 0
@@ -168,7 +163,7 @@ export class SocialArea extends Area
     setOnlyFans()
     {
         const interactiveArea = this.game.interactivePoints.create(
-            this.references.get('onlyFans')[0].position,
+            this.references.items.get('onlyFans')[0].position,
             'OnlyFans',
             InteractivePoints.ALIGN_RIGHT,
             InteractivePoints.STATE_CONCEALED,
@@ -194,13 +189,13 @@ export class SocialArea extends Area
     setStatue()
     {
         this.statue = {}
-        this.statue.body = this.references.get('statue')[0].userData.object.physical.body
+        this.statue.body = this.references.items.get('statue')[0].userData.object.physical.body
         this.statue.down = false
     }
 
     setAchievement()
     {
-        this.events.on('enter', () =>
+        this.events.on('boundingIn', () =>
         {
             this.game.achievements.setProgress('areas', 'social')
         })

@@ -18,9 +18,9 @@ export class ProjectsArea extends Area
     static STATE_CLOSED = 5
     static STATE_CLOSING = 6
 
-    constructor(references)
+    constructor(model)
     {
-        super(references)
+        super(model)
 
         // Debug
         if(this.game.debug.active)
@@ -49,7 +49,6 @@ export class ProjectsArea extends Area
         this.setUrl()
         this.setDistinctions()
         this.setBlackBoard()
-        this.setLabels()
         this.setOven()
         this.setGrinder()
         this.setAnvil()
@@ -63,24 +62,18 @@ export class ProjectsArea extends Area
             this.debugPanel.addButton({ title: 'open', label: 'open' }).on('click', () => { this.open() })
             this.debugPanel.addButton({ title: 'close', label: 'close' }).on('click', () => { this.close() })
         }
-
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        })
     }
 
     setSounds()
     {
         this.sounds = {}
-
         this.sounds.anvil = this.game.audio.register({
             path: 'sounds/anvil/METLImpt_Anvil Single Hammer Strike Hammers_GENHD1-01372.mp3',
             autoplay: false,
             loop: false,
             volume: 0.5,
             antiSpam: 0.1,
-            positions: this.references.get('anvil')[0].position,
+            positions: this.references.items.get('anvil')[0].position,
             distanceFade: 18,
             onPlay: (item) =>
             {
@@ -93,7 +86,7 @@ export class ProjectsArea extends Area
     setInteractivePoint()
     {
         this.interactivePoint = this.game.interactivePoints.create(
-            this.references.get('interactivePoint')[0].position,
+            this.references.items.get('interactivePoint')[0].position,
             'Projects',
             InteractivePoints.ALIGN_RIGHT,
             InteractivePoints.STATE_CONCEALED,
@@ -192,7 +185,7 @@ export class ProjectsArea extends Area
 
         const applyPositionAndTarget = () =>
         {
-            const flatPosition = this.references.get('interactivePoint')[0].position.clone()
+            const flatPosition = this.references.items.get('interactivePoint')[0].position.clone()
             flatPosition.y = 0
             this.cinematic.position.copy(flatPosition).add(this.cinematic.positionOffset)
             this.cinematic.target.copy(flatPosition).add(this.cinematic.targetOffset)
@@ -350,7 +343,7 @@ export class ProjectsArea extends Area
         this.images.animationDirection = uniform(0)
 
         // Mesh
-        this.images.mesh = this.references.get('images')[0]
+        this.images.mesh = this.references.items.get('images')[0]
         this.images.mesh.receiveShadow = true
         this.images.mesh.castShadow = false
         this.images.mesh.visible = false // Wait for first load to display
@@ -565,12 +558,12 @@ export class ProjectsArea extends Area
     {
         this.pagination = {}
         this.pagination.inter = 0.2
-        this.pagination.group = this.references.get('pagination')[0].children[0]
+        this.pagination.group = this.references.items.get('pagination')[0].children[0]
         this.pagination.items = []
 
         // List
         let i = 0
-        const intersectPagination = this.references.get('intersectPagination')
+        const intersectPagination = this.references.items.get('intersectPagination')
 
         for(const child of this.pagination.group.children)
         {
@@ -619,10 +612,10 @@ export class ProjectsArea extends Area
 
 
         // Adjacents
-        const intersectPrevious = this.references.get('intersectPreviousImage')[0]
+        const intersectPrevious = this.references.items.get('intersectPreviousImage')[0]
         const intersectPreviousPosition = new THREE.Vector3()
         intersectPrevious.getWorldPosition(intersectPreviousPosition)
-        const arrowPrevious = this.references.get('arrowPreviousImage')[0]
+        const arrowPrevious = this.references.items.get('arrowPreviousImage')[0]
         arrowPrevious.material = this.hover.inactiveMaterial
  
         this.pagination.previousIntersect = this.game.rayCursor.addIntersects({
@@ -645,10 +638,10 @@ export class ProjectsArea extends Area
             }
         })
 
-        const intersectNext = this.references.get('intersectNextImage')[0]
+        const intersectNext = this.references.items.get('intersectNextImage')[0]
         const intersectNextPosition = new THREE.Vector3()
         intersectNext.getWorldPosition(intersectNextPosition)
-        const arrowNext = this.references.get('arrowNextImage')[0]
+        const arrowNext = this.references.items.get('arrowNextImage')[0]
         arrowNext.material = this.hover.inactiveMaterial
         this.pagination.nextIntersect = this.game.rayCursor.addIntersects({
             active: false,
@@ -716,7 +709,7 @@ export class ProjectsArea extends Area
     setAttributes()
     {
         this.attributes = {}
-        this.attributes.group = this.references.get('attributes')[0]
+        this.attributes.group = this.references.items.get('attributes')[0]
         this.attributes.inter = 0.75
         this.attributes.names = ['role', 'at', 'with']
         this.attributes.items = {}
@@ -799,7 +792,7 @@ export class ProjectsArea extends Area
          * Previous
          */
         this.adjacents.previous = {}
-        this.adjacents.previous.group = this.references.get('previous')[0]
+        this.adjacents.previous.group = this.references.items.get('previous')[0]
         this.adjacents.previous.inner = this.adjacents.previous.group.children[0]
 
         // Text
@@ -817,11 +810,11 @@ export class ProjectsArea extends Area
         this.texts.createMaterialOnMesh(this.adjacents.previous.textMesh, this.adjacents.previous.textCanvas.texture)
 
         // Arrow
-        const arrowPrevious = this.references.get('arrowPreviousProject')[0]
+        const arrowPrevious = this.references.items.get('arrowPreviousProject')[0]
         arrowPrevious.material = this.hover.inactiveMaterial
         
         // Intersect
-        const intersectPrevious = this.references.get('intersectPreviousProject')[0]
+        const intersectPrevious = this.references.items.get('intersectPreviousProject')[0]
         const intersectPreviousPosition = new THREE.Vector3()
         intersectPrevious.getWorldPosition(intersectPreviousPosition)
 
@@ -849,7 +842,7 @@ export class ProjectsArea extends Area
          * Next
          */
         this.adjacents.next = {}
-        this.adjacents.next.group = this.references.get('next')[0]
+        this.adjacents.next.group = this.references.items.get('next')[0]
         this.adjacents.next.inner = this.adjacents.next.group.children[0]
 
         // Text
@@ -867,11 +860,11 @@ export class ProjectsArea extends Area
         this.texts.createMaterialOnMesh(this.adjacents.next.textMesh, this.adjacents.next.textCanvas.texture)
 
         // Arrow
-        const arrowNext = this.references.get('arrowNextProject')[0]
+        const arrowNext = this.references.items.get('arrowNextProject')[0]
         arrowNext.material = this.hover.inactiveMaterial
         
         // Intersect
-        const intersectNext = this.references.get('intersectNextProject')[0]
+        const intersectNext = this.references.items.get('intersectNextProject')[0]
 
         const intersectNextPosition = new THREE.Vector3()
         intersectNext.getWorldPosition(intersectNextPosition)
@@ -926,7 +919,7 @@ export class ProjectsArea extends Area
     {
         this.title = {}
         this.title.status = 'hidden'
-        this.title.group = this.references.get('title')[0]
+        this.title.group = this.references.items.get('title')[0]
         this.title.inner = this.title.group.children[0]
         this.title.textMesh = this.title.inner.children.find(_child => _child.name.startsWith('text'))
         this.title.textCanvas = new TextCanvas(
@@ -965,7 +958,7 @@ export class ProjectsArea extends Area
     {
         this.url = {}
         this.url.status = 'hidden'
-        this.url.group = this.references.get('url')[0]
+        this.url.group = this.references.items.get('url')[0]
         this.url.inner = this.url.group.children[0]
 
         // Text
@@ -1014,7 +1007,7 @@ export class ProjectsArea extends Area
         this.url.textMesh.material = material
 
         // Intersect
-        const intersect = this.references.get('intersectUrl')[0]
+        const intersect = this.references.items.get('intersectUrl')[0]
         intersect.visible = false
  
         this.url.intersect = this.game.rayCursor.addIntersects({
@@ -1076,7 +1069,7 @@ export class ProjectsArea extends Area
     {
         this.distinctions = {}
         this.distinctions.status = 'hidden'
-        this.distinctions.group = this.references.get('distinctions')[0]
+        this.distinctions.group = this.references.items.get('distinctions')[0]
         this.distinctions.names = ['awwwards', 'cssda', 'fwa']
         this.distinctions.items = {}
         this.distinctions.items.awwwards = this.distinctions.group.children.find(_child => _child.name.startsWith('awwwards'))
@@ -1137,19 +1130,19 @@ export class ProjectsArea extends Area
 
     setPendulum()
     {
-        this.references.get('balls')[0].rotation.reorder('YXZ')
+        this.references.items.get('balls')[0].rotation.reorder('YXZ')
         const timeline0 = gsap.timeline({ yoyo: true, repeat: -1 })
-        timeline0.to(this.references.get('balls')[0].rotation, { x: 0.75, ease: 'power2.out', delay: 0.75, duration: 0.75 })
+        timeline0.to(this.references.items.get('balls')[0].rotation, { x: 0.75, ease: 'power2.out', delay: 0.75, duration: 0.75 })
         
         const timeline1 = gsap.timeline({ yoyo: true, repeat: -1, delay: 1.5 })
-        timeline1.to(this.references.get('balls')[1].rotation, { x: -0.75, ease: 'power2.out', delay: 0.75, duration: 0.75 })
+        timeline1.to(this.references.items.get('balls')[1].rotation, { x: -0.75, ease: 'power2.out', delay: 0.75, duration: 0.75 })
     }
 
     setBlackBoard()
     {
         this.blackBoard = {}
         this.blackBoard.active = true
-        this.blackBoard.group = this.references.get('blackBoard')[0]
+        this.blackBoard.group = this.references.items.get('blackBoard')[0]
         this.blackBoard.parent = this.blackBoard.group.parent
 
         // Jump timeline
@@ -1174,9 +1167,9 @@ export class ProjectsArea extends Area
         this.blackBoard.timeline.to(this.blackBoard.group.rotation, { x: 0, duration: 0.3 }, 1.05 + 2)
 
         // Labels
-        this.blackBoard.labelsGamepadPlaystation = this.references.get('blackboardLabelsGamepadPlaystation')[0]
-        this.blackBoard.labelsGamepadXbox = this.references.get('blackboardLabelsGamepadXbox')[0]
-        this.blackBoard.labelsMouseKeyboard = this.references.get('blackboardLabelsMouseKeyboard')[0]
+        this.blackBoard.labelsGamepadPlaystation = this.references.items.get('blackboardLabelsGamepadPlaystation')[0]
+        this.blackBoard.labelsGamepadXbox = this.references.items.get('blackboardLabelsGamepadXbox')[0]
+        this.blackBoard.labelsMouseKeyboard = this.references.items.get('blackboardLabelsMouseKeyboard')[0]
         this.blackBoard.labelsGamepadPlaystation.castShadow = false
         this.blackBoard.labelsGamepadXbox.castShadow = false
         this.blackBoard.labelsMouseKeyboard.castShadow = false
@@ -1232,23 +1225,15 @@ export class ProjectsArea extends Area
         })
     }
 
-    setLabels()
-    {
-        for(const mesh of this.references.get('label'))
-        {
-            mesh.castShadow = false
-        }
-    }
-
     setOven()
     {
         this.oven = {}
 
         // Blower
-        this.oven.blower = this.references.get('blower')[0]
+        this.oven.blower = this.references.items.get('blower')[0]
 
         // Charcoal
-        this.oven.charcoal = this.references.get('charcoal')[0]
+        this.oven.charcoal = this.references.items.get('charcoal')[0]
 
         this.oven.threshold = uniform(0.2)
 
@@ -1287,7 +1272,7 @@ export class ProjectsArea extends Area
 
     setGrinder()
     {
-        this.grinder = this.references.get('grinder')[0]
+        this.grinder = this.references.items.get('grinder')[0]
     }
 
     setAnvil()
@@ -1297,11 +1282,11 @@ export class ProjectsArea extends Area
         this.anvil.loopTime = 0
         
         // Hammer
-        this.anvil.hammer = this.references.get('hammer')[0]
+        this.anvil.hammer = this.references.items.get('hammer')[0]
         this.anvil.hammer.rotation.reorder('ZXY')
 
         // Blade
-        this.anvil.blade = this.references.get('blade')[0]
+        this.anvil.blade = this.references.items.get('blade')[0]
 
         const material = new MeshDefaultMaterial({
             colorNode: color('#a88c7f')
@@ -1330,7 +1315,7 @@ export class ProjectsArea extends Area
 
     setAchievement()
     {
-        this.events.on('enter', () =>
+        this.events.on('boundingIn', () =>
         {
             this.game.achievements.setProgress('areas', 'projects')
         })

@@ -1,23 +1,80 @@
+import * as THREE from 'three/webgpu'
 import { Events } from '../../Events.js'
 import { Game } from '../../Game.js'
+import { References } from '../../References.js'
 
 export class Area
 {
-    constructor(references)
+    constructor(model)
     {
         this.game = Game.getInstance()
-        
-        this.references = references
 
+        this.model = model
         this.isIn = false
         this.events = new Events()
-        
-        this.setZone()
+        this.references = new References()
+
+        this.setObjects()
+        this.setBounding()
+        this.setFrustum()
+
+        this.game.ticker.events.on('tick', () =>
+        {
+            if(this.frustum)
+                this.frustum.test()
+                
+            if(typeof this.update === 'function' && this.frustum.isIn)
+                this.update()
+        }, 5)
     }
 
-    setZone()
+    setObjects()
     {
-        let zoneReference = this.references.get('zone')
+        this.objects = {}
+        this.objects.items = []
+        this.objects.hideable = []
+        const children = [...this.model.children]
+        for(const child of children)
+        {
+            if(typeof child.userData.prevent !== 'undefined' || child.userData.prevent === true)
+            {
+                console.log(child)
+            }
+            if(typeof child.userData.preventAutoAdd === 'undefined' || child.userData.preventAutoAdd === false)
+            {
+                const object = this.game.objects.addFromModel(
+                    child,
+                    {
+
+                    },
+                    {
+                        position: child.position.add(this.model.position),
+                        rotation: child.quaternion,
+                        sleeping: true,
+                        mass: child.userData.mass,
+                    }
+                )
+
+                this.objects.items.push(object)
+
+                if(
+                    object.visual && // Has visual
+                    (!object.physical || object.physical?.type === 'fixed') && // Doesn't have physical or is fixed
+                    typeof child.userData.preventHideable === 'undefined' || child.userData.preventHideable === false
+                )
+                {
+                    this.objects.hideable.push(object.visual.object3D)
+                }
+
+            }
+
+            this.references.parse(child)
+        }
+    }
+
+    setBounding()
+    {
+        let zoneReference = this.references.items.get('zoneBounding')
 
         if(!zoneReference)
             return
@@ -33,7 +90,7 @@ export class Area
             () =>
             {
                 this.isIn = true
-                this.events.trigger('enter')
+                this.events.trigger('boundingIn')
             }
         )
 
@@ -42,8 +99,59 @@ export class Area
             () =>
             {
                 this.isIn = false
-                this.events.trigger('leave')
+                this.events.trigger('boundingOut')
             }
         )
+    }
+
+    setFrustum()
+    {
+        let zoneReference = this.references.items.get('zoneFrustum')
+
+        if(!zoneReference)
+            return
+
+        this.frustum = {}
+        this.frustum.position = new THREE.Vector2(
+            zoneReference[0].position.x,
+            zoneReference[0].position.z
+        )
+        this.frustum.radius = zoneReference[0].scale.x
+        this.frustum.isIn = null
+        
+        this.frustum.test = () =>
+        {
+            const distance = Math.hypot(
+                this.game.view.focusPoint.position.x - this.frustum.position.x,
+                this.game.view.focusPoint.position.z - this.frustum.position.y
+            )
+
+            if(distance < this.frustum.radius + this.game.view.optimalArea.radius)
+            {
+                if(this.frustum.isIn === false || this.frustum.isIn === null)
+                {
+                    for(const object3D of this.objects.hideable)
+                    {
+                        object3D.visible = true
+                    }
+
+                    this.frustum.isIn = true
+                    this.events.trigger('frustumIn')
+                }
+            }
+            else
+            {
+                if(this.frustum.isIn === true || this.frustum.isIn === null)
+                {
+                    for(const object3D of this.objects.hideable)
+                    {
+                        object3D.visible = false
+                    }
+
+                    this.frustum.isIn = false
+                    this.events.trigger('frustumOut')
+                }
+            }
+        }
     }
 }

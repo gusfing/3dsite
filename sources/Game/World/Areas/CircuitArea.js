@@ -18,9 +18,9 @@ export class CircuitArea extends Area
     static STATE_RUNNING = 3
     static STATE_ENDING = 4
 
-    constructor(references)
+    constructor(model)
     {
-        super(references)
+        super(model)
 
         // Debug
         if(this.game.debug.active)
@@ -35,11 +35,10 @@ export class CircuitArea extends Area
 
         this.setSounds()
         this.setStartPosition()
-        this.setRoad()
         this.setStartingLights()
         this.setTimer()
         this.setCheckpoints()
-        this.setObjects()
+        this.setResetObjects()
         this.setObstacles()
         this.setRails()
         this.setInteractivePoint()
@@ -58,11 +57,6 @@ export class CircuitArea extends Area
 
         this.game.materials.getFromName('circuitBrand').map.minFilter = THREE.LinearFilter
         this.game.materials.getFromName('circuitBrand').map.magFilter = THREE.LinearFilter
-
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        })
     }
 
     setSounds()
@@ -116,69 +110,17 @@ export class CircuitArea extends Area
 
     setStartPosition()
     {
-        const baseStart = this.references.get('start')[0]
+        const baseStart = this.references.items.get('start')[0]
 
         this.startPosition = {}
         this.startPosition.position = baseStart.position.clone()
         this.startPosition.rotation = baseStart.rotation.y
     }
 
-    setRoad()
-    {
-        this.road = {}
-
-        // Mesh and material
-        const mesh = this.references.get('road')[0]
-        
-        this.road.color = uniform(color('#383039'))
-        this.road.glitterScarcity = uniform(0.1)
-        this.road.glitterLighten = uniform(0.28)
-        this.road.middleLighten = uniform(0.1)
-
-        const colorNode = Fn(() =>
-        {
-            const glitterUv = positionWorld.xz.mul(0.2)
-            const glitter = texture(this.game.noises.hash, glitterUv).r
-            
-            const glitterLighten = glitter.remap(this.road.glitterScarcity.oneMinus(), 1, 0, this.road.glitterLighten)
-
-            // return vec3(glitterLighten)
-            
-            const middleLighten = uv().y.mul(PI).sin().mul(this.road.middleLighten)
-
-            const baseColor = this.road.color.toVar()
-            baseColor.addAssign(max(glitterLighten, middleLighten).mul(0.2))
-
-            return vec3(baseColor)
-        })()
-
-        const material = new MeshDefaultMaterial({
-            colorNode: colorNode,
-
-            hasLightBounce: false,
-            hasWater: false,
-        })
-        mesh.material = material
-
-        // Physics
-        this.road.body = mesh.userData.object.physical.body
-        this.road.body.setEnabled(false)
-
-        // Debug
-        if(this.game.debug.active)
-        {
-            const debugPanel = this.debugPanel.addFolder({ title: 'road' })
-            this.game.debug.addThreeColorBinding(debugPanel, this.road.color.value, 'color')
-            debugPanel.addBinding(this.road.glitterScarcity, 'value', { label: 'glitterScarcity', min: 0, max: 1, step: 0.001 })
-            debugPanel.addBinding(this.road.glitterLighten, 'value', { label: 'glitterLighten', min: 0, max: 1, step: 0.001 })
-            debugPanel.addBinding(this.road.middleLighten, 'value', { label: 'middleLighten', min: 0, max: 0.2, step: 0.001 })
-        }
-    }
-
     setStartingLights()
     {
         this.startingLights = {}
-        this.startingLights.mesh = this.references.get('startingLights')[0]
+        this.startingLights.mesh = this.references.items.get('startingLights')[0]
         this.startingLights.mesh.visible = false
         this.startingLights.redMaterial = this.game.materials.getFromName('emissiveOrangeRadialGradient')
         this.startingLights.greenMaterial = this.game.materials.getFromName('emissiveGreenRadialGradient')
@@ -199,7 +141,7 @@ export class CircuitArea extends Area
         this.timer.startTime = 0
         this.timer.elapsedTime = 0
         this.timer.running = false
-        this.timer.group = this.references.get('timer')[0]
+        this.timer.group = this.references.items.get('timer')[0]
         this.timer.group.rotation.y = Math.PI * 0.1
         this.timer.group.visible = false
         this.timer.defaultPosition = this.timer.group.position.clone()
@@ -371,7 +313,7 @@ export class CircuitArea extends Area
         this.checkpoints.timings = []
 
         // Create checkpoints
-        const baseCheckpoints = this.references.get('checkpoints').sort((a, b) => a.name.localeCompare(b.name))
+        const baseCheckpoints = this.references.items.get('checkpoints').sort((a, b) => a.name.localeCompare(b.name))
 
         let i = 0
         for(const baseCheckpoint of baseCheckpoints)
@@ -561,22 +503,22 @@ export class CircuitArea extends Area
         }
     }
 
-    setObjects()
+    setResetObjects()
     {
-        this.objects = {}
-        this.objects.items = []
+        this.resetObjects = {}
+        this.resetObjects.items = []
 
-        const baseObjects = this.references.get('objects')
+        const baseObjects = this.references.items.get('objects')
 
         for(const baseObject of baseObjects)
         {
 
-            this.objects.items.push(baseObject.userData.object)
+            this.resetObjects.items.push(baseObject.userData.object)
         }
 
-        this.objects.reset = () =>
+        this.resetObjects.reset = () =>
         {
-            for(const object of this.objects.items)
+            for(const object of this.resetObjects.items)
                 this.game.objects.resetObject(object)
         }
     }
@@ -586,7 +528,7 @@ export class CircuitArea extends Area
         this.obstacles = {}
         this.obstacles.items = []
         
-        const baseObstacles = this.references.get('obstacles')
+        const baseObstacles = this.references.items.get('obstacles')
 
         let i = 0
         for(const baseObstacle of baseObstacles)
@@ -606,7 +548,7 @@ export class CircuitArea extends Area
     {
         this.rails = {}
         
-        const railsMesh = this.references.get('rails')[0]
+        const railsMesh = this.references.items.get('rails')[0]
         railsMesh.material = railsMesh.material.clone()
         railsMesh.material.side = THREE.DoubleSide
 
@@ -628,7 +570,7 @@ export class CircuitArea extends Area
     setInteractivePoint()
     {
         this.interactivePoint = this.game.interactivePoints.create(
-            this.references.get('interactivePoint')[0].position,
+            this.references.items.get('interactivePoint')[0].position,
             'Start race!',
             InteractivePoints.ALIGN_RIGHT,
             InteractivePoints.STATE_CONCEALED,
@@ -758,7 +700,7 @@ export class CircuitArea extends Area
 
     setAirDancers()
     {
-        const baseAirDancers = this.references.get('airDancers')
+        const baseAirDancers = this.references.items.get('airDancers')
         const height = 5
         const colorNode = uniform(color('#d684ff'))
 
@@ -825,7 +767,7 @@ export class CircuitArea extends Area
 
     setBanners()
     {
-        this.banners = this.references.get('banners')
+        this.banners = this.references.items.get('banners')
     }
 
     setLeaderboard()
@@ -880,7 +822,7 @@ export class CircuitArea extends Area
             )
         })()
 
-        const mesh = this.references.get('leaderboard')[0]
+        const mesh = this.references.items.get('leaderboard')[0]
         mesh.material = material
 
         const columsSettings = [
@@ -1063,7 +1005,7 @@ export class CircuitArea extends Area
             )
         })()
 
-        const mesh = this.references.get('leaderboardReset')[0]
+        const mesh = this.references.items.get('leaderboardReset')[0]
         mesh.material = material
 
         this.resetTime.activate = (resetTime = 0) =>
@@ -1128,10 +1070,10 @@ export class CircuitArea extends Area
     setPodium()
     {
         this.podium = {}
-        this.podium.object = this.references.get('podium')[0].userData.object
-        this.podium.confettiPositionA = this.references.get('podiumConfettiA')[0].position.clone()
-        this.podium.confettiPositionB = this.references.get('podiumConfettiB')[0].position.clone()
-        this.podium.respawn = this.references.get('podiumRespawn')[0]
+        this.podium.object = this.references.items.get('podium')[0].userData.object
+        this.podium.confettiPositionA = this.references.items.get('podiumConfettiA')[0].position.clone()
+        this.podium.confettiPositionB = this.references.items.get('podiumConfettiB')[0].position.clone()
+        this.podium.respawn = this.references.items.get('podiumRespawn')[0]
         this.podium.viewFocusPosition = this.podium.respawn.position.clone()
         this.podium.viewFocusPosition.x -= 4
         this.podium.viewFocusPosition.y = 0
@@ -1434,7 +1376,7 @@ export class CircuitArea extends Area
             this.checkpoints.timings = []
 
             // Objects
-            this.objects.reset()
+            this.resetObjects.reset()
 
             // Crates (all crates in the world?)
             this.game.world.explosiveCrates.reset()
@@ -1525,7 +1467,7 @@ export class CircuitArea extends Area
 
     setAchievement()
     {
-        this.events.on('enter', () =>
+        this.events.on('boundingIn', () =>
         {
             this.game.achievements.setProgress('areas', 'circuit')
         })
