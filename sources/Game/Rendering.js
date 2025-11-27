@@ -37,7 +37,7 @@ export class Rendering
 
     async setRenderer()
     {
-        this.renderer = new THREE.WebGPURenderer({ canvas: this.game.canvasElement, forceWebGL: false, antialias: true })
+        this.renderer = new THREE.WebGPURenderer({ canvas: this.game.canvasElement, forceWebGL: true, antialias: true })
         this.renderer.setSize(this.game.viewport.width, this.game.viewport.height)
         this.renderer.setPixelRatio(this.game.viewport.pixelRatio)
         this.renderer.sortObjects = true
@@ -53,7 +53,7 @@ export class Rendering
             return a.renderOrder - b.renderOrder
         })
 
-        if(this.game.debug.active)
+        if(location.hash.match(/inspector/i))
         {
             this.renderer.inspector = new Inspector()
         }
@@ -120,9 +120,9 @@ export class Rendering
 
     setStats()
     {
-        // if(!this.game.debug.active)
-        //     return
-
+        if(!location.hash.match(/stats/i))
+            return
+        console.log('ok')
         this.stats = {}
         this.stats.feed = {}
         this.stats.update = () =>
