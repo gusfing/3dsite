@@ -44,7 +44,7 @@ export class Reveal
 
     step(step)
     {
-        const speedMultiplier = this.game.debug.active ? 4 : 1
+        const speedMultiplier = location.hash.match(/skip/i) ? 4 : 1
 
         // Step 0
         if(step === 0)
@@ -96,7 +96,7 @@ export class Reveal
                     this.game.world.cherryTrees.leaves.seeThroughMultiplier = 0.5
 
                 // Click
-                if(this.game.debug.active)
+                if(location.hash.match(/skip/i))
                 {
                     this.step(1)
                 }

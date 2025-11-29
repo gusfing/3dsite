@@ -104,7 +104,7 @@ export class LandingArea extends Area
 
         menuInstance.events.on('close', () =>
         {
-            interactivePoint.reveal()
+            interactivePoint.show()
         })
 
         menuInstance.events.on('open', () =>

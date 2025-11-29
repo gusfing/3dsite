@@ -317,7 +317,7 @@ export class AchievementsArea extends Area
 
         this.game.menu.items.get('achievements').events.on('close', () =>
         {
-            this.interactivePoint.reveal()
+            this.interactivePoint.show()
         })
     }
 

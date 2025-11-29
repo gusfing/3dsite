@@ -8,7 +8,7 @@ export class Debug
     constructor()
     {
         
-        this.active = location.hash.indexOf('debug') !== -1
+        this.active = location.hash.match(/debug/i)
 
         if(this.active)
         {

@@ -143,7 +143,7 @@ export class BehindTheSceneArea extends Area
 
         this.game.menu.items.get('behindTheScene').events.on('close', () =>
         {
-            this.interactivePoint.reveal()
+            this.interactivePoint.show()
         })
     }
 
