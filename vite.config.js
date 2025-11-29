@@ -1,6 +1,7 @@
 import restart from 'vite-plugin-restart'
 import wasm from 'vite-plugin-wasm'
 import topLevelAwait from 'vite-plugin-top-level-await'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 export default {
     root: 'sources/', // Sources files (typically where index.html is)
@@ -9,6 +10,7 @@ export default {
     base: './', // Public path (what's after the domain)
     server:
     {
+        // https: true,
         host: true, // Open to local network and display URL
         open: true // Open in browser
     },
@@ -22,6 +24,7 @@ export default {
     [
         wasm(),
         topLevelAwait(),
-        restart({ restart: [ '../static/**', ] }) // Restart server on static file change
+        restart({ restart: [ '../static/**', ] }), // Restart server on static file change
+        basicSsl()
     ]
 }
