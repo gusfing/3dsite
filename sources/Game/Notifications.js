@@ -23,6 +23,35 @@ export class Notifications
         {
             this.update()
         })
+
+        // // Fake notifications
+        // for(let i = 0; i < 10; i++)
+        // {
+        //     // Notification
+        //     const html = /* html */`
+        //         <div class="top">
+        //             <div class="title">Some title</div>
+        //             <div class="progress">
+        //                 <div class="check-icon"></div>
+        //                 <span class="check"></span>
+        //                 <span class="current">1</span> / <span>2</span>
+        //             </div>
+        //         </div>
+        //         <div class="bottom">
+        //             <div class="description">Lorem ipsum dolor, sit amet consectetur adi</div>
+        //             <div class="open-icon"></div>
+        //         </div>
+        //     `
+
+        //     this.show(
+        //         html,
+        //         4,
+        //         () => {
+        //             this.game.inputs.interactiveButtons.clearItems()
+        //             this.game.menu.open('achievements')
+        //         }
+        //     )
+        // }
     }
 
     show(html = '', duration = 3, clickCallback = null)

@@ -1,8 +1,15 @@
 .notifications
+
+    --max-width @css{ min(350px, calc(100% - 40px)) }
+
+    html.is-mode-touch &
+        --max-width @css{ min(350px, calc(100% - 88px)) }
+
     position absolute
     top 20px
-    right 20px
-    width @css{ min(350px, calc(100% - 40px)) }
+    left calc(50% - var(--max-width) / 2)
+    right 0
+    width var(--max-width)
 
     .items
         position absolute
@@ -25,8 +32,9 @@
             transform translateY(0)
 
         &.is-leaving
-            transform translateX(calc(100% + 20px))
+            transform translateY(calc(-100% + 20px)) scale(0, 0)
             transition-timing-function cubic-bezier(0.42, 0, 0.47,-0.55)
+            transition-duration 0.45s
 
         html:not(.is-mode-touch) &:hover
             .bottom
@@ -52,7 +60,7 @@
             .title
                 text-align left
                 color #d5ff95
-                font-size 32px
+                font-size 1.7rem
                 margin-right 10px
                 margin-bottom 0
                 line-height 1em
