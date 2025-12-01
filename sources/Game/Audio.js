@@ -150,10 +150,8 @@ export class Audio
             // 'sounds/musics/Healing Native Flute 01.mp3',
             // 'sounds/musics/omaha_main-full.mp3',
             // 'sounds/musics/Portfolio BS - Track 1.mp3',
-            'sounds/musics/Portfolio BS - Track 2.mp3',
-            'sounds/musics/Portfolio BS - Track 3.mp3',
-            'sounds/musics/Portfolio BS - Track 4.mp3',
-            'sounds/musics/Portfolio BS - Track 5 WIP.mp3',
+            'sounds/musics/Portfolio BS - Track 2 V1.mp3',
+            'sounds/musics/Portfolio BS - Track 4 V1.mp3',
         ]
 
         this.playlist = {}
@@ -187,8 +185,6 @@ export class Audio
 
             if(this.playlist.index >= this.playlist.songs.length)
                 this.playlist.index = 0
-
-            console.log('playing', this.playlist.index)
 
             // Old one
             if(this.playlist.current)
