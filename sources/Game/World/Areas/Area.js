@@ -57,7 +57,7 @@ export class Area
                 if(
                     object.visual && // Has visual
                     (!object.physical || object.physical?.type === 'fixed') && // Doesn't have physical or is fixed
-                    typeof child.userData.preventHideable === 'undefined' || child.userData.preventHideable === false
+                    typeof child.userData.preventFrustum === 'undefined' || child.userData.preventFrustum === false
                 )
                 {
                     this.objects.hideable.push(object.visual.object3D)
