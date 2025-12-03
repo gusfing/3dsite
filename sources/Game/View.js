@@ -602,8 +602,8 @@ export class View
                         const smallestSide = Math.min(this.game.viewport.width, this.game.viewport.height)
                         mapMovement.multiplyScalar(10 / smallestSide)
                         
-                        this.focusPoint.position.x -= mapMovement.x
-                        this.focusPoint.position.z -= mapMovement.y
+                        this.focusPoint.position.x -= mapMovement.x * 2
+                        this.focusPoint.position.z -= mapMovement.y * 2
                     }
 
                     // Pinch
