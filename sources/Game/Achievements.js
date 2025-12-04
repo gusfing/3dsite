@@ -168,6 +168,7 @@ export class Achievements
             item.element = rewardElement
             item.threshold = Math.round(i / (this.rewards.count - 1) * this.globalProgress.totalCount)
             item.locked = true
+            item.tooltipTextElement = item.element.querySelector('.js-tooltip strong')
 
             item.element.addEventListener('click', (event) =>
             {
@@ -243,6 +244,7 @@ export class Achievements
                     {
                         item.locked = false
                         item.element.classList.remove('is-locked')
+                        item.element.classList.remove('has-tooltip')
                     }
                 }
                 // Lock
@@ -252,12 +254,14 @@ export class Achievements
                     {
                         item.locked = true
                         item.element.classList.add('is-locked')
+                        item.element.classList.add('has-tooltip')
 
                         if(item === this.rewards.current)
                         {
                             this.rewards.set(this.rewards.default.name)
                         }
                     }
+                    item.tooltipTextElement.textContent = item.threshold
 
                     // Current should be locked (shouldn't happen but you never know)
                     if(item === this.rewards.current)
