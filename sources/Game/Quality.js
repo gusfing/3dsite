@@ -17,7 +17,7 @@ export class Quality
         {
             const debugPanel = this.game.debug.panel.addFolder({
                 title: '⚙️ Quality',
-                expanded: true,
+                expanded: false,
             })
 
             this.game.debug.addButtons(

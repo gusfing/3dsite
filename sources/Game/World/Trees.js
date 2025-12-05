@@ -5,7 +5,7 @@ import { color, uniform } from 'three/tsl'
 
 export class Trees
 {
-    constructor(name, visual, references, color)
+    constructor(name, visual, references, colorA, colorB)
     {
         this.game = Game.getInstance()
 
@@ -20,7 +20,8 @@ export class Trees
 
         this.visual = visual
         this.references = references
-        this.color = color
+        this.colorA = colorA
+        this.colorB = colorB
 
         this.setModelParts()
         this.setBodies()
@@ -80,13 +81,15 @@ export class Trees
             }
         }
 
-        const leavesColorNode = uniform(color(this.color))
-        this.leaves = new Foliage(references, leavesColorNode, true)
+        const leavesColorANode = uniform(color(this.colorA))
+        const leavesColorBNode = uniform(color(this.colorB))
+        this.leaves = new Foliage(references, leavesColorANode, leavesColorBNode, true)
 
         // Debug
         if(this.game.debug.active)
         {
-            this.game.debug.addThreeColorBinding(this.debugPanel, leavesColorNode.value, 'leavesColor')
+            this.game.debug.addThreeColorBinding(this.debugPanel, leavesColorANode.value, 'leavesColorA')
+            this.game.debug.addThreeColorBinding(this.debugPanel, leavesColorBNode.value, 'leavesColorB')
             this.debugPanel.addBinding(this.leaves.material.shadowOffset, 'value', { label: 'shadowOffset', min: 0, max: 2, step: 0.001 })
             this.debugPanel.addBinding(this.leaves.material.threshold, 'value', { label: 'threshold', min: 0, max: 1, step: 0.001 })
             this.debugPanel.addBinding(this.leaves.material.seeThroughEdgeMin, 'value', { label: 'seeThroughEdgeMin', min: 0, max: 1, step: 0.001 })

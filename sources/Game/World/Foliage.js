@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { color, uniform, mix, output, instance, smoothstep, min, vec4, PI, vertexIndex, rotateUV, sin, uv, texture, float, Fn, positionLocal, vec3, transformNormalToView, normalWorld, positionWorld, frontFacing, If, screenUV, vec2, viewportResolution, screenSize, instanceIndex, varying, range } from 'three/tsl'
+import { color, uniform, mix, output, instance, smoothstep, min, vec4, PI, vertexIndex, rotateUV, sin, uv, texture, float, Fn, positionLocal, vec3, transformNormalToView, normalWorld, positionWorld, frontFacing, If, screenUV, vec2, viewportResolution, screenSize, instanceIndex, varying, range, positionGeometry, storage, instancedBufferAttribute, normalLocal } from 'three/tsl'
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import { remap } from '../utilities/maths.js'
 import { MeshDefaultMaterial } from '../Materials/MeshDefaultMaterial.js'
@@ -10,12 +10,13 @@ const rng = new alea('foliage')
 
 export class Foliage
 {
-    constructor(references, colorNode, seeThrough = false)
+    constructor(references, colorANode, colorBNode, seeThrough = false)
     {
         this.game = Game.getInstance()
 
         this.references = references
-        this.colorNode = colorNode
+        this.colorANode = colorANode
+        this.colorBNode = colorBNode
         this.seeThrough = seeThrough
         this.seeThroughMultiplier = 1
 
@@ -126,12 +127,18 @@ export class Foliage
         })()
         
         // Instance
+        const colorNode = Fn(() =>
+        {
+            const mixStrength = normalWorld.dot(this.game.lighting.directionUniform).smoothstep(0, 1)
+            return mix(this.colorANode, this.colorBNode, mixStrength)
+        })()
         this.material.instance = new MeshDefaultMaterial({
             // shadowSide: THREE.FrontSide,
-            colorNode: this.colorNode,
+            colorNode: colorNode,
             alphaNode: alphaNode,
             hasWater: false
         })
+        // this.material.instance.outputNode = vec4(colorNode, 1)
     
         // Position
         const wind = this.game.wind.offsetNode(positionLocal.xz)

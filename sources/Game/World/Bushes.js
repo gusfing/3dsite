@@ -9,8 +9,9 @@ export class Bushes
     {
         this.game = Game.getInstance()
 
-        this.colorNode = uniform(color('#a7af46'))
-        this.foliage = new Foliage(this.game.resources.bushesReferences.scene.children, this.colorNode)
+        this.colorANode = uniform(color('#b4b536'))
+        this.colorBNode = uniform(color('#d8cf3b'))
+        this.foliage = new Foliage(this.game.resources.bushesReferences.scene.children, this.colorANode, this.colorBNode)
 
         // Debug
         if(this.game.debug.active)
@@ -19,7 +20,8 @@ export class Bushes
                 title: '🌳 Bushes',
                 expanded: false,
             })
-            this.game.debug.addThreeColorBinding(debugPanel, this.colorNode.value, 'color')
+            this.game.debug.addThreeColorBinding(debugPanel, this.colorANode.value, 'colorA')
+            this.game.debug.addThreeColorBinding(debugPanel, this.colorBNode.value, 'colorB')
             debugPanel.addBinding(this.foliage.material.shadowOffset, 'value', { label: 'shadowOffset', min: 0, max: 2, step: 0.001 })
         }
     }
