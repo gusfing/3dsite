@@ -20,6 +20,9 @@ export default class Keyboard
         // Key down event
         addEventListener('keydown', (_event) =>
         {
+            if(document.activeElement.matches('input, textarea, [contenteditable]'))
+                return
+                
             this.pressed.push(_event.code, _event.key)
             this.events.trigger('down', [ _event.code, _event.key ])
         })
