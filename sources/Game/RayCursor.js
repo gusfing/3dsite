@@ -22,7 +22,14 @@ export class RayCursor
         const intersect = { ...description }
         intersect.isIntersecting = false
         intersect.isDown = false
-        intersect.position = intersect.shape instanceof THREE.Mesh ? intersect.shape.position : intersect.shape.center
+
+        if(intersect.shape instanceof THREE.Mesh)
+        {
+            intersect.position = new THREE.Vector3()
+            intersect.shape.getWorldPosition(intersect.position)
+        }
+        else
+            intersect.position = intersect.shape.center
 
         this.intersects.push(intersect)
         this.needsTest = intersect.active
