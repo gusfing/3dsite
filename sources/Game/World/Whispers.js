@@ -219,6 +219,19 @@ export class Whispers
             if(item)
             {
                 item.available = true
+
+                const dummy = { value: 1 }
+                gsap.to(
+                    dummy,
+                    {
+                        value: 0,
+                        onUpdate: () =>
+                        {
+                            this.revealArray[item.index] = dummy.value
+                            this.revealBufferNeedsUpdate = true
+                        }
+                    }
+                )
             }
         }
 
