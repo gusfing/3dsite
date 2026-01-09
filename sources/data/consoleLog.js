@@ -16,7 +16,7 @@ const text = `
 ╚═╝      ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝      ╚═════╝ ╚══════╝╚═╝ ╚═════╝ 
 
 ╔═ Intro ═══════════════╗
-║ Thank you for visiting my portfolio, you snicky developer!
+║ Thank you for visiting my portfolio, you sneaky developer!
 ║ If you are curious about the stack and how I built this project, here’s everything you need to know.
 ╚═══════════════════════╝
 
