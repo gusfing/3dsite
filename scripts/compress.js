@@ -4,6 +4,9 @@ import { spawn } from 'node:child_process'
 import { glob } from 'glob'
 import sharp from 'sharp'
 
+const isWindows = process.platform === 'win32'
+const spawnOptions = { shell: isWindows }
+
 /**
  * Models
  */
@@ -15,37 +18,37 @@ import sharp from 'sharp'
         {
             ignore:
             {
-                ignored: (p) =>
-                {
+                ignored: (p) => {
                     return /-(draco|ktx|compressed).glb$/.test(p.name)
                 }
             }
         }
     )
 
-    for(const inputFile of files)
-    {
+    for (const inputFile of files) {
         const ktx2File = inputFile.replace('.glb', '-compressed.glb')
         const dracoFile = inputFile.replace('.glb', '-compressed.glb')
-        
+
         const command = spawn(
-            'gltf-transform',
+            'npx',
             [
+                'gltf-transform',
                 'etc1s',
                 inputFile,
                 ktx2File,
                 '--quality', '255',
                 '--verbose'
-            ]
+            ],
+            spawnOptions
         )
 
         command.stdout.on('data', data => { console.log(`stdout: ${data}`) })
         command.stderr.on('data', data => { console.error(`stderr: ${data}`) })
-        command.on('close', code =>
-        {
+        command.on('close', code => {
             const dracoCommand = spawn(
-                'gltf-transform',
+                'npx',
                 [
+                    'gltf-transform',
                     'draco',
                     ktx2File,
                     dracoFile,
@@ -56,7 +59,8 @@ import sharp from 'sharp'
                     '--quantize-texcoord', 6,
                     '--quantize-color', 2,
                     '--quantize-generic', 2
-                ]
+                ],
+                spawnOptions
             )
             dracoCommand.stdout.on('data', data => { console.log(`stdout: ${data}`) })
             dracoCommand.stderr.on('data', data => { console.error(`stderr: ${data}`) })
@@ -79,30 +83,29 @@ import sharp from 'sharp'
 
     const defaultPreset = '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf srgb --target_type RGB'
     const presets = [
-        [ /test.png$/,                            '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001' ],
+        [/test.png$/, '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001'],
 
-        [ /whispers\/whisperFlame.png$/,          '--nowarn --2d --t2 --encode uastc --qlevel 255 --assign_oetf linear --target_type R --swizzle r001' ],
-        [ /achievements\/glyphs.png$/,            '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001' ],
-        [ /areas\/satanStar.png$/,                '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001' ],
-        [ /floor\/slabs.png$/,                    '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001' ],
-        [ /foliage\/foliageSDF.png$/,             '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001' ],
-        [ /interactivePoints\/.+.png$/,           '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001' ],
-        [ /intro\/.+.png$/,                       '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001' ],
-        [ /jukebox\/jukeboxMusicNotes.png$/,      '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001' ],
-        [ /overlay\/overlayPattern.png$/,         '--nowarn --2d --t2 --encode uastc --assign_oetf linear' ],
-        [ /palette.png$/,                         '--nowarn --2d --t2 --encode uastc --genmipmap --assign_oetf srgb --target_type RGB' ],
-        [ /terrain\/terrain.png$/,                '--nowarn --2d --t2 --encode uastc --genmipmap --assign_oetf linear --target_type RGB' ],
-        [ /career\/.+png$/,                       '--nowarn --2d --t2 --encode uastc --assign_oetf srgb --target_type RG' ],
-        [ /whispers\/whisperFlame.png$/,          '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R' ],
+        [/whispers\/whisperFlame.png$/, '--nowarn --2d --t2 --encode uastc --qlevel 255 --assign_oetf linear --target_type R --swizzle r001'],
+        [/achievements\/glyphs.png$/, '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001'],
+        [/areas\/satanStar.png$/, '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001'],
+        [/floor\/slabs.png$/, '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001'],
+        [/foliage\/foliageSDF.png$/, '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001'],
+        [/interactivePoints\/.+.png$/, '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001'],
+        [/intro\/.+.png$/, '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001'],
+        [/jukebox\/jukeboxMusicNotes.png$/, '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R --swizzle r001'],
+        [/overlay\/overlayPattern.png$/, '--nowarn --2d --t2 --encode uastc --assign_oetf linear'],
+        [/palette.png$/, '--nowarn --2d --t2 --encode uastc --genmipmap --assign_oetf srgb --target_type RGB'],
+        [/terrain\/terrain.png$/, '--nowarn --2d --t2 --encode uastc --genmipmap --assign_oetf linear --target_type RGB'],
+        [/career\/.+png$/, '--nowarn --2d --t2 --encode uastc --assign_oetf srgb --target_type RG'],
+        [/whispers\/whisperFlame.png$/, '--nowarn --2d --t2 --encode etc1s --qlevel 255 --assign_oetf linear --target_type R'],
     ]
 
-    for(const inputFile of files)
-    {
+    for (const inputFile of files) {
         const ktx2File = inputFile.replace(/\.(png|jpg)$/, '.ktx')
 
         let preset = presets.find(preset => preset[0].test(inputFile))
 
-        if(preset)
+        if (preset)
             preset = preset[1]
         else
             preset = defaultPreset
@@ -113,13 +116,13 @@ import sharp from 'sharp'
                 ...preset.split(' '),
                 ktx2File,
                 inputFile,
-            ]
+            ],
+            spawnOptions
         )
 
         command.stdout.on('data', data => { console.log(inputFile); console.log(`stdout: ${data}`) })
         command.stderr.on('data', data => { console.log(inputFile); console.error(`stderr: ${data}`) })
-        command.on('close', code =>
-        {
+        command.on('close', code => {
             // console.log('finished:', ktx2File);
         })
     }
@@ -135,8 +138,7 @@ import sharp from 'sharp'
         `${directory}/ui/**/*.{png,jpg}`
     )
 
-    for(const inputFile of files)
-    {
+    for (const inputFile of files) {
         const webpFile = inputFile.replace(/\.(png|jpg)$/, '.webp')
 
         await sharp(inputFile)

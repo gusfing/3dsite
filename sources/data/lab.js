@@ -1,79 +1,79 @@
 export default [
     {
-        title: 'Black Hole',
-        url: 'https://awwwards-2022-workshop.vercel.app',
+        title: 'Particle Universe',
+        url: 'https://kawakistudios.com/demos/particles',
         image: 'black-hole.ktx',
         imageMini: 'black-hole-mini.ktx'
     },
     {
-        title: 'Infinite World',
-        url: 'https://infinite-world.vercel.app',
+        title: 'Infinite Worlds',
+        url: 'https://kawakistudios.com/demos/infinite',
         image: 'infinite-world.ktx',
         imageMini: 'infinite-world-mini.ktx'
     },
     {
-        title: 'My Room in 3D',
-        url: 'https://my-room-in-3d.vercel.app',
+        title: '3D Room Builder',
+        url: 'https://kawakistudios.com/demos/room',
         image: 'my-room-in-3d.ktx',
         imageMini: 'my-room-in-3d-mini.ktx',
     },
     {
-        title: 'Particles System',
-        url: 'https://three-js-tsl-particles-system.vercel.app',
+        title: 'GPU Particles',
+        url: 'https://kawakistudios.com/demos/gpu-particles',
         image: 'particles-system.ktx',
         imageMini: 'particles-system-mini.ktx'
     },
     {
-        title: 'Stylized Low Poly',
-        url: 'https://stylized-low-poly.vercel.app',
+        title: 'Stylized Shader',
+        url: 'https://kawakistudios.com/demos/stylized',
         image: 'stylized-low-poly.ktx',
         imageMini: 'stylized-low-poly-mini.ktx'
     },
     {
-        title: 'Holographic terrain',
-        url: 'https://experiment-holographic-terrain.vercel.app',
+        title: 'Holographic FX',
+        url: 'https://kawakistudios.com/demos/holographic',
         image: 'holographic-terrain.ktx',
         imageMini: 'holographic-terrain-mini.ktx'
     },
     {
-        title: 'Woodkid Volcano Robot',
-        url: 'https://experiment-woodkid-volcano-robot.vercel.app',
+        title: 'Robot Animation',
+        url: 'https://kawakistudios.com/demos/robot',
         image: 'woodkid-volcano-robot.ktx',
         imageMini: 'woodkid-volcano-robot-mini.ktx'
     },
     {
-        title: 'Bounce Friday',
-        url: 'https://threejs-journey.com/apps/bounce-friday/',
+        title: 'Physics Playground',
+        url: 'https://kawakistudios.com/demos/physics',
         image: 'bounce-friday.ktx',
         imageMini: 'bounce-friday-mini.ktx'
     },
     {
-        title: 'VFX flames',
-        url: 'https://threejs.org/examples/webgpu_tsl_vfx_flames.html',
+        title: 'Fire VFX',
+        url: 'https://kawakistudios.com/demos/fire',
         image: 'vfx-flames.ktx',
         imageMini: 'vfx-flames-mini.ktx'
     },
     {
-        title: 'VFX tornado',
-        url: 'https://threejs.org/examples/webgpu_tsl_vfx_tornado.html',
+        title: 'Tornado VFX',
+        url: 'https://kawakistudios.com/demos/tornado',
         image: 'vfx-tornado.ktx',
         imageMini: 'vfx-tornado-mini.ktx'
     },
     {
-        title: 'DOOM Portal',
-        url: 'https://doom-portal-in-webgl.vercel.app',
+        title: 'Portal Effect',
+        url: 'https://kawakistudios.com/demos/portal',
         image: 'doom-portal.ktx',
         imageMini: 'doom-portal-mini.ktx'
     },
     {
-        title: 'Organic Sphere',
-        url: 'https://organic-sphere.vercel.app',
+        title: 'Organic Shapes',
+        url: 'https://kawakistudios.com/demos/organic',
         image: 'organic-sphere.ktx',
         imageMini: 'organic-sphere-mini.ktx'
     },
     {
-        title: 'Attractors',
-        url: 'https://threejs.org/examples/webgpu_tsl_compute_attractors_particles.html',
+        title: 'Attractors Sim',
+        url: 'https://kawakistudios.com/demos/attractors',
         image: 'attractors.ktx',
         imageMini: 'attractors-mini.ktx'
     }

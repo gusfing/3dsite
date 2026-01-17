@@ -1,6 +1,6 @@
 {
-  "name": "Bruno's",
-  "short_name": "Bruno's",
+  "name": "Kawaki Studios",
+  "short_name": "Kawaki",
   "icons": [
     {
       "src": "/favicons/web-app-manifest-192x192.png",
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#7C3AED",
+  "background_color": "#0F0F0F",
   "display": "standalone"
 }

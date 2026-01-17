@@ -4,10 +4,8 @@ import { Area } from './Area.js'
 import { Fn, texture, uv, vec2, vec3, vec4 } from 'three/tsl'
 import gsap from 'gsap'
 
-export class TimeMachine extends Area
-{
-    constructor(model)
-    {
+export class TimeMachine extends Area {
+    constructor(model) {
         super(model)
 
         this.setInteractivePoint()
@@ -15,34 +13,28 @@ export class TimeMachine extends Area
         this.setAchievement()
     }
 
-    setInteractivePoint()
-    {
+    setInteractivePoint() {
         this.interactivePoint = this.game.interactivePoints.create(
             this.references.items.get('interactivePoint')[0].position,
             'Time Machine',
             InteractivePoints.ALIGN_RIGHT,
             InteractivePoints.STATE_CONCEALED,
-            () =>
-            {
-                window.open('https://2019.bruno-simon.com')
+            () => {
+                window.open('https://kawakistudios.com/archive')
             },
-            () =>
-            {
+            () => {
                 this.game.inputs.interactiveButtons.addItems(['interact'])
             },
-            () =>
-            {
+            () => {
                 this.game.inputs.interactiveButtons.removeItems(['interact'])
             },
-            () =>
-            {
+            () => {
                 this.game.inputs.interactiveButtons.removeItems(['interact'])
             }
         )
     }
 
-    setTV()
-    {
+    setTV() {
         let canCollide = true
         let collideIndex = 0
 
@@ -58,27 +50,24 @@ export class TimeMachine extends Area
             volume: 0.3,
             preload: true
         })
-    
+
 
         const tv = this.references.items.get('tv')[0]
-        tv.userData.object.physical.onCollision = (force, position) =>
-        {
-            if(canCollide)
-            {
+        tv.userData.object.physical.onCollision = (force, position) => {
+            if (canCollide) {
                 canCollide = false
                 collideIndex++
                 material.outputNode = screenOutputNode()
                 material.needsUpdate = true
 
                 const clickSound = this.game.audio.groups.get('click')
-                if(clickSound)
+                if (clickSound)
                     clickSound.play(true)
 
-                if(collideIndex === 1)
+                if (collideIndex === 1)
                     alertSound.play()
 
-                gsap.delayedCall(1, () =>
-                {
+                gsap.delayedCall(1, () => {
                     canCollide = true
                 })
             }
@@ -87,10 +76,9 @@ export class TimeMachine extends Area
         const screenMesh = this.references.items.get('screen')[0]
 
         const material = new THREE.MeshBasicNodeMaterial()
-        const screenOutputNode = Fn(() =>
-        {
+        const screenOutputNode = Fn(() => {
             const baseUv = vec2(uv().x, uv().y)
-            
+
             const textureColor = texture(screenTextures[collideIndex % screenTextures.length], baseUv)
 
             const stripes = texture(
@@ -108,10 +96,8 @@ export class TimeMachine extends Area
         screenMesh.material = material
     }
 
-    setAchievement()
-    {
-        this.events.on('boundingIn', () =>
-        {
+    setAchievement() {
+        this.events.on('boundingIn', () => {
             this.game.achievements.setProgress('areas', 'timeMachine')
         })
     }
